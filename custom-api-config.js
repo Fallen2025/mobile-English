@@ -43,7 +43,8 @@ class MobileCustomAPIConfig {
             // Advanced settings
             customHeaders: {},
             systemPrompt: '',
-            streamEnabled: false
+            streamEnabled: false,
+            availableModels: []
         };
     }
 
@@ -54,9 +55,9 @@ class MobileCustomAPIConfig {
         return {
             openai: {
                 name: 'OpenAI',
-                defaultUrl: 'https://api.openai.com',
-                urlSuffix: 'v1/chat/completions',
-                modelsEndpoint: 'v1/models',
+                defaultUrl: 'https://api.openai.com/v1',
+                urlSuffix: 'chat/completions',
+                modelsEndpoint: 'models',
                 defaultModels: ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'],
                 authType: 'Bearer',
                 requiresKey: true,
@@ -74,9 +75,9 @@ class MobileCustomAPIConfig {
             },
             openrouter: {
                 name: 'OpenRouter',
-                defaultUrl: 'https://openrouter.ai/api',
-                urlSuffix: 'v1/chat/completions',
-                modelsEndpoint: 'v1/models',
+                defaultUrl: 'https://openrouter.ai/api/v1',
+                urlSuffix: 'chat/completions',
+                modelsEndpoint: 'models',
                 defaultModels: [
                     'openai/gpt-4o',
                     'openai/gpt-4o-mini',
@@ -572,8 +573,10 @@ class MobileCustomAPIConfig {
             keySection.style.display = provider.requiresKey ? 'block' : 'none';
         }
 
-        // Update model list
-        this.updateModelList(provider.defaultModels);
+        const savedModels = (this.currentSettings.provider === providerKey && this.currentSettings.availableModels && this.currentSettings.availableModels.length)
+            ? this.currentSettings.availableModels
+            : provider.defaultModels;
+        this.updateModelList(savedModels);
     }
 
     /**
@@ -663,6 +666,22 @@ class MobileCustomAPIConfig {
         if (tempValue) {
             tempValue.textContent = settings.temperature;
         }
+
+        const provider = this.supportedProviders[settings.provider];
+        const models = (settings.availableModels && settings.availableModels.length)
+            ? settings.availableModels
+            : (provider?.defaultModels || []);
+        this.updateModelList(models);
+        const modelSelect = document.getElementById('api-model');
+        if (modelSelect && settings.model) {
+            if (![...modelSelect.options].some(o => o.value === settings.model)) {
+                const opt = document.createElement('option');
+                opt.value = settings.model;
+                opt.textContent = settings.model;
+                modelSelect.appendChild(opt);
+            }
+            modelSelect.value = settings.model;
+        }
     }
 
     /**
@@ -691,7 +710,10 @@ class MobileCustomAPIConfig {
                 model: document.getElementById('api-model')?.value || '',
                 temperature: parseFloat(document.getElementById('api-temperature')?.value || 0.8),
                 maxTokens: parseInt(document.getElementById('api-max-tokens')?.value || 1500),
-                systemPrompt: document.getElementById('api-system-prompt')?.value || ''
+                systemPrompt: document.getElementById('api-system-prompt')?.value || '',
+                availableModels: Array.from(document.getElementById('api-model')?.options || [])
+                    .map(opt => opt.value)
+                    .filter(v => v)
             };
 
             // Validate required fields
@@ -763,6 +785,7 @@ class MobileCustomAPIConfig {
 
             if (models && models.length > 0) {
                 this.updateModelList(models);
+                this.currentSettings.availableModels = models;
                 this.showStatus(`✅ Fetched ${models.length} models`, 'success');
                 console.log('[Mobile API Config] Model list fetched:', models);
             } else {
@@ -795,30 +818,7 @@ class MobileCustomAPIConfig {
             throw new Error('Unsupported provider');
         }
 
-        // Build models URL
-        let modelsUrl = apiUrl.trim();
-        if (!modelsUrl.endsWith('/')) {
-            modelsUrl += '/';
-        }
-
-        // Build the correct URL per provider
-        if (provider === 'gemini') {
-            // Gemini uses a special URL shape
-            if (!modelsUrl.includes('/v1beta/models')) {
-                if (modelsUrl.endsWith('/v1/')) {
-                    modelsUrl = modelsUrl.replace('/v1/', '/v1beta/models');
-                } else {
-                    modelsUrl += 'v1beta/models';
-                }
-            }
-        } else {
-            // OpenAI / OpenRouter / custom use the standard URL shape
-            if (modelsUrl.endsWith('/v1/')) {
-                modelsUrl += 'models';
-            } else if (!modelsUrl.includes('/models')) {
-                modelsUrl += 'models';
-            }
-        }
+        let modelsUrl = this.buildModelsUrl(provider, apiUrl);
 
         // Build headers + auth
         const headers = this.getProviderHeaders(provider, apiKey);
@@ -1300,31 +1300,42 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * Build models URL (debug)
+     * Build GET /models URL.
+     * OpenAI:     {base}/v1/models
+     * OpenRouter: {base}/api/v1/models
+     * Custom:     {base}/models  (or {base}/v1/models if the user already included /v1)
      */
     buildModelsUrl(provider, apiUrl) {
-        let modelsUrl = apiUrl.trim();
-        if (!modelsUrl.endsWith('/')) {
-            modelsUrl += '/';
-        }
+        let base = (apiUrl || '').trim().replace(/\/+$/, '');
+        const providerConfig = this.supportedProviders[provider] || {};
 
         if (provider === 'gemini') {
-            if (!modelsUrl.includes('/v1beta/models')) {
-                if (modelsUrl.endsWith('/v1/')) {
-                    modelsUrl = modelsUrl.replace('/v1/', '/v1beta/models');
+            if (!base.includes('/v1beta/models')) {
+                if (base.endsWith('/v1')) {
+                    base = base.replace(/\/v1$/, '/v1beta/models');
                 } else {
-                    modelsUrl += 'v1beta/models';
+                    base += '/v1beta/models';
                 }
             }
-        } else {
-            if (modelsUrl.endsWith('/v1/')) {
-                modelsUrl += 'models';
-            } else if (!modelsUrl.includes('/models')) {
-                modelsUrl += 'models';
+            return base;
+        }
+
+        if (provider === 'openai' && !/\/v1$/.test(base) && !base.includes('/models')) {
+            base += '/v1';
+        }
+        if (provider === 'openrouter' && !base.includes('/api/v1') && !base.includes('/models')) {
+            if (base === 'https://openrouter.ai' || base === 'https://openrouter.ai/') {
+                base = 'https://openrouter.ai/api/v1';
+            } else if (base === 'https://openrouter.ai/api') {
+                base += '/v1';
             }
         }
 
-        return modelsUrl;
+        if (base.endsWith('/models')) {
+            return base;
+        }
+        const endpoint = providerConfig.modelsEndpoint || 'models';
+        return `${base}/${endpoint}`;
     }
 
     /**
