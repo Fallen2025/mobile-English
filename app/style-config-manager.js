@@ -1,32 +1,32 @@
 /**
- * Style Config Manager - 移动端样式配置管理器
- * 使用SillyTavern的Data Bank API在global层级存储移动端界面样式配置
+ * Style Config Manager - Mobile style config manager
+ * Stores mobile UI styles in SillyTavern Data Bank (global)
  */
 
-// 导入SillyTavern的Data Bank API
+// Import SillyTavern Data Bank API
 let getDataBankAttachmentsForSource, getFileAttachment, uploadFileAttachmentToServer, deleteAttachment;
 let sillyTavernCoreImported = false;
 
-// 配置文件名（存储在Data Bank中）
+// Config filename (Data Bank)
 const STYLE_CONFIG_FILE_NAME = 'mobile_style_config.json';
 
-// 默认样式配置
+// Default style config
 const DEFAULT_STYLE_CONFIG = {
   homeScreen: {
     backgroundImage: '',
     backgroundImageUrl: '',
-    description: '主屏幕背景图片',
+    description: 'Home screen background image',
   },
   messageDetailApp: {
     backgroundImage: '',
     backgroundImageUrl: '',
-    description: '消息详情应用背景',
+    description: 'Message-detail app background',
   },
   messagesApp: {
     backgroundImage: '',
     backgroundImageUrl: '',
     backgroundPosition: 'center center',
-    description: '消息应用背景',
+    description: 'Messages app background',
   },
   messageSentAvatar: {
     backgroundImage: '',
@@ -34,7 +34,7 @@ const DEFAULT_STYLE_CONFIG = {
     backgroundPosition: 'center center',
     rotation: '0',
     scale: '1',
-    description: '发送消息头像背景',
+    description: 'Sent-message avatar background',
   },
   messageReceivedAvatars: [
     {
@@ -45,32 +45,32 @@ const DEFAULT_STYLE_CONFIG = {
       rotation: '0',
       scale: '1',
       friendId: '',
-      name: '默认好友头像',
-      description: '接收消息头像背景',
+      name: 'Default friend avatar',
+      description: 'Received-message avatar background',
     },
   ],
-  // 新增：好友专属背景配置
+  // Per-friend backgrounds
   friendBackgrounds: [
     {
       id: 'default',
       friendId: '',
-      name: '默认好友背景',
+      name: 'Default friend background',
       backgroundImage: '',
       backgroundImageUrl: '',
       backgroundPosition: 'center center',
       rotation: '0',
       scale: '1',
-      description: '好友专属聊天背景',
+      description: 'Per-friend chat background',
     },
   ],
   customStyles: {
     cssText: '',
-    description: '自定义CSS样式',
+    description: 'Custom CSS',
   },
 };
 
-// 避免重复定义
-// @ts-ignore - StyleConfigManager全局对象
+// Avoid redefining
+// @ts-ignore - StyleConfigManager global
 if (typeof window.StyleConfigManager === 'undefined') {
   class StyleConfigManager {
     constructor() {
@@ -79,53 +79,53 @@ if (typeof window.StyleConfigManager === 'undefined') {
       this.styleElement = null;
       this.isReady = false;
 
-      console.log('[Style Config Manager] 样式配置管理器初始化开始');
+      console.log('[Style Config Manager] Style config manager starting');
 
-      // 初始化
+      // Init
       this.init();
     }
 
     async init() {
       try {
-        // 导入SillyTavern核心模块
+        // Import SillyTavern core
         await this.importSillyTavernCore();
 
-        // 创建样式元素
+        // Create style element
         this.createStyleElement();
 
-        // 清理重复的默认配置文件
+        // Clean duplicate default configs
         await this.cleanupDuplicateDefaultConfigs();
 
-        // 自动加载配置
+        // Auto-load config
         await this.loadConfig();
 
-        // 应用配置
+        // Apply config
         this.applyStyles();
 
         this.isReady = true;
-        console.log('[Style Config Manager] ✅ 样式配置管理器初始化完成');
+        console.log('[Style Config Manager] ✅ Style config manager ready');
 
-        // 触发就绪事件
+        // Fire ready event
         this.dispatchReadyEvent();
 
-        // 确保全局引用可用
+        // Keep the global ref
         // @ts-ignore - Window global property
         window.styleConfigManager = this;
       } catch (error) {
-        console.error('[Style Config Manager] 初始化失败:', error);
+        console.error('[Style Config Manager] Init failed:', error);
       }
     }
 
-    // 导入SillyTavern核心模块
+    // Import SillyTavern core
     async importSillyTavernCore() {
       if (sillyTavernCoreImported) {
         return;
       }
 
       try {
-        console.log('[Style Config Manager] 🔍 导入SillyTavern Data Bank API...');
+        console.log('[Style Config Manager] 🔍 Importing SillyTavern Data Bank API...');
 
-        // 动态导入chats.js模块
+        // Dynamic-import chats.js
         const chatsModule = await import('../../../../chats.js');
 
         getDataBankAttachmentsForSource = chatsModule.getDataBankAttachmentsForSource;
@@ -134,81 +134,81 @@ if (typeof window.StyleConfigManager === 'undefined') {
         deleteAttachment = chatsModule.deleteAttachment;
 
         sillyTavernCoreImported = true;
-        console.log('[Style Config Manager] ✅ SillyTavern Data Bank API导入成功');
+        console.log('[Style Config Manager] ✅ SillyTavern Data Bank API imported');
       } catch (error) {
-        console.warn('[Style Config Manager] ⚠️ 导入SillyTavern模块失败，使用localStorage备用方案:', error);
-        // 如果导入失败，仍然可以使用localStorage备用方案
+        console.warn('[Style Config Manager] ⚠️ SillyTavern import failed — using localStorage:', error);
+        // Fall back to localStorage if import fails
       }
     }
 
-    // 创建样式元素
+    // Create style element
     createStyleElement() {
-      // 移除旧的样式元素
+      // Remove old style element
       const oldStyleElement = document.getElementById('mobile-style-config');
       if (oldStyleElement) {
         oldStyleElement.remove();
       }
 
-      // 创建新的样式元素
+      // Create style element
       this.styleElement = document.createElement('style');
       this.styleElement.id = 'mobile-style-config';
       this.styleElement.type = 'text/css';
       document.head.appendChild(this.styleElement);
 
-      console.log('[Style Config Manager] 样式元素已创建');
+      console.log('[Style Config Manager] Style element created');
     }
 
-    // 清理重复的默认配置文件
+    // Clean duplicate default configs
     async cleanupDuplicateDefaultConfigs() {
       try {
         if (!sillyTavernCoreImported) {
-          console.log('[Style Config Manager] SillyTavern未导入，跳过清理');
+          console.log('[Style Config Manager] SillyTavern not imported — skip cleanup');
           return;
         }
 
-        console.log('[Style Config Manager] 🧹 正在清理重复的默认配置文件...');
+        console.log('[Style Config Manager] 🧹 Cleaning duplicate default configs...');
 
-        // 获取所有配置文件
+        // List config files
         const globalAttachments = getDataBankAttachmentsForSource('global', true);
         const defaultConfigs = globalAttachments.filter(att => att.name === STYLE_CONFIG_FILE_NAME);
 
         if (defaultConfigs.length > 1) {
-          console.log(`[Style Config Manager] 发现 ${defaultConfigs.length} 个重复的默认配置，准备清理...`);
+          console.log(`[Style Config Manager] Found ${defaultConfigs.length} duplicate default configs — cleaning...`);
 
-          // 保留第一个，删除其余的
+          // Keep the first, delete the rest
           for (let i = 1; i < defaultConfigs.length; i++) {
             try {
-              console.log(`[Style Config Manager] 正在删除重复配置: ${defaultConfigs[i].name}`);
+              console.log(`[Style Config Manager] Deleting duplicate config: ${defaultConfigs[i].name}`);
               await deleteAttachment(defaultConfigs[i], 'global', () => {}, false);
-              console.log(`[Style Config Manager] ✅ 已删除重复配置: ${defaultConfigs[i].name}`);
+              console.log(`[Style Config Manager] ✅ Deleted duplicate config: ${defaultConfigs[i].name}`);
             } catch (error) {
-              console.warn(`[Style Config Manager] 删除重复配置失败: ${defaultConfigs[i].name}`, error);
+              console.warn(`[Style Config Manager] Failed to delete duplicate: ${defaultConfigs[i].name}`, error);
             }
           }
 
-          console.log('[Style Config Manager] ✅ 重复默认配置清理完成');
+          console.log('[Style Config Manager] ✅ Duplicate default configs cleaned');
         } else {
-          console.log('[Style Config Manager] 未发现重复的默认配置');
+          console.log('[Style Config Manager] No duplicate default configs');
         }
       } catch (error) {
-        console.warn('[Style Config Manager] 清理重复配置时出错:', error);
+        console.warn('[Style Config Manager] Error cleaning duplicate configs:', error);
       }
     }
 
-    // 清理旧的默认配置文件（包括带时间戳的）
+    // Clean old default configs (including timestamped)
     async cleanupOldDefaultConfigs() {
       try {
         if (!sillyTavernCoreImported) {
-          console.log('[Style Config Manager] SillyTavern未导入，跳过清理');
+          console.log('[Style Config Manager] SillyTavern not imported — skip cleanup');
           return;
         }
 
-        console.log('[Style Config Manager] 🧹 正在清理旧的默认配置文件...');
+        console.log('[Style Config Manager] 🧹 Cleaning old default configs...');
 
-        // 获取所有配置文件
+        // List config files
         const globalAttachments = getDataBankAttachmentsForSource('global', true);
 
-        // 查找所有默认配置相关的文件
+        // Find default-config related files
         const defaultRelatedConfigs = globalAttachments.filter(
           att =>
             att.name === STYLE_CONFIG_FILE_NAME ||
@@ -216,35 +216,35 @@ if (typeof window.StyleConfigManager === 'undefined') {
         );
 
         if (defaultRelatedConfigs.length > 0) {
-          console.log(`[Style Config Manager] 发现 ${defaultRelatedConfigs.length} 个默认配置相关文件，准备清理...`);
+          console.log(`[Style Config Manager] Found ${defaultRelatedConfigs.length} default-config files — cleaning...`);
 
-          // 删除所有相关文件
+          // Delete related files
           for (const config of defaultRelatedConfigs) {
             try {
-              console.log(`[Style Config Manager] 正在删除旧配置: ${config.name}`);
+              console.log(`[Style Config Manager] Deleting old config: ${config.name}`);
               await deleteAttachment(config, 'global', () => {}, false);
-              console.log(`[Style Config Manager] ✅ 已删除旧配置: ${config.name}`);
+              console.log(`[Style Config Manager] ✅ Deleted old config: ${config.name}`);
             } catch (error) {
-              console.warn(`[Style Config Manager] 删除旧配置失败: ${config.name}`, error);
+              console.warn(`[Style Config Manager] Failed to delete old config: ${config.name}`, error);
             }
           }
 
-          console.log('[Style Config Manager] ✅ 旧默认配置清理完成');
+          console.log('[Style Config Manager] ✅ Old default configs cleaned');
         } else {
-          console.log('[Style Config Manager] 未发现需要清理的旧默认配置');
+          console.log('[Style Config Manager] No old default configs to clean');
         }
       } catch (error) {
-        console.warn('[Style Config Manager] 清理旧默认配置时出错:', error);
+        console.warn('[Style Config Manager] Error cleaning old default configs:', error);
       }
     }
 
-    // 从Data Bank加载配置
+    // Load config from Data Bank
     async loadConfig() {
       try {
-        console.log('[Style Config Manager] 🔄 从Data Bank加载样式配置...');
+        console.log('[Style Config Manager] 🔄 Loading styles from Data Bank...');
 
         if (sillyTavernCoreImported && getDataBankAttachmentsForSource && getFileAttachment) {
-          // 使用SillyTavern原生API
+          // Use native SillyTavern API
           const result = await this.loadConfigFromDataBank();
           if (result) {
             this.configLoaded = true;
@@ -252,92 +252,92 @@ if (typeof window.StyleConfigManager === 'undefined') {
           }
         }
 
-        // 备用方案：从localStorage加载
+        // Fallback: load from localStorage
         await this.loadConfigFromLocalStorage();
         this.configLoaded = true;
       } catch (error) {
-        console.warn('[Style Config Manager] 加载配置失败，使用默认配置:', error);
+        console.warn('[Style Config Manager] Load failed — using defaults:', error);
         this.configLoaded = true;
       }
     }
 
-    // 从Data Bank加载配置
+    // Load config from Data Bank
     async loadConfigFromDataBank() {
       try {
-        console.log('[Style Config Manager] 🔍 开始从Data Bank加载配置...');
+        console.log('[Style Config Manager] 🔍 Loading config from Data Bank...');
 
-        // 获取全局附件列表
+        // List global attachments
         const globalAttachments = getDataBankAttachmentsForSource('global', true);
-        console.log('[Style Config Manager] 全局附件数量:', globalAttachments.length);
+        console.log('[Style Config Manager] Global attachment count:', globalAttachments.length);
 
-        // 寻找配置文件，优先寻找标准名称，然后寻找带时间戳的JSON文件
+        // Find config — standard name first, then timestamped JSON
         let configAttachment = globalAttachments.find(att => att.name === STYLE_CONFIG_FILE_NAME);
 
         if (!configAttachment) {
-          console.log('[Style Config Manager] 未找到标准配置文件，寻找带时间戳的配置文件...');
-          // 寻找最新的mobile_config_开头的JSON文件
+          console.log('[Style Config Manager] No standard config file — looking for timestamped ones...');
+          // Find newest mobile_config_*.json
           const mobileConfigs = globalAttachments
             .filter(att => att.name.startsWith('mobile_config_') && att.name.endsWith('.json'))
             .sort((a, b) => {
-              // 按文件名中的时间戳排序，最新的在前
+              // Sort by filename timestamp, newest first
               const timeA = parseInt(a.name.match(/mobile_config_(\d+)_/)?.[1] || '0');
               const timeB = parseInt(b.name.match(/mobile_config_(\d+)_/)?.[1] || '0');
               return timeB - timeA;
             });
 
           console.log(
-            '[Style Config Manager] 找到带时间戳的配置文件:',
+            '[Style Config Manager] Timestamped config files:',
             mobileConfigs.map(c => c.name),
           );
 
           if (mobileConfigs.length > 0) {
-            configAttachment = mobileConfigs[0]; // 使用最新的
-            console.log('[Style Config Manager] 选择最新的配置文件:', configAttachment.name);
+            configAttachment = mobileConfigs[0]; // Use the newest
+            console.log('[Style Config Manager] Using newest config file:', configAttachment.name);
           }
         }
 
         if (configAttachment) {
-          console.log('[Style Config Manager] 📁 找到配置文件:', configAttachment.name);
-          console.log('[Style Config Manager] 配置文件URL:', configAttachment.url);
+          console.log('[Style Config Manager] 📁 Found config file:', configAttachment.name);
+          console.log('[Style Config Manager] Config file URL:', configAttachment.url);
 
-          // 验证URL格式
+          // Validate URL
           if (configAttachment.url.endsWith('.txt')) {
-            console.error('[Style Config Manager] ❌ 配置文件被错误保存为TXT格式，无法加载');
+            console.error('[Style Config Manager] ❌ Config was saved as TXT — cannot load');
             return false;
           }
 
-          // 下载文件内容
-          console.log('[Style Config Manager] 🔄 下载文件内容...');
+          // Download file contents
+          console.log('[Style Config Manager] 🔄 Downloading file...');
           const configContent = await getFileAttachment(configAttachment.url);
-          console.log('[Style Config Manager] 下载的内容长度:', configContent ? configContent.length : 0);
+          console.log('[Style Config Manager] Downloaded length:', configContent ? configContent.length : 0);
 
           if (configContent && configContent.trim()) {
             try {
               const parsedConfig = JSON.parse(configContent);
-              console.log('[Style Config Manager] ✅ JSON解析成功');
+              console.log('[Style Config Manager] ✅ JSON parsed');
 
-              // 合并配置（保留默认值，覆盖已存在的值）
+              // Merge configs (keep defaults, override existing)
               this.currentConfig = this.mergeConfigs(DEFAULT_STYLE_CONFIG, parsedConfig);
 
-              console.log('[Style Config Manager] ✅ 从Data Bank加载配置成功:', this.currentConfig);
+              console.log('[Style Config Manager] ✅ Loaded config from Data Bank:', this.currentConfig);
               return true;
             } catch (parseError) {
-              console.error('[Style Config Manager] ❌ JSON解析失败:', parseError);
-              console.log('[Style Config Manager] 无效的JSON内容:', configContent.substring(0, 200));
+              console.error('[Style Config Manager] ❌ JSON parse failed:', parseError);
+              console.log('[Style Config Manager] Invalid JSON:', configContent.substring(0, 200));
               return false;
             }
           }
         }
 
-        console.log('[Style Config Manager] 📄 Data Bank中未找到有效的配置文件，使用默认配置');
+        console.log('[Style Config Manager] 📄 No valid Data Bank config — using defaults');
         return false;
       } catch (error) {
-        console.error('[Style Config Manager] ❌ 从Data Bank加载配置失败:', error);
+        console.error('[Style Config Manager] ❌ Failed to load from Data Bank:', error);
         return false;
       }
     }
 
-    // 从localStorage加载配置
+    // Load config from localStorage
     async loadConfigFromLocalStorage() {
       try {
         const storageKey = `sillytavern_mobile_${STYLE_CONFIG_FILE_NAME}`;
@@ -346,180 +346,180 @@ if (typeof window.StyleConfigManager === 'undefined') {
         if (stored) {
           const parsedConfig = JSON.parse(stored);
           this.currentConfig = this.mergeConfigs(DEFAULT_STYLE_CONFIG, parsedConfig);
-          console.log('[Style Config Manager] ✅ 从localStorage加载配置成功');
+          console.log('[Style Config Manager] ✅ Loaded config from localStorage');
         } else {
-          console.log('[Style Config Manager] 📄 localStorage中未找到配置，使用默认配置');
+          console.log('[Style Config Manager] 📄 No localStorage config — using defaults');
         }
       } catch (error) {
-        console.warn('[Style Config Manager] 从localStorage加载配置失败:', error);
+        console.warn('[Style Config Manager] Failed to load from localStorage:', error);
       }
     }
 
-    // 保存配置到Data Bank
+    // Save config to Data Bank
     async saveConfig() {
       try {
-        console.log('[Style Config Manager] 💾 保存样式配置...');
+        console.log('[Style Config Manager] 💾 Saving styles...');
         console.log('[Style Config Manager] sillyTavernCoreImported:', sillyTavernCoreImported);
         console.log('[Style Config Manager] uploadFileAttachmentToServer:', !!uploadFileAttachmentToServer);
 
         if (sillyTavernCoreImported && uploadFileAttachmentToServer) {
-          console.log('[Style Config Manager] 🔄 尝试保存到Data Bank...');
-          // 优先使用SillyTavern原生API
+          console.log('[Style Config Manager] 🔄 Trying Data Bank save...');
+          // Prefer native SillyTavern API
           const success = await this.saveConfigToDataBank();
-          console.log('[Style Config Manager] Data Bank保存结果:', success);
+          console.log('[Style Config Manager] Data Bank save result:', success);
 
           if (success) {
-            console.log('[Style Config Manager] ✅ Data Bank保存成功，同时保存到localStorage备份');
-            // 同时保存到localStorage作为备份
+            console.log('[Style Config Manager] ✅ Saved to Data Bank and localStorage backup');
+            // Also save to localStorage as backup
             await this.saveConfigToLocalStorage();
             this.applyStyles();
             return true;
           } else {
-            console.warn('[Style Config Manager] ⚠️ Data Bank保存失败，使用localStorage备用方案');
+            console.warn('[Style Config Manager] ⚠️ Data Bank save failed — using localStorage');
           }
         } else {
-          console.log('[Style Config Manager] ⚠️ SillyTavern API不可用，直接使用localStorage');
+          console.log('[Style Config Manager] ⚠️ SillyTavern API unavailable — using localStorage');
         }
 
-        // 备用方案：保存到localStorage
-        console.log('[Style Config Manager] 🔄 保存到localStorage...');
+        // Fallback: save to localStorage
+        console.log('[Style Config Manager] 🔄 Saving to localStorage...');
         await this.saveConfigToLocalStorage();
         this.applyStyles();
-        console.log('[Style Config Manager] ✅ localStorage保存完成');
+        console.log('[Style Config Manager] ✅ localStorage save done');
         return true;
       } catch (error) {
-        console.error('[Style Config Manager] ❌ 保存配置失败:', error);
+        console.error('[Style Config Manager] ❌ Failed to save config:', error);
         return false;
       }
     }
 
-    // 保存配置到Data Bank
+    // Save config to Data Bank
     async saveConfigToDataBank() {
       try {
-        console.log('[Style Config Manager] 🔄 开始保存到Data Bank...');
-        console.log('[Style Config Manager] 文件名:', STYLE_CONFIG_FILE_NAME);
+        console.log('[Style Config Manager] 🔄 Saving to Data Bank...');
+        console.log('[Style Config Manager] Filename:', STYLE_CONFIG_FILE_NAME);
 
         const configJson = JSON.stringify(this.currentConfig, null, 2);
-        console.log('[Style Config Manager] 配置JSON长度:', configJson.length);
+        console.log('[Style Config Manager] Config JSON length:', configJson.length);
 
-        // 先清理旧的默认配置文件
+        // Clean old default configs first
         await this.cleanupOldDefaultConfigs();
 
-        // 使用标准的文件名，不添加时间戳
+        // Use the standard filename, no timestamp
         const safeFileName = STYLE_CONFIG_FILE_NAME;
-        console.log('[Style Config Manager] 使用标准文件名:', safeFileName);
+        console.log('[Style Config Manager] Using standard filename:', safeFileName);
 
         const file = new File([configJson], safeFileName, { type: 'application/json' });
-        console.log('[Style Config Manager] 创建文件对象:', {
+        console.log('[Style Config Manager] Created file object:', {
           name: file.name,
           type: file.type,
           size: file.size,
         });
 
-        // 上传文件到全局Data Bank
-        console.log('[Style Config Manager] 🔄 调用uploadFileAttachmentToServer...');
+        // Upload to global Data Bank
+        console.log('[Style Config Manager] 🔄 Calling uploadFileAttachmentToServer...');
         const fileUrl = await uploadFileAttachmentToServer(file, 'global');
-        console.log('[Style Config Manager] 上传返回URL:', fileUrl);
+        console.log('[Style Config Manager] Upload URL:', fileUrl);
 
-        // 验证返回的URL是否是JSON格式
+        // Check that the returned URL is JSON
         const isValidJsonUrl =
           fileUrl && (fileUrl.endsWith('.json') || fileUrl.includes(safeFileName.replace('.json', '')));
 
         if (fileUrl && isValidJsonUrl) {
-          console.log('[Style Config Manager] ✅ 配置已保存到Data Bank (JSON格式):', fileUrl);
+          console.log('[Style Config Manager] ✅ Saved to Data Bank (JSON):', fileUrl);
 
-          // 验证文件是否正确保存
-          console.log('[Style Config Manager] 🔍 验证保存结果...');
+          // Verify the file saved correctly
+          console.log('[Style Config Manager] 🔍 Verifying save...');
           setTimeout(async () => {
             try {
               const globalAttachments = getDataBankAttachmentsForSource('global', true);
               const savedConfig = globalAttachments.find(att => att.name === STYLE_CONFIG_FILE_NAME);
-              console.log('[Style Config Manager] 验证结果 - 文件已保存:', !!savedConfig);
+              console.log('[Style Config Manager] Verify — file saved:', !!savedConfig);
               if (savedConfig) {
-                console.log('[Style Config Manager] 保存的文件信息:', savedConfig);
+                console.log('[Style Config Manager] Saved file info:', savedConfig);
               }
             } catch (verifyError) {
-              console.warn('[Style Config Manager] 验证保存结果失败:', verifyError);
+              console.warn('[Style Config Manager] Verify failed:', verifyError);
             }
           }, 500);
 
           return true;
         } else if (fileUrl && fileUrl.endsWith('.txt')) {
-          console.error('[Style Config Manager] ❌ 文件被错误保存为TXT格式:', fileUrl);
+          console.error('[Style Config Manager] ❌ File was saved as TXT:', fileUrl);
           console.error(
-            '[Style Config Manager] SillyTavern的uploadFileAttachmentToServer函数有问题，JSON文件被保存为TXT',
+            '[Style Config Manager] uploadFileAttachmentToServer saved the JSON as TXT',
           );
           return false;
         }
 
-        console.warn('[Style Config Manager] ⚠️ uploadFileAttachmentToServer返回空URL或无效格式');
+        console.warn('[Style Config Manager] ⚠️ uploadFileAttachmentToServer returned an empty or invalid URL');
         return false;
       } catch (error) {
-        console.error('[Style Config Manager] ❌ 保存到Data Bank失败:', error);
+        console.error('[Style Config Manager] ❌ Failed to save to Data Bank:', error);
         return false;
       }
     }
 
-    // 保存配置到localStorage
+    // Save config to localStorage
     async saveConfigToLocalStorage() {
       try {
         const storageKey = `sillytavern_mobile_${STYLE_CONFIG_FILE_NAME}`;
         const configJson = JSON.stringify(this.currentConfig, null, 2);
         localStorage.setItem(storageKey, configJson);
-        console.log('[Style Config Manager] ✅ 配置已保存到localStorage');
+        console.log('[Style Config Manager] ✅ Saved to localStorage');
       } catch (error) {
-        console.warn('[Style Config Manager] 保存到localStorage失败:', error);
+        console.warn('[Style Config Manager] Failed to save to localStorage:', error);
       }
     }
 
-    // 应用样式到页面
+    // Apply styles to the page
     applyStyles() {
       if (!this.styleElement) {
-        console.warn('[Style Config Manager] 样式元素不存在');
+        console.warn('[Style Config Manager] Style element missing');
         return;
       }
 
       const css = this.generateCSS();
       this.styleElement.textContent = css;
 
-      console.log('[Style Config Manager] ✅ 样式已应用');
-      console.log('[Style Config Manager] 当前配置:', JSON.stringify(this.currentConfig, null, 2));
+      console.log('[Style Config Manager] ✅ Styles applied');
+      console.log('[Style Config Manager] Current config:', JSON.stringify(this.currentConfig, null, 2));
 
-      // 验证图片URL是否有效
+      // Validate image URLs
       Object.keys(this.currentConfig).forEach(key => {
         const config = this.currentConfig[key];
         if (config && config.backgroundImage) {
-          console.log(`[Style Config Manager] ${key} 背景图片URL:`, config.backgroundImage);
+          console.log(`[Style Config Manager] ${key} background URL:`, config.backgroundImage);
 
-          // 如果是http/https URL，尝试验证
+          // If http(s), probe the image
           if (config.backgroundImage.startsWith('http')) {
             const img = new Image();
-            img.onload = () => console.log(`[Style Config Manager] ✅ ${key} 图片加载成功`);
-            img.onerror = () => console.warn(`[Style Config Manager] ❌ ${key} 图片加载失败:`, config.backgroundImage);
+            img.onload = () => console.log(`[Style Config Manager] ✅ ${key} image loaded`);
+            img.onerror = () => console.warn(`[Style Config Manager] ❌ ${key} image failed:`, config.backgroundImage);
             img.src = config.backgroundImage;
           }
         }
       });
 
-      // 触发样式应用事件
+      // Fire styles-applied event
       this.dispatchStyleAppliedEvent();
     }
 
-    // 生成CSS字符串
+    // Build CSS string
     generateCSS() {
       const config = this.currentConfig;
 
-      // 处理URL，确保格式正确且安全
+      // Normalize URLs
       const formatImageUrl = url => {
         if (!url) return '';
 
-        // 如果是base64数据，直接返回
+        // Return base64 as-is
         if (url.startsWith('data:')) {
           return url;
         }
 
-        // 对于普通URL路径，直接返回（不再拒绝.txt文件，因为可能是有效的图片数据）
-        // 如果URL不以引号包围，添加引号
+        // Return plain URLs as-is (do not reject .txt)
+        // Quote the URL if needed
         if (!url.startsWith('"') && !url.startsWith("'")) {
           return `"${url}"`;
         }
@@ -527,10 +527,10 @@ if (typeof window.StyleConfigManager === 'undefined') {
         return url;
       };
 
-      // 生成头像背景的CSS样式
+      // Build avatar background CSS
       const generateAvatarCSS = (avatarConfig, selector) => {
         if (!avatarConfig || typeof avatarConfig === 'string') {
-          // 处理旧格式的configKey
+          // Handle old-format configKey
           const oldConfig = config[avatarConfig];
           if (!oldConfig) return '';
 
@@ -558,7 +558,7 @@ ${selector} {
 }`;
         }
 
-        // 处理新格式的avatar对象
+        // Handle new-format avatar object
         const backgroundImage = avatarConfig.backgroundImage || avatarConfig.backgroundImageUrl;
         if (!backgroundImage) return '';
 
@@ -584,7 +584,7 @@ ${selector} {
       };
 
       let css = `
-/* 移动端样式配置 - 由StyleConfigManager自动生成 */
+/* Mobile styles — generated by StyleConfigManager */
 .home-screen {
     ${
       config.homeScreen.backgroundImage
@@ -633,7 +633,7 @@ ${selector} {
     }
 }
 
-/* 隐藏所有消息头像中的表情符号文本，只显示背景图片 */
+/* Hide emoji text in avatars — show the background image only */
 .message-avatar {
     font-size: 0 !important;
     color: transparent !important;
@@ -641,11 +641,11 @@ ${selector} {
     overflow: hidden !important;
 }
 
-/* 头像背景样式 */
+/* Avatar background styles */
 ${(() => {
   const sentAvatarCSS = generateAvatarCSS(config.messageSentAvatar, '.message-sent > .message-avatar');
-  console.log(`[Style Config Manager] 发送头像配置:`, config.messageSentAvatar);
-  console.log(`[Style Config Manager] 发送头像CSS:`, sentAvatarCSS);
+  console.log(`[Style Config Manager] Sent-avatar config:`, config.messageSentAvatar);
+  console.log(`[Style Config Manager] Sent-avatar CSS:`, sentAvatarCSS);
   return sentAvatarCSS;
 })()}
 ${
@@ -654,23 +654,23 @@ ${
         .map((avatar, index) => {
           if (avatar.friendId && avatar.friendId.trim()) {
             console.log(
-              `[Style Config Manager] ✅ 生成接收头像CSS: ${avatar.name || `头像${index + 1}`} (ID: ${
+              `[Style Config Manager] ✅ Generated received-avatar CSS: ${avatar.name || `Avatar ${index + 1}`} (ID: ${
                 avatar.friendId
               })`,
             );
-            console.log(`[Style Config Manager] 头像配置数据:`, avatar);
-            // 生成两种CSS选择器以覆盖不同的页面结构
+            console.log(`[Style Config Manager] Avatar config:`, avatar);
+            // Emit two selectors for both page layouts
             const css1 = generateAvatarCSS(
               avatar,
               `.message-item[data-friend-id="${avatar.friendId}"] .message-avatar`,
             );
             const css2 = generateAvatarCSS(avatar, `.message-received #message-avatar-${avatar.friendId}`);
-            console.log(`[Style Config Manager] 生成的CSS1:`, css1);
-            console.log(`[Style Config Manager] 生成的CSS2:`, css2);
+            console.log(`[Style Config Manager] CSS 1:`, css1);
+            console.log(`[Style Config Manager] CSS 2:`, css2);
             return css1 + '\n' + css2;
           } else {
             console.warn(
-              `[Style Config Manager] ⚠️ 跳过无效头像配置: ${avatar.name || `头像${index + 1}`} - 缺少好友ID`,
+              `[Style Config Manager] ⚠️ Skipping invalid avatar config: ${avatar.name || `Avatar ${index + 1}`} — missing friend ID`,
             );
             return '';
           }
@@ -680,9 +680,9 @@ ${
 }
         `.trim();
 
-      // 添加好友专属背景CSS
+      // Add per-friend background CSS
       if (config.friendBackgrounds && config.friendBackgrounds.length > 0) {
-        css += '\n\n/* 好友专属聊天背景 */\n';
+        css += '\n\n/* Per-friend chat background */\n';
         config.friendBackgrounds.forEach(friendBg => {
           if (friendBg.friendId && friendBg.friendId.trim()) {
             const backgroundImage = friendBg.backgroundImage || friendBg.backgroundImageUrl;
@@ -701,47 +701,47 @@ ${
     transform-origin: center center !important;
 }
 `;
-              console.log(`[Style Config Manager] ✅ 生成好友专属背景CSS: ${friendBg.name || friendBg.friendId}`);
+              console.log(`[Style Config Manager] ✅ Generated per-friend background CSS: ${friendBg.name || friendBg.friendId}`);
             }
           }
         });
       }
 
-      // 添加自定义CSS样式
+      // Add custom CSS
       if (config.customStyles && config.customStyles.cssText) {
-        css += '\n\n/* 用户自定义CSS样式 */\n' + config.customStyles.cssText;
+        css += '\n\n/* User custom CSS */\n' + config.customStyles.cssText;
       }
 
-      console.log('[Style Config Manager] 生成的CSS:', css);
+      console.log('[Style Config Manager] Generated CSS:', css);
       return css;
     }
 
-    // 获取当前配置
+    // Get current config
     getConfig() {
       return JSON.parse(JSON.stringify(this.currentConfig));
     }
 
-    // 更新配置项
+    // Update a config field
     updateConfig(key, property, value) {
-      // 处理数组类型的配置（如messageReceivedAvatars、friendBackgrounds）
+      // Handle array configs (messageReceivedAvatars, friendBackgrounds)
       if ((key === 'messageReceivedAvatars' || key === 'friendBackgrounds') && property === null) {
         this.currentConfig[key] = value;
-        console.log(`[Style Config Manager] 数组配置已更新: ${key} = `, value);
+        console.log(`[Style Config Manager] Array config updated: ${key} = `, value);
         return true;
       }
 
-      // 处理普通对象配置
+      // Handle object configs
       if (this.currentConfig[key] && this.currentConfig[key].hasOwnProperty(property)) {
         this.currentConfig[key][property] = value;
-        console.log(`[Style Config Manager] 配置已更新: ${key}.${property} = ${value}`);
+        console.log(`[Style Config Manager] Config updated: ${key}.${property} = ${value}`);
         return true;
       }
 
-      console.warn(`[Style Config Manager] 无效的配置项: ${key}.${property}`);
+      console.warn(`[Style Config Manager] Invalid config key: ${key}.${property}`);
       return false;
     }
 
-    // 批量更新配置
+    // Batch-update config
     updateMultipleConfigs(updates) {
       let hasChanges = false;
 
@@ -754,13 +754,13 @@ ${
       return hasChanges;
     }
 
-    // 合并配置对象
+    // Merge config objects
     mergeConfigs(defaultConfig, userConfig) {
       const merged = JSON.parse(JSON.stringify(defaultConfig));
 
       for (const key in userConfig) {
         if (userConfig.hasOwnProperty(key) && merged.hasOwnProperty(key)) {
-          // 处理数组类型的配置（如messageReceivedAvatars）
+          // Handle array configs (messageReceivedAvatars)
           if (Array.isArray(userConfig[key])) {
             merged[key] = userConfig[key];
           } else if (typeof userConfig[key] === 'object' && userConfig[key] !== null) {
@@ -771,15 +771,15 @@ ${
         }
       }
 
-      // 兼容性处理：迁移旧的单个messageReceivedAvatar到数组格式
+      // Migrate old single messageReceivedAvatar to an array
       if (userConfig.messageReceivedAvatar && !userConfig.messageReceivedAvatars) {
-        console.log('[Style Config Manager] 检测到旧格式头像配置，正在迁移...');
+        console.log('[Style Config Manager] Old avatar format detected — migrating...');
         merged.messageReceivedAvatars = [
           {
             id: 'migrated_default',
             ...userConfig.messageReceivedAvatar,
-            name: '迁移的好友头像',
-            description: '从旧配置迁移的接收消息头像背景',
+            name: 'Migrated friend avatar',
+            description: 'Received-message avatar migrated from old config',
           },
         ];
       }
@@ -787,48 +787,48 @@ ${
       return merged;
     }
 
-    // 获取所有样式配置文件
+    // List all style config files
     async getAllStyleConfigs() {
       try {
         if (sillyTavernCoreImported && getDataBankAttachmentsForSource) {
-          // 从Data Bank获取配置文件列表
+          // List Data Bank config files
           const globalAttachments = getDataBankAttachmentsForSource('global', true);
           const styleConfigs = globalAttachments.filter(att => att.name.endsWith('_style_config.json'));
 
-          // 过滤掉带时间戳的旧默认配置文件
+          // Drop timestamped old default files
           const validConfigs = styleConfigs.filter(att => {
-            // 保留标准的默认配置文件
+            // Keep the standard default config file
             if (att.name === STYLE_CONFIG_FILE_NAME) {
               return true;
             }
-            // 过滤掉带时间戳的默认配置文件
+            // Drop timestamped default files
             if (att.name.startsWith('mobile_config_') && att.name.includes('_mobile_style_config.json')) {
-              console.log('[Style Config Manager] 过滤掉带时间戳的旧默认配置:', att.name);
+              console.log('[Style Config Manager] Filtered timestamped old defaults:', att.name);
               return false;
             }
-            // 保留其他用户配置文件
+            // Keep other user config files
             return true;
           });
 
-          // 确保默认配置只出现一次，并放在最前面
+          // Show the default config once, first
           const defaultConfigs = validConfigs.filter(att => att.name === STYLE_CONFIG_FILE_NAME);
           const userConfigs = validConfigs.filter(att => att.name !== STYLE_CONFIG_FILE_NAME);
 
-          // 如果有多个默认配置，只保留一个
+          // If several default configs exist, keep one
           const finalConfigs = [];
           if (defaultConfigs.length > 0) {
-            finalConfigs.push(defaultConfigs[0]); // 只保留第一个默认配置
+            finalConfigs.push(defaultConfigs[0]); // Keep only the first default config
           }
           finalConfigs.push(...userConfigs);
 
           console.log(
-            '[Style Config Manager] 找到有效配置文件:',
+            '[Style Config Manager] Found valid config file:',
             finalConfigs.map(c => c.name),
           );
           return finalConfigs;
         }
 
-        // 备用方案：从localStorage获取
+        // Fallback: read localStorage
         const configs = [];
         const configKeys = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -838,7 +838,7 @@ ${
           }
         }
 
-        // 处理默认配置
+        // Handle default config
         const defaultKey = `sillytavern_mobile_${STYLE_CONFIG_FILE_NAME}`;
         const userKeys = configKeys.filter(key => key !== defaultKey);
 
@@ -851,7 +851,7 @@ ${
           });
         }
 
-        // 添加用户配置
+        // Add user configs
         userKeys.forEach(key => {
           const fileName = key.replace('sillytavern_mobile_', '');
           configs.push({
@@ -864,16 +864,16 @@ ${
 
         return configs;
       } catch (error) {
-        console.warn('[Style Config Manager] 获取配置列表失败:', error);
+        console.warn('[Style Config Manager] Failed to get config list:', error);
         return [];
       }
     }
 
-    // 从指定配置文件加载配置
+    // Load a named config file
     async loadConfigFromFile(fileName) {
       try {
         if (sillyTavernCoreImported && getDataBankAttachmentsForSource && getFileAttachment) {
-          // 从Data Bank加载
+          // Load from Data Bank
           const globalAttachments = getDataBankAttachmentsForSource('global', true);
           const configAttachment = globalAttachments.find(att => att.name === fileName);
 
@@ -883,62 +883,62 @@ ${
               const parsedConfig = JSON.parse(configContent);
               this.currentConfig = this.mergeConfigs(DEFAULT_STYLE_CONFIG, parsedConfig);
               this.applyStyles();
-              console.log('[Style Config Manager] ✅ 已加载配置:', fileName);
+              console.log('[Style Config Manager] ✅ Loaded config:', fileName);
               return true;
             }
           }
         }
 
-        // 备用方案：从localStorage加载
+        // Fallback: load from localStorage
         const storageKey = `sillytavern_mobile_${fileName}`;
         const stored = localStorage.getItem(storageKey);
         if (stored) {
           const parsedConfig = JSON.parse(stored);
           this.currentConfig = this.mergeConfigs(DEFAULT_STYLE_CONFIG, parsedConfig);
           this.applyStyles();
-          console.log('[Style Config Manager] ✅ 从localStorage加载配置:', fileName);
+          console.log('[Style Config Manager] ✅ Loaded from localStorage:', fileName);
           return true;
         }
 
         return false;
       } catch (error) {
-        console.error('[Style Config Manager] 加载配置文件失败:', error);
+        console.error('[Style Config Manager] Failed to load config file:', error);
         return false;
       }
     }
 
-    // 保存配置到指定文件名
+    // Save config under a given name
     async saveConfigWithName(configName) {
       try {
-        // 验证配置名称
+        // Validate config name
         if (!configName || configName.trim() === '') {
-          throw new Error('配置名称不能为空');
+          throw new Error('Config name cannot be empty');
         }
 
-        // 防止与默认配置冲突
+        // Avoid clashing with the default config
         const cleanName = configName.trim();
-        if (cleanName === 'mobile' || cleanName === 'default' || cleanName === '默认') {
-          throw new Error('不能使用 "mobile"、"default" 或 "默认" 作为配置名称，这些名称为系统保留');
+        if (cleanName === 'mobile' || cleanName === 'default' || cleanName === 'Default') {
+          throw new Error('Cannot use "mobile", "default", or "Default" as a config name — those are reserved');
         }
 
-        // 确保文件名格式正确
+        // Normalize the filename
         const fileName = cleanName.endsWith('.json') ? cleanName : `${cleanName}_style_config.json`;
 
-        // 检查是否会与默认配置文件名冲突
+        // Check for a default-config filename clash
         if (fileName === STYLE_CONFIG_FILE_NAME) {
-          throw new Error('此配置名称会与默认配置冲突，请选择其他名称');
+          throw new Error('That name conflicts with the default config — pick another');
         }
 
         if (sillyTavernCoreImported && uploadFileAttachmentToServer) {
-          // 保存到Data Bank
+          // Save to Data Bank
           const configJson = JSON.stringify(this.currentConfig, null, 2);
           const file = new File([configJson], fileName, { type: 'application/json' });
 
           const fileUrl = await uploadFileAttachmentToServer(file, 'global');
           if (fileUrl) {
-            console.log('[Style Config Manager] ✅ 配置已保存为:', fileName);
+            console.log('[Style Config Manager] ✅ Saved as:', fileName);
 
-            // 同时保存到localStorage
+            // Also save to localStorage
             const storageKey = `sillytavern_mobile_${fileName}`;
             localStorage.setItem(storageKey, configJson);
 
@@ -946,46 +946,46 @@ ${
           }
         }
 
-        // 备用方案：保存到localStorage
+        // Fallback: save to localStorage
         const storageKey = `sillytavern_mobile_${fileName}`;
         const configJson = JSON.stringify(this.currentConfig, null, 2);
         localStorage.setItem(storageKey, configJson);
-        console.log('[Style Config Manager] ✅ 配置已保存到localStorage:', fileName);
+        console.log('[Style Config Manager] ✅ Saved to localStorage:', fileName);
         return true;
       } catch (error) {
-        console.error('[Style Config Manager] 保存配置失败:', error);
-        throw error; // 重新抛出错误，让调用者处理
+        console.error('[Style Config Manager] Failed to save config:', error);
+        throw error; // Re-throw so the caller can handle it
       }
     }
 
-    // 删除配置文件
+    // Delete a config file
     async deleteConfigFile(fileName) {
       try {
         if (sillyTavernCoreImported && getDataBankAttachmentsForSource && deleteAttachment) {
-          // 从Data Bank删除
+          // Delete from Data Bank
           const globalAttachments = getDataBankAttachmentsForSource('global', true);
           const configAttachment = globalAttachments.find(att => att.name === fileName);
 
           if (configAttachment) {
-            console.log('[Style Config Manager] 🗑️ 正在从Data Bank删除配置:', fileName);
-            // 使用SillyTavern的deleteAttachment函数，confirm参数设为false以避免弹窗
+            console.log('[Style Config Manager] 🗑️ Deleting from Data Bank:', fileName);
+            // Use deleteAttachment with confirm=false to skip the dialog
             await deleteAttachment(configAttachment, 'global', () => {}, false);
-            console.log('[Style Config Manager] ✅ 已从Data Bank删除配置:', fileName);
+            console.log('[Style Config Manager] ✅ Deleted from Data Bank:', fileName);
           }
         }
 
-        // 从localStorage删除
+        // Delete from localStorage
         const storageKey = `sillytavern_mobile_${fileName}`;
         localStorage.removeItem(storageKey);
-        console.log('[Style Config Manager] ✅ 已从localStorage删除配置:', fileName);
+        console.log('[Style Config Manager] ✅ Deleted from localStorage:', fileName);
         return true;
       } catch (error) {
-        console.error('[Style Config Manager] 删除配置失败:', error);
+        console.error('[Style Config Manager] Failed to delete config:', error);
         return false;
       }
     }
 
-    // 生成配置列表HTML
+    // Build config-list HTML
     async generateConfigListSection() {
       const configs = await this.getAllStyleConfigs();
 
@@ -994,59 +994,59 @@ ${
       if (configs.length === 0) {
         configListHTML = `
                 <div class="no-configs">
-                    <p>暂无保存的配置</p>
-                    <small>保存当前配置后将在此显示</small>
+                    <p>No saved configs</p>
+                    <small>Saved configs will show up here</small>
                 </div>
             `;
       } else {
         configListHTML = configs
           .map(config => {
-            // 处理显示名称
+            // Format display name
             let displayName;
             const isDefault = config.name === STYLE_CONFIG_FILE_NAME;
 
             if (isDefault) {
-              displayName = '默认配置';
+              displayName = 'Default config';
             } else if (config.name.startsWith('mobile_config_') && config.name.includes('_mobile_style_config.json')) {
-              // 处理带时间戳的默认配置文件：mobile_config_timestamp_mobile_style_config.json
+              // Handle timestamped default files: mobile_config_timestamp_mobile_style_config.json
               const match = config.name.match(/mobile_config_(\d+)_mobile_style_config\.json/);
               if (match) {
                 const timestamp = match[1];
                 const date = new Date(parseInt(timestamp));
-                displayName = `默认配置 (${date.toLocaleString()})`;
+                displayName = `Default config (${date.toLocaleString()})`;
               } else {
                 displayName = config.name.replace('_style_config.json', '');
               }
             } else {
-              // 处理普通的用户配置文件
+              // Handle normal user config files
               displayName = config.name.replace('_style_config.json', '');
             }
 
-            const createTime = config.created ? new Date(config.created).toLocaleString() : '未知';
+            const createTime = config.created ? new Date(config.created).toLocaleString() : 'Unknown';
 
             return `
                     <div class="config-item" data-config-file="${config.name}">
                         <div class="config-info">
                             <div class="config-name">
                                 ${isDefault ? '🏠' : '📄'} ${displayName}
-                                ${isDefault ? '<span class="default-badge">默认</span>' : ''}
+                                ${isDefault ? '<span class="default-badge">Default</span>' : ''}
                             </div>
                             <div class="config-meta">
-                                <small>创建时间: ${createTime}</small>
-                                ${config.source ? `<small>来源: ${config.source}</small>` : ''}
+                                <small>Created: ${createTime}</small>
+                                ${config.source ? `<small>Source: ${config.source}</small>` : ''}
                             </div>
                         </div>
                         <div class="config-actions">
                             <button class="config-action-btn load-config" data-config-file="${
                               config.name
-                            }" title="加载此配置">
-                                📥 加载
+                            }" title="Load this config">
+                                📥 Load
                             </button>
                             ${
                               !isDefault
                                 ? `
-                                <button class="config-action-btn delete-config" data-config-file="${config.name}" title="删除此配置">
-                                    🗑️ 删除
+                                <button class="config-action-btn delete-config" data-config-file="${config.name}" title="Delete this config">
+                                    🗑️ Delete
                                 </button>
                             `
                                 : ''
@@ -1061,16 +1061,16 @@ ${
       return `
             <div class="config-list-section">
                 <div class="section-header">
-                    <h3>📋 已保存的配置</h3>
-                    <p>管理你保存的样式配置文件</p>
+                    <h3>📋 Saved configs</h3>
+                    <p>Manage your saved style files</p>
                 </div>
 
                 <div class="save-new-config">
                     <div class="save-config-input">
-                        <input type="text" id="new-config-name" placeholder="输入配置名称..." maxlength="50">
+                        <input type="text" id="new-config-name" placeholder="Config name..." maxlength="50">
                         <button id="save-new-config-btn" class="config-btn save-btn">
                             <span class="btn-icon">💾</span>
-                            <span>另存为</span>
+                            <span>Save As</span>
                         </button>
                     </div>
                 </div>
@@ -1082,37 +1082,37 @@ ${
                 <div class="config-list-actions">
                     <button id="refresh-config-list" class="config-btn">
                         <span class="btn-icon">🔄</span>
-                        <span>刷新列表</span>
+                        <span>Refresh list</span>
                     </button>
                 </div>
             </div>
         `;
     }
 
-    // 重置为默认配置
+    // Reset to default config
     resetToDefault() {
       this.currentConfig = JSON.parse(JSON.stringify(DEFAULT_STYLE_CONFIG));
-      console.log('[Style Config Manager] 配置已重置为默认值');
+      console.log('[Style Config Manager] Config reset to defaults');
     }
 
-    // 获取设置应用的HTML内容
+    // Build settings-app HTML
     getSettingsAppContent() {
-      const config = this.getConfig(); // 使用getConfig()确保获取最新配置
+      const config = this.getConfig(); // getConfig() so we use the latest values
 
       return `
             <div class="style-config-app">
                 <div class="style-config-header">
-                    <h2>🎨 移动端界面样式设置</h2>
-                    <p>自定义移动端界面的背景和样式，配置会保存到全局Data Bank</p>
+                    <h2>🎨 Mobile UI styles</h2>
+                    <p>Customize mobile backgrounds and styles. Config is stored in the global Data Bank.</p>
                 </div>
 
                 <div class="style-config-tabs">
                     <div class="tab-headers">
                         <button class="tab-header active" data-tab="editor">
-                            ✏️ 样式编辑器
+                            ✏️ Style editor
                         </button>
                         <button class="tab-header" data-tab="manager">
-                            📋 配置管理
+                            📋 Config manager
                         </button>
                     </div>
 
@@ -1120,43 +1120,43 @@ ${
                         <div class="tab-panel active" data-tab="editor">
                 <div class="style-config-settings">
                     <div class="image-upload-settings">
-                        <h4>🔧 图片上传设置</h4>
+                        <h4>🔧 Image upload</h4>
                         <div class="setting-item">
                             <label>
                                 <input type="radio" name="imageUploadMode" value="auto" checked>
-                                <span>自动模式</span>
-                                <small>优先Data Bank，失败时自动使用base64</small>
+                                <span>Auto</span>
+                                <small>Data Bank first, base64 if that fails</small>
                             </label>
                         </div>
                         <div class="setting-item">
                             <label>
                                 <input type="radio" name="imageUploadMode" value="base64">
-                                <span>Base64模式</span>
-                                <small>直接转换为base64，配置文件会较大但更稳定</small>
+                                <span>Base64</span>
+                                <small>Store as base64 — larger file, more reliable</small>
                             </label>
                         </div>
                     </div>
                 </div>
 
                 <div class="style-config-content">
-                    ${this.generateConfigSection('homeScreen', '主屏幕背景', config.homeScreen)}
+                    ${this.generateConfigSection('homeScreen', 'Home screen background', config.homeScreen)}
                     ${this.generateFriendBackgroundsSection(config.friendBackgrounds || [])}
-                    ${this.generateConfigSection('messagesApp', '消息应用背景', config.messagesApp)}
+                    ${this.generateConfigSection('messagesApp', 'Messages app background', config.messagesApp)}
                                 ${this.generateAvatarConfigSection(
                                   'messageSentAvatar',
-                                  '发送消息头像背景',
+                                  'Sent-message avatar background',
                                   config.messageSentAvatar,
                                 )}
             ${this.generateReceivedAvatarsSection(config.messageReceivedAvatars)}
-                    ${this.generateCustomStylesSection('customStyles', '自定义CSS样式', config.customStyles)}
+                    ${this.generateCustomStylesSection('customStyles', 'Custom CSS', config.customStyles)}
                             </div>
                         </div>
 
                         <div class="tab-panel" data-tab="manager">
                             <div class="config-list-section">
                                 <div class="section-header">
-                                    <h3>📋 已保存的配置</h3>
-                                    <p>管理你保存的样式配置文件，使用编辑器底部的"另存为"按钮创建新配置</p>
+                                    <h3>📋 Saved configs</h3>
+                                    <p>Manage saved style files. Use Save As at the bottom of the editor to create one.</p>
                                 </div>
 
 
@@ -1164,19 +1164,19 @@ ${
                                 <div class="config-list" id="config-list-container">
                                     <div class="loading-configs">
                                         <div class="loading-icon">⏳</div>
-                                        <div class="loading-text">正在加载配置列表...</div>
+                                        <div class="loading-text">Loading config list...</div>
                                     </div>
                                 </div>
 
                                 <div class="config-list-actions">
                                     <button id="refresh-config-list" class="config-btn">
-                                        <span>刷新</span>
+                                        <span>Refresh</span>
                                     </button>
                                     <button id="export-config" class="config-btn preview-btn">
-                                        <span>导出</span>
+                                        <span>Export</span>
                                     </button>
                                     <button id="import-config" class="config-btn save-btn">
-                                        <span>导入</span>
+                                        <span>Import</span>
                                     </button>
                                 </div>
 
@@ -1191,24 +1191,24 @@ ${
                 <div class="style-config-footer">
                     <div class="config-actions">
                         <button class="config-btn preview-btn" id="preview-styles">
-                            <span>预览样式</span>
+                            <span>Preview styles</span>
                         </button>
                         <button class="config-btn save-btn" id="save-new-config-btn">
-                            <span>另存为</span>
+                            <span>Save As</span>
                         </button>
                         <button class="config-btn reset-btn" id="reset-styles">
-                            <span>重置默认</span>
+                            <span>Reset default</span>
                         </button>
                     </div>
 
                     <div class="config-status" id="config-status">
                         <span class="status-icon">ℹ️</span>
-                        <span class="status-text">调整完成后点击另存为按钮</span>
+                        <span class="status-text">Click Save As when you are done</span>
                     </div>
                 </div>
 
                 <style>
-                /* 针对 data-app="settings" 容器的样式优化 */
+                /* Styles scoped to data-app="settings" */
                 [data-app="settings"] {
                     padding: 0 !important;
                     margin: 0 !important;
@@ -1222,7 +1222,7 @@ ${
                     background: transparent !important;
                 }
 
-                /* 样式配置应用界面美化 */
+                /* Style-config app chrome */
                 .style-config-app {
                     max-width: 1200px;
                     margin: 0 auto;
@@ -1230,7 +1230,7 @@ ${
                     border-radius: 12px;
                 }
 
-                /* 在 data-app="settings" 容器内的头部样式优化 */
+                /* Header inside data-app="settings" */
                 [data-app="settings"] .style-config-header {
                     margin-bottom: 12px !important;
                     padding: 12px 16px !important;
@@ -1269,7 +1269,7 @@ ${
                     font-size: 14px;
                 }
 
-                /* 在 data-app="settings" 容器内的标签页样式优化 */
+                /* Tabs inside data-app="settings" */
                 [data-app="settings"] .style-config-tabs {
                     border-radius: 8px !important;
                 }
@@ -1285,7 +1285,7 @@ ${
                     padding: 0 !important;
                 }
 
-                /* 标签页样式 */
+                /* Tab styles */
                 .style-config-tabs {
                     border-radius: 12px;
                     overflow: hidden;
@@ -1339,7 +1339,7 @@ ${
                     to { opacity: 1; transform: translateY(0); }
                 }
 
-                /* 在 data-app="settings" 容器内的设置区域样式优化 */
+                /* Settings area inside data-app="settings" */
                 [data-app="settings"] .style-config-settings {
                     margin-bottom: 16px !important;
                 }
@@ -1355,7 +1355,7 @@ ${
                     margin: 0 0 8px 0 !important;
                 }
 
-                /* 设置区域样式 */
+                /* Settings-area styles */
                 .style-config-settings {
                     margin-bottom: 30px;
                 }
@@ -1410,7 +1410,7 @@ ${
                     line-height: 1.4;
                 }
 
-                /* 在 data-app="settings" 容器内的配置区段样式优化 */
+                /* Config sections inside data-app="settings" */
                 [data-app="settings"] .config-section {
                     margin-bottom: 12px !important;
                     border-radius: 8px !important;
@@ -1435,7 +1435,7 @@ ${
                     padding: 12px 16px !important;
                 }
 
-                /* 配置区段样式 */
+                /* Section styles */
                 .config-section {
                     background: #f8fafc;
                     border-radius: 12px;
@@ -1457,7 +1457,7 @@ ${
                     font-size: 14px;
                 }
 
-                /* 在 data-app="settings" 容器内的图片上传字段样式优化 */
+                /* Image-upload fields inside data-app="settings" */
                 [data-app="settings"] .image-upload-field {
                     margin-bottom: 16px !important;
                 }
@@ -1487,7 +1487,7 @@ ${
                     font-size: 12px !important;
                 }
 
-                /* 图片上传字段样式 */
+                /* Image-upload field styles */
                 .image-upload-field {
                     margin-bottom: 24px;
                 }
@@ -1573,7 +1573,7 @@ ${
                     transform: translateY(-1px);
                 }
 
-                /* 自定义CSS样式区域 */
+                /* Custom CSS area */
                 .custom-css-field {
                     margin-bottom: 24px;
                 }
@@ -1612,7 +1612,7 @@ ${
                     color: #4a5568;
                 }
 
-                /* 在 data-app="settings" 容器内的按钮样式优化 */
+                /* Buttons inside data-app="settings" */
                 [data-app="settings"] .config-btn {
                     padding: 8px 16px !important;
                     font-size: 12px !important;
@@ -1636,7 +1636,7 @@ ${
                     margin-top: 8px !important;
                 }
 
-                /* 按钮样式 */
+                /* Button styles */
                 .config-btn {
                     padding: 12px 20px;
                     border: none;
@@ -1692,7 +1692,7 @@ ${
                     background: #c53030;
                 }
 
-                /* 状态显示 */
+                /* Status */
                 .config-status {
                     display: flex;
                     align-items: center;
@@ -1728,7 +1728,7 @@ ${
                     border: 1px solid #faf089;
                 }
 
-                /* 配置列表样式 */
+                /* Config-list styles */
                 .config-item {
                     background: white;
                     border: 1px solid #e2e8f0;
@@ -1802,7 +1802,7 @@ ${
                     transform: translateY(-1px);
                 }
 
-                /* 加载动画 */
+                /* Loading animation */
                 .loading-configs {
                     text-align: center;
                     padding: 40px;
@@ -1820,7 +1820,7 @@ ${
                     to { transform: rotate(360deg); }
                 }
 
-                /* 在 data-app="settings" 容器内的头像配置样式优化 */
+                /* Avatar fields inside data-app="settings" */
                 [data-app="settings"] .avatar-config-section {
                     border-left: 3px solid #8b5cf6 !important;
                 }
@@ -1858,7 +1858,7 @@ ${
                     font-size: 12px !important;
                 }
 
-                /* 头像配置区段样式 */
+                /* Avatar-section styles */
                 .avatar-config-section {
                     border-left: 4px solid #8b5cf6;
                     background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
@@ -1960,7 +1960,7 @@ ${
                     margin-top: 8px;
                 }
 
-                /* 头像卡片样式 */
+                /* Avatar-card styles */
                 .avatars-section {
                     background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
                     border: 2px solid #7c3aed;
@@ -2085,7 +2085,7 @@ ${
                     gap: 16px;
                 }
 
-                /* 好友背景配置样式 */
+                /* Friend-background styles */
                 .friend-backgrounds-section {
                     border-left: 4px solid #10b981;
                     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
@@ -2403,7 +2403,7 @@ ${
                     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
                 }
 
-                /* 配置状态指示器 */
+                /* Config status indicator */
                 .field-status {
                     display: block;
                     margin-top: 4px;
@@ -2435,7 +2435,7 @@ ${
                     box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2);
                 }
 
-                /* 在 data-app="settings" 容器内的通用紧凑样式 */
+                /* Compact styles inside data-app="settings" */
                 [data-app="settings"] .config-field {
                     margin-bottom: 12px !important;
                 }
@@ -2477,13 +2477,13 @@ ${
                     font-size: 11px !important;
                 }
 
-                /* 响应式设计 */
+                /* Responsive */
                 @media (max-width: 768px) {
                     .style-config-app {
                         margin: 10px;
                     }
 
-                    /* 在 data-app="settings" 容器内的移动端优化 */
+                    /* Mobile tweaks inside data-app="settings" */
                     [data-app="settings"] .style-config-app {
                         margin: 0 !important;
                     }
@@ -2572,7 +2572,7 @@ ${
                     }
                 }
 
-                /* 针对 data-app="settings" 容器的滚动条优化 */
+                /* Scrollbar inside data-app="settings" */
                 [data-app="settings"]::-webkit-scrollbar {
                     width: 6px !important;
                 }
@@ -2591,7 +2591,7 @@ ${
                     background: #a8a8a8 !important;
                 }
 
-                /* 确保设置容器内的内容不会溢出 */
+                /* Keep settings content from overflowing */
                 [data-app="settings"] * {
                     box-sizing: border-box !important;
                 }
@@ -2607,7 +2607,7 @@ ${
         `;
     }
 
-    // 异步加载配置列表内容
+    // Load config-list content async
     async loadConfigListContent() {
       try {
         const configListContainer = document.getElementById('config-list-container');
@@ -2620,62 +2620,62 @@ ${
         if (configs.length === 0) {
           configListHTML = `
                     <div class="no-configs">
-                        <p>暂无保存的配置</p>
-                        <small>保存当前配置后将在此显示</small>
+                        <p>No saved configs</p>
+                        <small>Saved configs will show up here</small>
                     </div>
                 `;
         } else {
           configListHTML = configs
             .map(config => {
-              // 处理显示名称
+              // Format display name
               let displayName;
               const isDefault = config.name === STYLE_CONFIG_FILE_NAME;
 
               if (isDefault) {
-                displayName = '默认配置';
+                displayName = 'Default config';
               } else if (
                 config.name.startsWith('mobile_config_') &&
                 config.name.includes('_mobile_style_config.json')
               ) {
-                // 处理带时间戳的默认配置文件：mobile_config_timestamp_mobile_style_config.json
+                // Handle timestamped default files: mobile_config_timestamp_mobile_style_config.json
                 const match = config.name.match(/mobile_config_(\d+)_mobile_style_config\.json/);
                 if (match) {
                   const timestamp = match[1];
                   const date = new Date(parseInt(timestamp));
-                  displayName = `默认配置 (${date.toLocaleString()})`;
+                  displayName = `Default config (${date.toLocaleString()})`;
                 } else {
                   displayName = config.name.replace('_style_config.json', '');
                 }
               } else {
-                // 处理普通的用户配置文件
+                // Handle normal user config files
                 displayName = config.name.replace('_style_config.json', '');
               }
 
-              const createTime = config.created ? new Date(config.created).toLocaleString() : '未知';
+              const createTime = config.created ? new Date(config.created).toLocaleString() : 'Unknown';
 
               return `
                         <div class="config-item" data-config-file="${config.name}">
                             <div class="config-info">
                                 <div class="config-name">
                                     ${isDefault ? '🏠' : '📄'} ${displayName}
-                                    ${isDefault ? '<span class="default-badge">默认</span>' : ''}
+                                    ${isDefault ? '<span class="default-badge">Default</span>' : ''}
                                 </div>
                                 <div class="config-meta">
-                                    <small>创建时间: ${createTime}</small>
-                                    ${config.source ? `<small>来源: ${config.source}</small>` : ''}
+                                    <small>Created: ${createTime}</small>
+                                    ${config.source ? `<small>Source: ${config.source}</small>` : ''}
                                 </div>
                             </div>
                             <div class="config-actions">
                                 <button class="config-action-btn load-config" data-config-file="${
                                   config.name
-                                }" title="加载此配置">
-                                    📥 加载
+                                }" title="Load this config">
+                                    📥 Load
                                 </button>
                                 ${
                                   !isDefault
                                     ? `
-                                    <button class="config-action-btn delete-config" data-config-file="${config.name}" title="删除此配置">
-                                        🗑️ 删除
+                                    <button class="config-action-btn delete-config" data-config-file="${config.name}" title="Delete this config">
+                                        🗑️ Delete
                                     </button>
                                 `
                                     : ''
@@ -2689,25 +2689,25 @@ ${
 
         configListContainer.innerHTML = configListHTML;
 
-        // 重新绑定配置列表事件
+        // Rebind config-list events
         this.bindConfigListEvents();
 
-        console.log('[Style Config Manager] 配置列表内容已加载');
+        console.log('[Style Config Manager] Config list loaded');
       } catch (error) {
-        console.error('[Style Config Manager] 加载配置列表内容失败:', error);
+        console.error('[Style Config Manager] Failed to load config list:', error);
         const configListContainer = document.getElementById('config-list-container');
         if (configListContainer) {
           configListContainer.innerHTML = `
                     <div class="error-configs">
-                        <p>❌ 加载配置列表失败</p>
-                        <small>请点击刷新按钮重试</small>
+                        <p>❌ Failed to load config list</p>
+                        <small>Click Refresh and try again</small>
                     </div>
                 `;
         }
       }
     }
 
-    // 生成配置区段HTML
+    // Build section HTML
     generateConfigSection(key, title, configObject) {
       let fieldsHTML = '';
 
@@ -2719,7 +2719,7 @@ ${
         const fieldTitle = this.getFieldTitle(property);
 
         if (property === 'backgroundImage') {
-          // 图片上传字段
+          // Image-upload field
           fieldsHTML += `
                     <div class="config-field image-upload-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2727,18 +2727,18 @@ ${
                             <div class="image-preview" data-field-id="${fieldId}">
                                 ${
                                   value
-                                    ? `<img src="${value}" alt="背景预览" />`
-                                    : '<div class="no-image">📷 暂无图片</div>'
+                                    ? `<img src="${value}" alt="Background preview" />`
+                                    : '<div class="no-image">📷 No image</div>'
                                 }
                             </div>
                             <div class="image-upload-controls">
                                 <input type="file" id="${fieldId}_file" class="image-file-input" accept="image/*" data-target="${fieldId}" style="display: none;">
                                 <button type="button" class="upload-btn" onclick="document.getElementById('${fieldId}_file').click()">
-                                    📤 选择图片
+                                    📤 Choose image
                                 </button>
                                 ${
                                   value
-                                    ? `<button type="button" class="remove-btn" data-target="${fieldId}">🗑️ 移除</button>`
+                                    ? `<button type="button" class="remove-btn" data-target="${fieldId}">🗑️ Remove</button>`
                                     : ''
                                 }
                             </div>
@@ -2754,7 +2754,7 @@ ${
                     </div>
                 `;
         } else if (property === 'backgroundImageUrl') {
-          // 图片链接字段
+          // Image-URL field
           fieldsHTML += `
                     <div class="config-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2765,12 +2765,12 @@ ${
                             value="${value}"
                             data-config-key="${key}"
                             data-config-property="${property}"
-                            placeholder="输入图片链接地址..."
+                            placeholder="Image URL..."
                         >
                     </div>
                 `;
         } else {
-          // 普通文本字段
+          // Plain text field
           fieldsHTML += `
                     <div class="config-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2781,7 +2781,7 @@ ${
                             value="${value}"
                             data-config-key="${key}"
                             data-config-property="${property}"
-                            placeholder="输入${fieldTitle}值..."
+                            placeholder="Enter ${fieldTitle}..."
                         >
                     </div>
                 `;
@@ -2801,7 +2801,7 @@ ${
         `;
     }
 
-    // 生成头像配置区段HTML
+    // Build avatar-section HTML
     generateAvatarConfigSection(key, title, configObject) {
       let fieldsHTML = '';
 
@@ -2813,7 +2813,7 @@ ${
         const fieldTitle = this.getFieldTitle(property);
 
         if (property === 'backgroundImage') {
-          // 图片上传字段
+          // Image-upload field
           fieldsHTML += `
                     <div class="config-field image-upload-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2821,18 +2821,18 @@ ${
                             <div class="image-preview" data-field-id="${fieldId}">
                                 ${
                                   value
-                                    ? `<img src="${value}" alt="背景预览" />`
-                                    : '<div class="no-image">📷 暂无图片</div>'
+                                    ? `<img src="${value}" alt="Background preview" />`
+                                    : '<div class="no-image">📷 No image</div>'
                                 }
                             </div>
                             <div class="image-upload-controls">
                                 <input type="file" id="${fieldId}_file" class="image-file-input" accept="image/*" data-target="${fieldId}" style="display: none;">
                                 <button type="button" class="upload-btn" onclick="document.getElementById('${fieldId}_file').click()">
-                                    📤 选择图片
+                                    📤 Choose image
                                 </button>
                                 ${
                                   value
-                                    ? `<button type="button" class="remove-btn" data-target="${fieldId}">🗑️ 移除</button>`
+                                    ? `<button type="button" class="remove-btn" data-target="${fieldId}">🗑️ Remove</button>`
                                     : ''
                                 }
                             </div>
@@ -2848,7 +2848,7 @@ ${
                     </div>
                 `;
         } else if (property === 'backgroundImageUrl') {
-          // 图片链接字段
+          // Image-URL field
           fieldsHTML += `
                     <div class="config-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2859,15 +2859,15 @@ ${
                             value="${value}"
                             data-config-key="${key}"
                             data-config-property="${property}"
-                            placeholder="输入图片链接地址..."
+                            placeholder="Image URL..."
                         >
                     </div>
                 `;
         } else if (property === 'rotation') {
-          // 旋转控制
+          // Rotation control
           fieldsHTML += `
                     <div class="config-field avatar-control-field">
-                        <label for="${fieldId}">${fieldTitle} (度):</label>
+                        <label for="${fieldId}">${fieldTitle} (deg):</label>
                         <div class="control-input-container">
                             <input
                                 type="range"
@@ -2895,7 +2895,7 @@ ${
                     </div>
                 `;
         } else if (property === 'scale') {
-          // 缩放控制
+          // Scale control
           fieldsHTML += `
                     <div class="config-field avatar-control-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2926,7 +2926,7 @@ ${
                     </div>
                 `;
         } else if (property === 'friendId') {
-          // 好友ID字段
+          // Friend ID field
           fieldsHTML += `
                     <div class="config-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2937,13 +2937,13 @@ ${
                             value="${value}"
                             data-config-key="${key}"
                             data-config-property="${property}"
-                            placeholder="输入好友ID（如：22333）"
+                            placeholder="Friend ID (e.g. 22333)"
                         >
-                        <small>💡 这个ID会用于生成CSS选择器：.message-received > .message-avatar#message-avatar-{ID}</small>
+                        <small>💡 This ID is used to build the CSS selector .message-received > .message-avatar#message-avatar-{ID}</small>
                     </div>
                 `;
         } else {
-          // 普通文本字段
+          // Plain text field
           fieldsHTML += `
                     <div class="config-field">
                         <label for="${fieldId}">${fieldTitle}:</label>
@@ -2954,23 +2954,23 @@ ${
                             value="${value}"
                             data-config-key="${key}"
                             data-config-property="${property}"
-                            placeholder="输入${fieldTitle}值..."
+                            placeholder="Enter ${fieldTitle}..."
                         >
                     </div>
                 `;
         }
       }
 
-      // 可视化预览
+      // Live preview
       const previewHTML = `
             <div class="config-field avatar-preview-field">
-                <label>预览效果:</label>
+                <label>Preview:</label>
                 <div class="avatar-preview-container">
                     <div class="avatar-preview" id="${key}_preview">
                         <div class="avatar-preview-circle"></div>
                     </div>
                     <div class="preview-info">
-                        <small>40px × 40px 圆形预览</small>
+                        <small>40×40px circle preview</small>
                     </div>
                 </div>
             </div>
@@ -2990,7 +2990,7 @@ ${
         `;
     }
 
-    // 生成好友专属背景配置区段HTML
+    // Build per-friend background section HTML
     generateFriendBackgroundsSection(backgroundsArray) {
       if (!backgroundsArray || !Array.isArray(backgroundsArray)) {
         backgroundsArray = [];
@@ -3005,8 +3005,8 @@ ${
       return `
             <div class="config-section friend-backgrounds-section">
                 <div class="section-header">
-                    <h3>🎨 好友专属聊天背景</h3>
-                    <p>为每个好友设置独特的聊天背景，基于data-background-id机制实现</p>
+                    <h3>🎨 Per-friend chat background</h3>
+                    <p>Per-friend chat backgrounds via data-background-id</p>
                 </div>
 
                 <div class="backgrounds-container">
@@ -3016,8 +3016,8 @@ ${
                         ? `
                         <div class="empty-backgrounds">
                             <div class="empty-icon">🖼️</div>
-                            <div class="empty-text">暂无好友专属背景</div>
-                            <div class="empty-hint">使用好友弹窗设置专属背景</div>
+                            <div class="empty-text">No per-friend backgrounds</div>
+                            <div class="empty-hint">Set a background from the friend dialog</div>
                         </div>
                     `
                         : ''
@@ -3027,14 +3027,14 @@ ${
                 <div class="background-actions">
                     <button class="config-btn add-background-btn" onclick="window.styleConfigManager.addNewFriendBackground()">
                         <span class="btn-icon">➕</span>
-                        <span>手动添加背景</span>
+                        <span>Add background manually</span>
                     </button>
                 </div>
             </div>
         `;
     }
 
-    // 生成接收消息头像配置区段HTML（支持多个头像）
+    // Build received-avatar section HTML (multi-avatar)
     generateReceivedAvatarsSection(avatarsArray) {
       if (!avatarsArray || !Array.isArray(avatarsArray)) {
         return '';
@@ -3049,8 +3049,8 @@ ${
       return `
             <div class="config-section avatars-section">
                 <div class="section-header">
-                    <h3>🎭 接收消息头像背景</h3>
-                    <p>为不同好友的头像设置个性化背景图片</p>
+                    <h3>🎭 Received-message avatar background</h3>
+                    <p>Per-friend avatar background images</p>
                 </div>
 
                 <div class="avatars-container">
@@ -3060,17 +3060,17 @@ ${
                 <div class="avatar-actions">
                     <button class="config-btn add-avatar-btn" onclick="window.styleConfigManager.addNewAvatar()">
                         <span class="btn-icon">➕</span>
-                        <span>添加新头像</span>
+                        <span>Add avatar</span>
                     </button>
                 </div>
             </div>
         `;
     }
 
-    // 生成单个好友背景配置卡片
+    // Build one friend-background card
     generateSingleBackgroundCard(background, index, backgroundsLength) {
       const friendId = background.friendId || '';
-      const name = background.name || `好友背景 ${index + 1}`;
+      const name = background.name || `Friend background ${index + 1}`;
       const backgroundImage = background.backgroundImage || background.backgroundImageUrl || '';
       const rotation = background.rotation || '0';
       const scale = background.scale || '1';
@@ -3087,16 +3087,16 @@ ${
                                data-background-index="${index}"
                                data-property="name"
                                value="${name}"
-                               placeholder="背景名称">
+                               placeholder="Background name">
                     </div>
                     <div class="background-card-actions">
-                        <button class="background-action-btn collapse-btn" onclick="window.styleConfigManager.toggleBackgroundCard(${index})" title="折叠/展开">
+                        <button class="background-action-btn collapse-btn" onclick="window.styleConfigManager.toggleBackgroundCard(${index})" title="Collapse / expand">
                             <span>📁</span>
                         </button>
                         ${
                           backgroundsLength > 1
                             ? `
-                        <button class="background-action-btn delete-btn" onclick="window.styleConfigManager.deleteFriendBackground(${index})" title="删除">
+                        <button class="background-action-btn delete-btn" onclick="window.styleConfigManager.deleteFriendBackground(${index})" title="Delete">
                             <span>🗑️</span>
                         </button>
                         `
@@ -3112,12 +3112,12 @@ ${
                                  style="background-image: ${previewImageUrl}; background-position: ${backgroundPosition}; transform: ${previewTransform};">
                             </div>
                         </div>
-                        <div class="background-preview-label">聊天背景预览</div>
+                        <div class="background-preview-label">Chat background preview</div>
                     </div>
 
                     <div class="background-fields">
                         <div class="config-field">
-                            <label>好友ID (必填):</label>
+                            <label>Friend ID (required):</label>
                             <input type="text"
                                    class="config-input background-input"
                                    data-background-index="${index}"
@@ -3125,16 +3125,16 @@ ${
                                    value="${friendId}"
                                    placeholder="558778"
                                    required>
-                            <small>⚠️ <strong>必须填写好友ID才能生效</strong> - 用于匹配data-background-id属性</small>
+                            <small>⚠️ <strong>Friend ID is required for this to apply</strong> - Matches the data-background-id attribute</small>
                             ${
                               friendId
-                                ? `<small class="field-status valid">✅ 配置有效 - CSS选择器: .message-detail-content[data-background-id="${friendId}"]</small>`
-                                : `<small class="field-status invalid">❌ 配置无效 - 请填写好友ID</small>`
+                                ? `<small class="field-status valid">✅ Valid — CSS: .message-detail-content[data-background-id="${friendId}"]</small>`
+                                : `<small class="field-status invalid">❌ Invalid — enter a friend ID</small>`
                             }
                         </div>
 
                         <div class="config-field">
-                            <label>背景图片:</label>
+                            <label>Background image:</label>
                             <div class="image-input-container">
                                 <input type="file"
                                        class="image-file-input background-file-input"
@@ -3143,7 +3143,7 @@ ${
                                        accept="image/*">
                                 <button class="upload-btn" onclick="this.previousElementSibling.click()">
                                     <span>📁</span>
-                                    <span>选择图片</span>
+                                    <span>Choose image</span>
                                 </button>
                                 ${
                                   backgroundImage
@@ -3160,7 +3160,7 @@ ${
                         </div>
 
                         <div class="config-field">
-                            <label>图片链接:</label>
+                            <label>Image URL:</label>
                             <input type="text"
                                    class="config-input background-input"
                                    data-background-index="${index}"
@@ -3170,18 +3170,18 @@ ${
                         </div>
 
                         <div class="config-field">
-                            <label>背景位置:</label>
+                            <label>Background position:</label>
                             <input type="text"
                                    class="config-input background-input"
                                    data-background-index="${index}"
                                    data-property="backgroundPosition"
                                    value="${backgroundPosition}"
                                    placeholder="center center">
-                            <small>例如: center center, top left, 50% 25%</small>
+                            <small>e.g. center center, top left, 50% 25%</small>
                         </div>
 
                         <div class="config-field range-field">
-                            <label>旋转角度: <span class="range-value">${rotation}°</span></label>
+                            <label>Rotation: <span class="range-value">${rotation}°</span></label>
                             <div class="range-container">
                                 <input type="range"
                                        class="config-range background-range"
@@ -3197,7 +3197,7 @@ ${
                         </div>
 
                         <div class="config-field range-field">
-                            <label>缩放比例: <span class="range-value">${scale}x</span></label>
+                            <label>Scale: <span class="range-value">${scale}x</span></label>
                             <div class="range-container">
                                 <input type="range"
                                        class="config-range background-range"
@@ -3217,10 +3217,10 @@ ${
         `;
     }
 
-    // 生成单个头像配置卡片
+    // Build one avatar card
     generateSingleAvatarCard(avatar, index, avatarsLength) {
       const friendId = avatar.friendId || '';
-      const name = avatar.name || `好友头像 ${index + 1}`;
+      const name = avatar.name || `Friend avatar ${index + 1}`;
       const backgroundImage = avatar.backgroundImage || avatar.backgroundImageUrl || '';
       const rotation = avatar.rotation || '0';
       const scale = avatar.scale || '1';
@@ -3236,16 +3236,16 @@ ${
                                data-avatar-index="${index}"
                                data-property="name"
                                value="${name}"
-                               placeholder="头像名称">
+                               placeholder="Avatar name">
                     </div>
                     <div class="avatar-card-actions">
-                        <button class="avatar-action-btn collapse-btn" onclick="window.styleConfigManager.toggleAvatarCard(${index})" title="折叠/展开">
+                        <button class="avatar-action-btn collapse-btn" onclick="window.styleConfigManager.toggleAvatarCard(${index})" title="Collapse / expand">
                             <span>📁</span>
                         </button>
                         ${
                           avatarsLength > 1
                             ? `
-                        <button class="avatar-action-btn delete-btn" onclick="window.styleConfigManager.deleteAvatar(${index})" title="删除">
+                        <button class="avatar-action-btn delete-btn" onclick="window.styleConfigManager.deleteAvatar(${index})" title="Delete">
                             <span>🗑️</span>
                         </button>
                         `
@@ -3261,12 +3261,12 @@ ${
                                  style="background-image: ${previewImageUrl}; transform: ${previewTransform};">
                             </div>
                         </div>
-                        <div class="avatar-preview-label">40×40px 预览</div>
+                        <div class="avatar-preview-label">40×40px preview</div>
                     </div>
 
                     <div class="avatar-fields">
                         <div class="config-field">
-                            <label>好友ID (必填):</label>
+                            <label>Friend ID (required):</label>
                             <input type="text"
                                    class="config-input avatar-input"
                                    data-avatar-index="${index}"
@@ -3274,16 +3274,16 @@ ${
                                    value="${friendId}"
                                    placeholder="558778"
                                    required>
-                            <small>⚠️ <strong>必须填写好友ID才能生效</strong> - 用于匹配特定好友的头像元素</small>
+                            <small>⚠️ <strong>Friend ID is required for this to apply</strong> - Matches that friend's avatar element</small>
                                                          ${
                                                            friendId
-                                                             ? `<small class="field-status valid">✅ 配置有效 - CSS选择器: [data-friend-id="${friendId}"] 和 #message-avatar-${friendId}</small>`
-                                                             : `<small class="field-status invalid">❌ 配置无效 - 请填写好友ID</small>`
+                                                             ? `<small class="field-status valid">✅ Valid — CSS: [data-friend-id="${friendId}"] and #message-avatar-${friendId}</small>`
+                                                             : `<small class="field-status invalid">❌ Invalid — enter a friend ID</small>`
                                                          }
                         </div>
 
                         <div class="config-field">
-                            <label>背景图片:</label>
+                            <label>Background image:</label>
                             <div class="image-input-container">
                                 <input type="file"
                                        class="image-file-input avatar-file-input"
@@ -3292,7 +3292,7 @@ ${
                                        accept="image/*">
                                 <button class="upload-btn" onclick="this.previousElementSibling.click()">
                                     <span>📁</span>
-                                    <span>选择图片</span>
+                                    <span>Choose image</span>
                                 </button>
                                 ${
                                   backgroundImage
@@ -3309,7 +3309,7 @@ ${
                         </div>
 
                         <div class="config-field">
-                            <label>图片链接:</label>
+                            <label>Image URL:</label>
                             <input type="text"
                                    class="config-input avatar-input"
                                    data-avatar-index="${index}"
@@ -3319,7 +3319,7 @@ ${
                         </div>
 
                         <div class="config-field range-field">
-                            <label>旋转角度: <span class="range-value">${rotation}°</span></label>
+                            <label>Rotation: <span class="range-value">${rotation}°</span></label>
                             <div class="range-container">
                                 <input type="range"
                                        class="config-range avatar-range"
@@ -3335,7 +3335,7 @@ ${
                         </div>
 
                         <div class="config-field range-field">
-                            <label>缩放比例: <span class="range-value">${scale}x</span></label>
+                            <label>Scale: <span class="range-value">${scale}x</span></label>
                             <div class="range-container">
                                 <input type="range"
                                        class="config-range avatar-range"
@@ -3355,7 +3355,7 @@ ${
         `;
     }
 
-    // 生成自定义样式区段HTML
+    // Build custom-CSS section HTML
     generateCustomStylesSection(key, title, configObject) {
       const value = configObject.cssText || '';
       const fieldId = `${key}_cssText`;
@@ -3368,18 +3368,18 @@ ${
                 </div>
                 <div class="section-fields">
                     <div class="config-field custom-css-field">
-                        <label for="${fieldId}">自定义CSS代码:</label>
+                        <label for="${fieldId}">Custom CSS:</label>
                         <div class="custom-css-container">
                             <textarea
                                 id="${fieldId}"
                                 class="config-input custom-css-textarea"
                                 data-config-key="${key}"
                                 data-config-property="cssText"
-                                placeholder="/* 在这里输入自定义CSS样式 */&#10;.your-custom-class {&#10;    /* 你的样式 */&#10;}"
+                                placeholder="/* Paste custom CSS here */&#10;.your-custom-class {&#10;    /* your rules */&#10;}"
                                 rows="8"
                             >${value}</textarea>
                             <div class="css-help">
-                                <small>💡 提示：这里的CSS样式会随配置一起保存，并自动应用到页面</small>
+                                <small>💡 This CSS is saved with the config and applied automatically</small>
                             </div>
                         </div>
                     </div>
@@ -3388,7 +3388,7 @@ ${
         `;
     }
 
-    // 添加新头像配置
+    // Add an avatar config
     addNewAvatar() {
       const config = this.getConfig();
       if (!config.messageReceivedAvatars) {
@@ -3402,37 +3402,37 @@ ${
         rotation: '0',
         scale: '1',
         friendId: '',
-        name: `好友头像 ${config.messageReceivedAvatars.length + 1}`,
-        description: '接收消息头像背景',
+        name: `Friend avatar ${config.messageReceivedAvatars.length + 1}`,
+        description: 'Received-message avatar background',
       };
 
       config.messageReceivedAvatars.push(newAvatar);
       this.updateConfig('messageReceivedAvatars', null, config.messageReceivedAvatars);
 
-      // 重新渲染界面
+      // Rerender UI
       this.refreshEditorInterface();
-      this.updateStatus('添加新头像成功，点击另存为按钮保存更改', 'info');
+      this.updateStatus('Avatar added — click Save As', 'info');
     }
 
-    // 删除头像配置
+    // Delete avatar config
     deleteAvatar(index) {
       const config = this.getConfig();
       if (!config.messageReceivedAvatars || config.messageReceivedAvatars.length <= 1) {
-        this.updateStatus('至少需要保留一个头像配置', 'warning');
+        this.updateStatus('Keep at least one avatar config', 'warning');
         return;
       }
 
-      if (confirm('确定要删除这个头像配置吗？')) {
+      if (confirm('Delete this avatar config?')) {
         config.messageReceivedAvatars.splice(index, 1);
         this.updateConfig('messageReceivedAvatars', null, config.messageReceivedAvatars);
 
-        // 重新渲染界面
+        // Rerender UI
         this.refreshEditorInterface();
-        this.updateStatus('删除头像成功，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Avatar removed — click Save As', 'info');
       }
     }
 
-    // 添加新好友背景配置
+    // Add a friend-background config
     addNewFriendBackground() {
       const config = this.getConfig();
       if (!config.friendBackgrounds) {
@@ -3442,42 +3442,42 @@ ${
       const newBackground = {
         id: 'friend_bg_' + Date.now(),
         friendId: '',
-        name: `好友背景 ${config.friendBackgrounds.length + 1}`,
+        name: `Friend background ${config.friendBackgrounds.length + 1}`,
         backgroundImage: '',
         backgroundImageUrl: '',
         backgroundPosition: 'center center',
         rotation: '0',
         scale: '1',
-        description: '好友专属聊天背景',
+        description: 'Per-friend chat background',
       };
 
       config.friendBackgrounds.push(newBackground);
       this.updateConfig('friendBackgrounds', null, config.friendBackgrounds);
 
-      // 重新渲染界面
+      // Rerender UI
       this.refreshEditorInterface();
-      this.updateStatus('添加新好友背景成功，点击另存为按钮保存更改', 'info');
+      this.updateStatus('Friend background added — click Save As', 'info');
     }
 
-    // 删除好友背景配置
+    // Delete friend-background config
     deleteFriendBackground(index) {
       const config = this.getConfig();
       if (!config.friendBackgrounds || config.friendBackgrounds.length === 0) {
-        this.updateStatus('没有可删除的背景配置', 'warning');
+        this.updateStatus('No background config to delete', 'warning');
         return;
       }
 
-      if (confirm('确定要删除这个好友背景配置吗？')) {
+      if (confirm('Delete this friend-background config?')) {
         config.friendBackgrounds.splice(index, 1);
         this.updateConfig('friendBackgrounds', null, config.friendBackgrounds);
 
-        // 重新渲染界面
+        // Rerender UI
         this.refreshEditorInterface();
-        this.updateStatus('删除好友背景成功，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Friend background removed — click Save As', 'info');
       }
     }
 
-    // 切换好友背景卡片展开/折叠状态
+    // Toggle friend-background card open/closed
     toggleBackgroundCard(index) {
       const card = document.querySelector(`[data-background-index="${index}"]`);
       if (card) {
@@ -3494,7 +3494,7 @@ ${
       }
     }
 
-    // 折叠/展开头像卡片
+    // Collapse / expand avatar card
     toggleAvatarCard(index) {
       const card = document.querySelector(`[data-avatar-index="${index}"]`);
       if (card) {
@@ -3517,56 +3517,56 @@ ${
       }
     }
 
-    // 获取字段标题
+    // Field title
     getFieldTitle(property) {
       const titleMap = {
-        background: '背景',
-        backgroundImage: '背景图片',
-        backgroundImageUrl: '背景图片链接',
-        borderRadius: '圆角',
-        color: '颜色',
-        fontSize: '字体大小',
-        padding: '内边距',
-        margin: '外边距',
-        rotation: '旋转角度',
-        scale: '缩放比例',
-        friendId: '好友ID',
+        background: 'Background',
+        backgroundImage: 'Background image',
+        backgroundImageUrl: 'Background image URL',
+        borderRadius: 'Radius',
+        color: 'Color',
+        fontSize: 'Font size',
+        padding: 'Padding',
+        margin: 'Margin',
+        rotation: 'Rotation',
+        scale: 'Scale',
+        friendId: 'Friend ID',
       };
 
       return titleMap[property] || property;
     }
 
-    // 绑定设置应用的事件
+    // Bind settings-app events
     bindSettingsEvents() {
-      // 标签页切换事件
+      // Tab-switch events
       document.querySelectorAll('.tab-header').forEach(tab => {
         tab.addEventListener('click', e => {
           this.handleTabSwitch(e.target);
         });
       });
 
-      // 输入框变化事件
+      // Input-change events
       document.querySelectorAll('.config-input').forEach(input => {
         input.addEventListener('input', e => {
           this.handleInputChange(e.target);
         });
       });
 
-      // 图片上传事件
+      // Image-upload events
       document.querySelectorAll('.image-file-input').forEach(input => {
         input.addEventListener('change', e => {
           this.handleImageUpload(e.target);
         });
       });
 
-      // 图片移除事件
+      // Image-remove events
       document.querySelectorAll('.remove-btn').forEach(btn => {
         btn.addEventListener('click', e => {
           this.handleImageRemove(e.target);
         });
       });
 
-      // 预览按钮
+      // Preview button
       const previewBtn = document.getElementById('preview-styles');
       if (previewBtn) {
         previewBtn.addEventListener('click', () => {
@@ -3574,7 +3574,7 @@ ${
         });
       }
 
-      // 另存为按钮（原保存按钮）
+      // Save As (was Save)
       const saveNewBtn = document.getElementById('save-new-config-btn');
       if (saveNewBtn) {
         saveNewBtn.addEventListener('click', async () => {
@@ -3582,7 +3582,7 @@ ${
         });
       }
 
-      // 重置按钮
+      // Reset button
       const resetBtn = document.getElementById('reset-styles');
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
@@ -3590,9 +3590,9 @@ ${
         });
       }
 
-      // 注意：另存为按钮已在上面绑定，这里不再重复绑定
+      // Save As is already bound above — do not bind twice
 
-      // 刷新配置列表按钮
+      // Refresh-list button
       const refreshBtn = document.getElementById('refresh-config-list');
       if (refreshBtn) {
         refreshBtn.addEventListener('click', async () => {
@@ -3600,7 +3600,7 @@ ${
         });
       }
 
-      // 导出配置按钮
+      // Export button
       const exportBtn = document.getElementById('export-config');
       if (exportBtn) {
         exportBtn.addEventListener('click', () => {
@@ -3608,7 +3608,7 @@ ${
         });
       }
 
-      // 导入配置按钮
+      // Import button
       const importBtn = document.getElementById('import-config');
       const importInput = document.getElementById('config-import-input');
       if (importBtn && importInput) {
@@ -3621,34 +3621,34 @@ ${
         });
       }
 
-      // 注意：配置管理器中的另存为输入框已移除
+      // Save As input was removed from this panel
 
-      // 绑定初始的配置列表事件（如果存在）
+      // Bind initial config-list events if present
       this.bindConfigListEvents();
 
-      // 自定义CSS textarea事件
+      // Custom CSS textarea events
       document.querySelectorAll('.custom-css-textarea').forEach(textarea => {
         textarea.addEventListener('input', e => {
           this.handleInputChange(e.target);
         });
       });
 
-      // 头像预览更新事件
+      // Avatar-preview update events
       this.bindAvatarPreviewEvents();
 
-      // 自动加载配置列表（延迟执行，确保DOM渲染完成）
+      // Load config list after DOM paint
       setTimeout(() => {
         this.loadConfigListContent();
-        this.updateAllAvatarPreviews(); // 更新所有头像预览
+        this.updateAllAvatarPreviews(); // Update all avatar previews
       }, 100);
     }
 
-    // 处理标签页切换
+    // Handle tab switch
     handleTabSwitch(tabHeader) {
       // @ts-ignore - EventTarget getAttribute
       const targetTab = tabHeader.getAttribute('data-tab');
 
-      // 更新标签页状态
+      // Update tab state
       document.querySelectorAll('.tab-header').forEach(header => {
         header.classList.remove('active');
       });
@@ -3659,150 +3659,150 @@ ${
       tabHeader.classList.add('active');
       document.querySelector(`[data-tab="${targetTab}"].tab-panel`).classList.add('active');
 
-      // 如果切换到配置管理标签页，加载配置列表
+      // Load the list when switching to Config manager
       if (targetTab === 'manager') {
         this.loadConfigListContent();
       }
     }
 
-    // 处理保存新配置（带弹窗提示）
+    // Save a new named config (with prompt)
     async handleSaveNewConfigWithPrompt() {
-      const configName = prompt('请输入配置名称：', '');
+      const configName = prompt('Config name:', '');
 
       if (!configName) {
-        this.updateStatus('已取消保存', 'info');
+        this.updateStatus('Save cancelled', 'info');
         return;
       }
 
       const trimmedName = configName.trim();
 
       if (!trimmedName) {
-        this.updateStatus('请输入有效的配置名称', 'error');
+        this.updateStatus('Enter a valid config name', 'error');
         return;
       }
 
       if (trimmedName.length > 50) {
-        this.updateStatus('配置名称过长（最多50个字符）', 'error');
+        this.updateStatus('Config name is too long (50 characters max)', 'error');
         return;
       }
 
-      this.updateStatus('正在保存配置...', 'loading');
+      this.updateStatus('Saving config...', 'loading');
 
       try {
         const success = await this.saveConfigWithName(trimmedName);
         if (success) {
-          this.updateStatus('配置保存成功！', 'success');
-          // 如果在配置管理标签页，刷新配置列表
+          this.updateStatus('Config saved', 'success');
+          // Refresh the list if that tab is open
           const activeTab = document.querySelector('.tab-header.active');
           if (activeTab && activeTab.getAttribute('data-tab') === 'manager') {
             await this.handleRefreshConfigList();
           }
         }
       } catch (error) {
-        console.error('[Style Config Manager] 保存配置失败:', error);
-        this.updateStatus(`保存失败：${error.message}`, 'error');
+        console.error('[Style Config Manager] Failed to save config:', error);
+        this.updateStatus(`Save failed: ${error.message}`, 'error');
       }
     }
 
-    // 处理加载配置
+    // Handle load config
     async handleLoadConfig(fileName) {
       if (!fileName) return;
 
-      this.updateStatus('正在加载配置...', 'loading');
+      this.updateStatus('Loading config...', 'loading');
 
       const success = await this.loadConfigFromFile(fileName);
       if (success) {
-        // 刷新编辑器界面
+        // Refresh editor UI
         await this.refreshEditorInterface();
 
-        // 检查是否为默认配置
+        // Check whether this is the default config
         const isDefaultConfig = fileName === STYLE_CONFIG_FILE_NAME;
 
         if (isDefaultConfig) {
-          this.updateStatus('默认配置加载成功！', 'success');
+          this.updateStatus('Default config loaded', 'success');
         } else {
-          // 对于非默认配置，询问用户是否要设为默认配置
+          // For non-default configs, ask whether to set as default
           const loadChoice = await this.showLoadOptionsDialog(fileName);
 
           if (loadChoice === 'setDefault') {
-            this.updateStatus('正在设为默认配置...', 'loading');
+            this.updateStatus('Setting as default config...', 'loading');
 
-            console.log('[Style Config Manager] 🔄 开始保存为默认配置');
-            console.log('[Style Config Manager] 当前配置内容:', JSON.stringify(this.currentConfig, null, 2));
+            console.log('[Style Config Manager] 🔄 Starting save-as-default');
+            console.log('[Style Config Manager] Current config contents:', JSON.stringify(this.currentConfig, null, 2));
 
-            // 保存为默认配置
+            // Save as default config
             const saveSuccess = await this.saveConfig();
 
-            console.log('[Style Config Manager] 保存结果:', saveSuccess);
+            console.log('[Style Config Manager] Save result:', saveSuccess);
 
             if (saveSuccess) {
-              this.updateStatus('配置已加载并设为默认配置！刷新页面后依然有效', 'success');
-              console.log('[Style Config Manager] ✅ 配置已加载并保存为默认配置');
+              this.updateStatus('Loaded and set as default — survives refresh', 'success');
+              console.log('[Style Config Manager] ✅ Config loaded and saved as default');
 
-              // 验证保存是否成功
-              console.log('[Style Config Manager] 🔍 验证保存结果...');
+              // Verify the save
+              console.log('[Style Config Manager] 🔍 Verifying save...');
               if (sillyTavernCoreImported && getDataBankAttachmentsForSource) {
                 const globalAttachments = getDataBankAttachmentsForSource('global', true);
                 const defaultConfig = globalAttachments.find(att => att.name === 'mobile_style_config.json');
-                console.log('[Style Config Manager] 默认配置文件存在:', !!defaultConfig);
+                console.log('[Style Config Manager] Default config file exists:', !!defaultConfig);
                 if (defaultConfig) {
-                  console.log('[Style Config Manager] 默认配置文件信息:', defaultConfig);
+                  console.log('[Style Config Manager] Default config file info:', defaultConfig);
                 }
               }
             } else {
-              this.updateStatus('配置加载成功，但设为默认配置失败', 'error');
-              console.error('[Style Config Manager] ❌ 保存为默认配置失败');
+              this.updateStatus('Loaded, but setting as default failed', 'error');
+              console.error('[Style Config Manager] ❌ Failed to save as default');
             }
           } else {
-            this.updateStatus('配置加载成功！仅本次会话有效，刷新页面后将恢复原配置', 'success');
+            this.updateStatus('Loaded for this session only — a refresh restores the previous config', 'success');
           }
         }
       } else {
-        this.updateStatus('加载配置失败', 'error');
+        this.updateStatus('Failed to load config', 'error');
       }
     }
 
-    // 处理删除配置
+    // Handle delete config
     async handleDeleteConfig(fileName) {
       if (!fileName) return;
 
-      if (!confirm(`确定要删除配置"${fileName}"吗？此操作无法撤销。`)) {
+      if (!confirm(`Delete config "${fileName}"? This cannot be undone.`)) {
         return;
       }
 
-      this.updateStatus('正在删除配置...', 'loading');
+      this.updateStatus('Deleting config...', 'loading');
 
       const success = await this.deleteConfigFile(fileName);
       if (success) {
-        this.updateStatus('配置删除成功！', 'success');
-        // 刷新配置列表
+        this.updateStatus('Config deleted', 'success');
+        // Refresh config list
         await this.handleRefreshConfigList();
       } else {
-        this.updateStatus('删除配置失败', 'error');
+        this.updateStatus('Failed to delete config', 'error');
       }
     }
 
-    // 处理刷新配置列表
+    // Handle refresh list
     async handleRefreshConfigList() {
       await this.loadConfigListContent();
-      console.log('[Style Config Manager] 配置列表已刷新');
+      console.log('[Style Config Manager] Config list refreshed');
     }
 
-    // 处理导出配置
+    // Handle export config
     handleExportConfig() {
       try {
         const configData = {
           version: '1.0',
           timestamp: new Date().toISOString(),
           config: this.currentConfig,
-          description: '移动端样式配置文件',
+          description: 'Mobile style config file',
         };
 
         const configJson = JSON.stringify(configData, null, 2);
         const blob = new Blob([configJson], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
-        // 创建下载链接
+        // Create download link
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
         downloadLink.download = `mobile-style-config-${new Date().toISOString().split('T')[0]}.json`;
@@ -3812,18 +3812,18 @@ ${
         downloadLink.click();
         document.body.removeChild(downloadLink);
 
-        // 清理URL对象
+        // Revoke object URL
         URL.revokeObjectURL(url);
 
-        this.updateStatus('配置导出成功！', 'success');
-        console.log('[Style Config Manager] 配置已导出:', configData);
+        this.updateStatus('Config exported', 'success');
+        console.log('[Style Config Manager] Config exported:', configData);
       } catch (error) {
-        console.error('[Style Config Manager] 导出配置失败:', error);
-        this.updateStatus('导出配置失败', 'error');
+        console.error('[Style Config Manager] Failed to export config:', error);
+        this.updateStatus('Failed to export config', 'error');
       }
     }
 
-    // 处理导入配置
+    // Handle import config
     async handleImportConfig(fileInput) {
       try {
         // @ts-ignore - HTMLInputElement files property
@@ -3831,91 +3831,91 @@ ${
         if (!file) return;
 
         if (!file.name.endsWith('.json')) {
-          this.updateStatus('请选择JSON格式的配置文件', 'error');
+          this.updateStatus('Pick a JSON config file', 'error');
           return;
         }
 
-        this.updateStatus('正在导入配置...', 'loading');
+        this.updateStatus('Importing config...', 'loading');
 
         const fileContent = await this.fileToText(file);
         const importData = JSON.parse(fileContent);
 
-        // 验证配置文件格式
+        // Validate config file format
         if (!importData.config) {
-          // 如果没有config字段，可能是直接的配置对象
+          // No config field — treat the object itself as the config
           if (typeof importData === 'object' && importData.mobilePhoneFrame) {
             this.currentConfig = this.mergeConfigs(DEFAULT_STYLE_CONFIG, importData);
           } else {
-            throw new Error('无效的配置文件格式');
+            throw new Error('Invalid config file format');
           }
         } else {
-          // 标准格式的配置文件
+          // Standard-format config file
           this.currentConfig = this.mergeConfigs(DEFAULT_STYLE_CONFIG, importData.config);
         }
 
-        // 应用新配置
+        // Apply the new config
         this.applyStyles();
 
-        // 刷新编辑器界面
+        // Refresh editor UI
         await this.refreshEditorInterface();
 
-        // 询问用户如何处理导入的配置
+        // Ask how to handle the imported config
         const importChoice = await this.showImportOptionsDialog();
 
         if (importChoice === 'default') {
-          this.updateStatus('正在保存为默认配置...', 'loading');
+          this.updateStatus('Saving as default config...', 'loading');
 
-          // 保存为默认配置
+          // Save as default config
           const saveSuccess = await this.saveConfig();
 
           if (saveSuccess) {
-            this.updateStatus('配置已导入并设为默认配置！刷新页面后依然有效', 'success');
-            console.log('[Style Config Manager] 配置已导入并保存为默认配置');
+            this.updateStatus('Imported and set as default — survives refresh', 'success');
+            console.log('[Style Config Manager] Config imported and saved as default');
           } else {
-            this.updateStatus('配置导入成功，但保存为默认配置失败', 'error');
+            this.updateStatus('Imported, but saving as default failed', 'error');
           }
         } else if (importChoice === 'named') {
-          // 保存为具名配置
-          const configName = prompt('请输入配置名称：', '导入的配置');
+          // Save as named config
+          const configName = prompt('Config name:', 'Imported config');
           if (configName && configName.trim()) {
-            this.updateStatus('正在保存具名配置...', 'loading');
+            this.updateStatus('Saving named config...', 'loading');
 
             try {
               const saveSuccess = await this.saveConfigWithName(configName.trim());
 
               if (saveSuccess) {
-                this.updateStatus(`配置已保存为"${configName.trim()}"，可在配置管理中选择加载`, 'success');
-                // 刷新配置列表
+                this.updateStatus(`Saved as "${configName.trim()}" — load it from config management`, 'success');
+                // Refresh config list
                 setTimeout(() => {
                   this.loadConfigListContent();
                 }, 1000);
               }
             } catch (error) {
-              this.updateStatus(`保存配置失败：${error.message}`, 'error');
+              this.updateStatus(`Save failed: ${error.message}`, 'error');
             }
           } else {
-            this.updateStatus('配置导入成功！仅本次会话有效', 'success');
+            this.updateStatus('Imported for this session only', 'success');
           }
         } else {
-          this.updateStatus('配置导入成功！仅本次会话有效，刷新页面后将恢复原配置', 'success');
+          this.updateStatus('Imported for this session only — a refresh restores the previous config', 'success');
         }
 
-        console.log('[Style Config Manager] 配置已导入:', this.currentConfig);
+        console.log('[Style Config Manager] Config imported:', this.currentConfig);
 
-        // 清空文件输入
+        // Clear the file input
         // @ts-ignore - HTMLInputElement value property
         fileInput.value = '';
       } catch (error) {
-        console.error('[Style Config Manager] 导入配置失败:', error);
-        this.updateStatus('导入配置失败：' + error.message, 'error');
+        console.error('[Style Config Manager] Import failed:', error);
+        this.updateStatus('Import failed: ' + error.message, 'error');
 
-        // 清空文件输入
+        // Clear the file input
         // @ts-ignore - HTMLInputElement value property
         fileInput.value = '';
       }
     }
 
-    // 文件转文本
+    // File to text
     fileToText(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -3925,39 +3925,39 @@ ${
       });
     }
 
-    // 显示加载选项对话框
+    // Show load-options dialog
     async showLoadOptionsDialog(fileName) {
       const displayName = fileName.replace('_style_config.json', '');
 
       return new Promise(resolve => {
-        // 创建对话框HTML
+        // Build dialog HTML
         const dialogHtml = `
                 <div class="load-options-dialog" id="load-options-dialog">
                     <div class="load-options-overlay"></div>
                     <div class="load-options-content">
                         <div class="load-options-header">
-                            <h3>📥 配置加载成功</h3>
-                            <p>已加载配置："${displayName}"</p>
-                            <p style="color: #f59e0b; font-size: 13px; margin-top: 8px;">💡 请选择如何保存此配置</p>
+                            <h3>📥 Config loaded</h3>
+                            <p>Loaded: "${displayName}"</p>
+                            <p style="color: #f59e0b; font-size: 13px; margin-top: 8px;">💡 How should this config be saved?</p>
                         </div>
                         <div class="load-options-body">
                             <div class="load-option recommended" data-choice="setDefault">
                                 <div class="option-icon">🏠</div>
                                 <div class="option-content">
-                                    <div class="option-title">设为默认配置 <span class="recommended-badge">推荐</span></div>
-                                    <div class="option-desc">替换当前默认配置，<strong>刷新页面后依然有效</strong></div>
+                                    <div class="option-title">Set as default <span class="recommended-badge">Recommended</span></div>
+                                    <div class="option-desc">Replace the current default config, <strong>survives a page refresh</strong></div>
                                 </div>
                             </div>
                             <div class="load-option" data-choice="temp">
                                 <div class="option-icon">⚡</div>
                                 <div class="option-content">
-                                    <div class="option-title">仅临时应用</div>
-                                    <div class="option-desc">本次会话有效，<strong style="color: #dc2626;">刷新页面后会恢复原配置</strong></div>
+                                    <div class="option-title">Apply for this session only</div>
+                                    <div class="option-desc">Valid for this session，<strong style="color: #dc2626;">A refresh restores the previous config</strong></div>
                                 </div>
                             </div>
                         </div>
                         <div class="load-options-footer">
-                            <button class="load-cancel-btn" data-choice="temp">保持临时</button>
+                            <button class="load-cancel-btn" data-choice="temp">Keep temporary</button>
                         </div>
                     </div>
                 </div>
@@ -4087,51 +4087,51 @@ ${
                 </style>
             `;
 
-        // 添加对话框到页面
+        // Append dialog to the page
         document.body.insertAdjacentHTML('beforeend', dialogHtml);
 
-        // 等待DOM更新后再绑定事件
+        // Bind events after the DOM updates
         setTimeout(() => {
           const dialog = document.getElementById('load-options-dialog');
-          console.log('[Load Dialog] 对话框元素:', dialog);
+          console.log('[Load Dialog] Dialog:', dialog);
 
           if (!dialog) {
-            console.error('[Load Dialog] 无法找到对话框元素');
+            console.error('[Load Dialog] Could not find dialog');
             resolve('temp');
             return;
           }
 
-          // 定义关闭函数
+          // Close helper
           const closeDialog = choice => {
-            console.log('[Load Dialog] 关闭对话框，选择:', choice);
+            console.log('[Load Dialog] Closing dialog, choice:', choice);
             if (dialog && dialog.parentNode) {
               dialog.remove();
             }
             resolve(choice);
           };
 
-          // 点击背景遮罩关闭
+          // Click overlay to close
           const overlay = dialog.querySelector('.load-options-overlay');
-          console.log('[Load Dialog] 背景遮罩元素:', overlay);
+          console.log('[Load Dialog] Overlay:', overlay);
           if (overlay) {
             overlay.addEventListener('click', e => {
-              console.log('[Load Dialog] 点击背景遮罩');
+              console.log('[Load Dialog] Clicked overlay');
               e.preventDefault();
               e.stopPropagation();
               closeDialog('temp');
             });
           } else {
-            console.error('[Load Dialog] 无法找到背景遮罩元素');
+            console.error('[Load Dialog] Could not find overlay');
           }
 
-          // 点击选项按钮
+          // Click an option
           const options = dialog.querySelectorAll('.load-option');
-          console.log('[Load Dialog] 找到选项按钮数量:', options.length);
+          console.log('[Load Dialog] Option button count:', options.length);
           options.forEach((option, index) => {
             const choice = option.getAttribute('data-choice');
-            console.log(`[Load Dialog] 绑定选项 ${index}:`, choice);
+            console.log(`[Load Dialog] Bound option ${index}:`, choice);
             option.addEventListener('click', e => {
-              console.log('[Load Dialog] 点击选项:', choice);
+              console.log('[Load Dialog] Clicked option:', choice);
               e.preventDefault();
               e.stopPropagation();
               if (choice) {
@@ -4140,23 +4140,23 @@ ${
             });
           });
 
-          // 点击取消按钮
+          // Clicked cancel
           const cancelBtn = dialog.querySelector('.load-cancel-btn');
-          console.log('[Load Dialog] 取消按钮元素:', cancelBtn);
+          console.log('[Load Dialog] Cancel button:', cancelBtn);
           if (cancelBtn) {
             const choice = cancelBtn.getAttribute('data-choice') || 'temp';
-            console.log('[Load Dialog] 取消按钮选择值:', choice);
+            console.log('[Load Dialog] Cancel button value:', choice);
             cancelBtn.addEventListener('click', e => {
-              console.log('[Load Dialog] 点击取消按钮');
+              console.log('[Load Dialog] Clicked cancel');
               e.preventDefault();
               e.stopPropagation();
               closeDialog(choice);
             });
           } else {
-            console.error('[Load Dialog] 无法找到取消按钮元素');
+            console.error('[Load Dialog] Could not find cancel button');
           }
 
-          // 阻止对话框内容区域的点击传播到背景
+          // Stop dialog clicks from hitting the overlay
           const content = dialog.querySelector('.load-options-content');
           if (content) {
             content.addEventListener('click', e => {
@@ -4164,48 +4164,48 @@ ${
             });
           }
 
-          console.log('[Load Dialog] 事件绑定完成');
+          console.log('[Load Dialog] Events bound');
         }, 100);
       });
     }
 
-    // 显示导入选项对话框
+    // Show import-options dialog
     async showImportOptionsDialog() {
       return new Promise(resolve => {
-        // 创建对话框HTML
+        // Build dialog HTML
         const dialogHtml = `
                 <div class="import-options-dialog" id="import-options-dialog">
                     <div class="import-options-overlay"></div>
                     <div class="import-options-content">
                         <div class="import-options-header">
-                            <h3>📥 配置导入成功</h3>
-                            <p>请选择如何处理此配置：</p>
+                            <h3>📥 Config imported</h3>
+                            <p>What should we do with this config?</p>
                         </div>
                         <div class="import-options-body">
                             <div class="import-option" data-choice="default">
                                 <div class="option-icon">🏠</div>
                                 <div class="option-content">
-                                    <div class="option-title">设为默认配置</div>
-                                    <div class="option-desc">替换当前默认配置，刷新页面后自动生效</div>
+                                    <div class="option-title">Set as default</div>
+                                    <div class="option-desc">Replace the default — applies after refresh</div>
                                 </div>
                             </div>
                             <div class="import-option" data-choice="named">
                                 <div class="option-icon">📄</div>
                                 <div class="option-content">
-                                    <div class="option-title">保存为具名配置</div>
-                                    <div class="option-desc">保存为新配置，不影响默认配置</div>
+                                    <div class="option-title">Save as named config</div>
+                                    <div class="option-desc">Save as a new config without touching the default</div>
                                 </div>
                             </div>
                             <div class="import-option" data-choice="temp">
                                 <div class="option-icon">⚡</div>
                                 <div class="option-content">
-                                    <div class="option-title">仅临时应用</div>
-                                    <div class="option-desc">本次会话有效，刷新页面后恢复原配置</div>
+                                    <div class="option-title">Apply for this session only</div>
+                                    <div class="option-desc">This session only — a refresh restores the previous config</div>
                                 </div>
                             </div>
                         </div>
                         <div class="import-options-footer">
-                            <button class="import-cancel-btn" data-choice="cancel">取消</button>
+                            <button class="import-cancel-btn" data-choice="cancel">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -4327,51 +4327,51 @@ ${
                 </style>
             `;
 
-        // 添加对话框到页面
+        // Append dialog to the page
         document.body.insertAdjacentHTML('beforeend', dialogHtml);
 
-        // 等待DOM更新后再绑定事件
+        // Bind events after the DOM updates
         setTimeout(() => {
           const dialog = document.getElementById('import-options-dialog');
-          console.log('[Import Dialog] 对话框元素:', dialog);
+          console.log('[Import Dialog] Dialog:', dialog);
 
           if (!dialog) {
-            console.error('[Import Dialog] 无法找到对话框元素');
+            console.error('[Import Dialog] Could not find dialog');
             resolve('cancel');
             return;
           }
 
-          // 定义关闭函数
+          // Close helper
           const closeDialog = choice => {
-            console.log('[Import Dialog] 关闭对话框，选择:', choice);
+            console.log('[Import Dialog] Closing dialog, choice:', choice);
             if (dialog && dialog.parentNode) {
               dialog.remove();
             }
             resolve(choice);
           };
 
-          // 点击背景遮罩关闭
+          // Click overlay to close
           const overlay = dialog.querySelector('.import-options-overlay');
-          console.log('[Import Dialog] 背景遮罩元素:', overlay);
+          console.log('[Import Dialog] Overlay:', overlay);
           if (overlay) {
             overlay.addEventListener('click', e => {
-              console.log('[Import Dialog] 点击背景遮罩');
+              console.log('[Import Dialog] Clicked overlay');
               e.preventDefault();
               e.stopPropagation();
               closeDialog('cancel');
             });
           } else {
-            console.error('[Import Dialog] 无法找到背景遮罩元素');
+            console.error('[Import Dialog] Could not find overlay');
           }
 
-          // 点击选项按钮
+          // Click an option
           const options = dialog.querySelectorAll('.import-option');
-          console.log('[Import Dialog] 找到选项按钮数量:', options.length);
+          console.log('[Import Dialog] Option button count:', options.length);
           options.forEach((option, index) => {
             const choice = option.getAttribute('data-choice');
-            console.log(`[Import Dialog] 绑定选项 ${index}:`, choice);
+            console.log(`[Import Dialog] Bound option ${index}:`, choice);
             option.addEventListener('click', e => {
-              console.log('[Import Dialog] 点击选项:', choice);
+              console.log('[Import Dialog] Clicked option:', choice);
               e.preventDefault();
               e.stopPropagation();
               if (choice) {
@@ -4380,23 +4380,23 @@ ${
             });
           });
 
-          // 点击取消按钮
+          // Clicked cancel
           const cancelBtn = dialog.querySelector('.import-cancel-btn');
-          console.log('[Import Dialog] 取消按钮元素:', cancelBtn);
+          console.log('[Import Dialog] Cancel button:', cancelBtn);
           if (cancelBtn) {
             const choice = cancelBtn.getAttribute('data-choice') || 'cancel';
-            console.log('[Import Dialog] 取消按钮选择值:', choice);
+            console.log('[Import Dialog] Cancel button value:', choice);
             cancelBtn.addEventListener('click', e => {
-              console.log('[Import Dialog] 点击取消按钮');
+              console.log('[Import Dialog] Clicked cancel');
               e.preventDefault();
               e.stopPropagation();
               closeDialog(choice);
             });
           } else {
-            console.error('[Import Dialog] 无法找到取消按钮元素');
+            console.error('[Import Dialog] Could not find cancel button');
           }
 
-          // 阻止对话框内容区域的点击传播到背景
+          // Stop dialog clicks from hitting the overlay
           const content = dialog.querySelector('.import-options-content');
           if (content) {
             content.addEventListener('click', e => {
@@ -4404,18 +4404,18 @@ ${
             });
           }
 
-          console.log('[Import Dialog] 事件绑定完成');
+          console.log('[Import Dialog] Events bound');
         }, 100);
       });
     }
 
-    // 绑定配置列表事件
+    // Bind config-list events
     bindConfigListEvents() {
-      // 加载配置按钮
+      // Load-config button
       document.querySelectorAll('.load-config').forEach(btn => {
-        // 移除旧的事件监听器（如果存在）
+        // Drop old listeners if any
         btn.removeEventListener('click', this.loadConfigHandler);
-        // 绑定新的事件监听器
+        // Bind new listeners
         this.loadConfigHandler = async e => {
           // @ts-ignore - EventTarget getAttribute
           const fileName = e.target.getAttribute('data-config-file');
@@ -4424,11 +4424,11 @@ ${
         btn.addEventListener('click', this.loadConfigHandler);
       });
 
-      // 删除配置按钮
+      // Delete-config button
       document.querySelectorAll('.delete-config').forEach(btn => {
-        // 移除旧的事件监听器（如果存在）
+        // Drop old listeners if any
         btn.removeEventListener('click', this.deleteConfigHandler);
-        // 绑定新的事件监听器
+        // Bind new listeners
         this.deleteConfigHandler = async e => {
           // @ts-ignore - EventTarget getAttribute
           const fileName = e.target.getAttribute('data-config-file');
@@ -4438,19 +4438,19 @@ ${
       });
     }
 
-    // 刷新编辑器界面
+    // Refresh editor UI
     async refreshEditorInterface() {
       try {
-        // 重新生成整个界面以确保数据同步
+        // Rebuild the UI so data stays in sync
         const container = document.querySelector('.style-config-app');
         if (container) {
           container.innerHTML = this.getSettingsAppContent();
 
-          // 重新绑定所有事件
+          // Rebind all events
           this.bindSettingsEvents();
           return;
         }
-        // 更新所有输入框的值（包括textarea）
+        // Refresh all inputs including textareas
         document.querySelectorAll('.config-input').forEach(input => {
           const key = input.getAttribute('data-config-key');
           const property = input.getAttribute('data-config-property');
@@ -4459,7 +4459,7 @@ ${
             // @ts-ignore - HTMLInputElement value property
             input.value = this.currentConfig[key][property] || '';
 
-            // 同步滑块值（如果存在对应的滑块）
+            // Sync slider values when a slider exists
             const rangeId = `${key}_${property}_range`;
             const rangeInput = document.getElementById(rangeId);
             if (rangeInput) {
@@ -4469,7 +4469,7 @@ ${
           }
         });
 
-        // 更新接收消息头像的输入框
+        // Update received-avatar inputs
         document.querySelectorAll('.avatar-input, .avatar-range, .avatar-number, .avatar-name-input').forEach(input => {
           // @ts-ignore - Event target
           const avatarIndex = input.getAttribute('data-avatar-index');
@@ -4485,7 +4485,7 @@ ${
           }
         });
 
-        // 同时更新图片预览
+        // Also update the image preview
         Object.keys(this.currentConfig).forEach(key => {
           const config = this.currentConfig[key];
           if (config && config.backgroundImage) {
@@ -4494,19 +4494,19 @@ ${
           }
         });
 
-        // 更新头像预览
+        // Update avatar preview
         this.updateAllAvatarPreviews();
 
-        // 重新绑定头像事件
+        // Rebind avatar events
         this.bindAvatarPreviewEvents();
 
-        console.log('[Style Config Manager] 编辑器界面已刷新');
+        console.log('[Style Config Manager] Editor UI refreshed');
       } catch (error) {
-        console.error('[Style Config Manager] 刷新编辑器界面失败:', error);
+        console.error('[Style Config Manager] Failed to refresh editor UI:', error);
       }
     }
 
-    // 处理输入框变化
+    // Handle input changes
     handleInputChange(input) {
       const key = input.getAttribute('data-config-key');
       const property = input.getAttribute('data-config-property');
@@ -4514,25 +4514,25 @@ ${
 
       if (key && property) {
         this.updateConfig(key, property, value);
-        this.updateStatus('配置已修改，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Config changed — click Save As to keep it', 'info');
 
-        // 如果是头像相关配置，更新预览
+        // If this is an avatar field, refresh the preview
         if (key === 'messageSentAvatar' || key === 'messageReceivedAvatar') {
           this.updateAvatarPreview(key);
         }
       }
     }
 
-    // 绑定头像预览事件
+    // Bind avatar-preview events
     bindAvatarPreviewEvents() {
-      // 发送消息头像控件
+      // Sent-message avatar controls
       document.querySelectorAll('[data-config-key="messageSentAvatar"]').forEach(input => {
         input.addEventListener('input', () => {
           this.updateAvatarPreview('messageSentAvatar');
         });
       });
 
-      // 接收消息头像控件（多个）
+      // Received-avatar controls (multiple)
       document.querySelectorAll('.avatar-input, .avatar-range, .avatar-number').forEach(input => {
         input.addEventListener('input', e => {
           // @ts-ignore - Event target
@@ -4545,7 +4545,7 @@ ${
           if (avatarIndex !== null && property) {
             this.updateAvatarProperty(parseInt(avatarIndex), property, value);
 
-            // 同步滑块和数字输入的值
+            // Keep slider and number input in sync
             if (property === 'rotation' || property === 'scale') {
               const relatedInputs = document.querySelectorAll(
                 `[data-avatar-index="${avatarIndex}"][data-property="${property}"]`,
@@ -4558,7 +4558,7 @@ ${
                 }
               });
 
-              // 更新标签显示
+              // Update the label
               const label = document.querySelector(`[data-avatar-index="${avatarIndex}"] .range-value`);
               if (label && (property === 'rotation' || property === 'scale')) {
                 const unit = property === 'rotation' ? '°' : 'x';
@@ -4569,7 +4569,7 @@ ${
         });
       });
 
-      // 头像名称输入
+      // Avatar-name input
       document.querySelectorAll('.avatar-name-input').forEach(input => {
         input.addEventListener('input', e => {
           // @ts-ignore - Event target
@@ -4585,21 +4585,21 @@ ${
         });
       });
 
-      // 头像文件上传
+      // Avatar file upload
       document.querySelectorAll('.avatar-file-input').forEach(input => {
         input.addEventListener('change', e => {
           this.handleAvatarFileUpload(e.target);
         });
       });
 
-      // 头像移除按钮
+      // Avatar remove button
       document.querySelectorAll('.avatar-remove-btn').forEach(btn => {
         btn.addEventListener('click', e => {
           this.handleAvatarImageRemove(e.target);
         });
       });
 
-      // 好友背景控件（多个）
+      // Friend-background controls (multiple)
       document.querySelectorAll('.background-input, .background-range, .background-number').forEach(input => {
         input.addEventListener('input', e => {
           // @ts-ignore - Event target
@@ -4612,7 +4612,7 @@ ${
           if (backgroundIndex !== null && property) {
             this.updateBackgroundProperty(parseInt(backgroundIndex), property, value);
 
-            // 同步滑块和数字输入的值
+            // Keep slider and number input in sync
             if (property === 'rotation' || property === 'scale') {
               const relatedInputs = document.querySelectorAll(
                 `[data-background-index="${backgroundIndex}"][data-property="${property}"]`,
@@ -4622,7 +4622,7 @@ ${
                 if (relatedInput !== e.target) relatedInput.value = value;
               });
 
-              // 更新范围值显示
+              // Update range-value label
               const rangeValueSpan = document.querySelector(
                 `[data-background-index="${backgroundIndex}"] .range-value`,
               );
@@ -4633,13 +4633,13 @@ ${
               }
             }
 
-            // 更新预览
+            // Update preview
             this.updateBackgroundPreview(parseInt(backgroundIndex));
           }
         });
       });
 
-      // 好友背景名称输入
+      // Friend-background name input
       document.querySelectorAll('.background-name-input').forEach(input => {
         input.addEventListener('input', e => {
           // @ts-ignore - Event target
@@ -4655,14 +4655,14 @@ ${
         });
       });
 
-      // 好友背景文件上传
+      // Friend-background file upload
       document.querySelectorAll('.background-file-input').forEach(input => {
         input.addEventListener('change', e => {
           this.handleBackgroundFileUpload(e.target);
         });
       });
 
-      // 好友背景移除按钮
+      // Friend-background remove button
       document.querySelectorAll('.background-remove-btn').forEach(btn => {
         btn.addEventListener('click', e => {
           this.handleBackgroundImageRemove(e.target);
@@ -4670,11 +4670,11 @@ ${
       });
     }
 
-    // 更新所有头像预览
+    // Update all avatar previews
     updateAllAvatarPreviews() {
       this.updateAvatarPreview('messageSentAvatar');
 
-      // 更新所有接收消息头像预览
+      // Update all received-avatar previews
       const config = this.getConfig();
       if (config.messageReceivedAvatars) {
         config.messageReceivedAvatars.forEach((_, index) => {
@@ -4683,7 +4683,7 @@ ${
       }
     }
 
-    // 更新头像预览
+    // Update avatar preview
     updateAvatarPreview(configKey) {
       const config = this.currentConfig[configKey];
       if (!config) return;
@@ -4694,14 +4694,14 @@ ${
       const circle = previewElement.querySelector('.avatar-preview-circle');
       if (!circle) return;
 
-      // 获取背景图片
+      // Read background image
       const backgroundImage = config.backgroundImage || config.backgroundImageUrl;
 
-      // 获取变换参数
+      // Read transform values
       const rotation = parseFloat(config.rotation) || 0;
       const scale = parseFloat(config.scale) || 1;
 
-      // 应用样式
+      // Apply styles
       if (backgroundImage) {
         // @ts-ignore - HTMLElement style property
         circle.style.backgroundImage = `url(${backgroundImage})`;
@@ -4718,40 +4718,40 @@ ${
         circle.style.background = '#f0f0f0';
       }
 
-      // 应用变换
+      // Apply transform
       // @ts-ignore - HTMLElement style property
       circle.style.transform = `rotate(${rotation}deg) scale(${scale})`;
       // @ts-ignore - HTMLElement style property
       circle.style.transformOrigin = 'center center';
     }
 
-    // 更新接收消息头像预览
+    // Update received-avatar preview
     updateReceivedAvatarPreview(avatarIndex) {
       const config = this.getConfig();
       if (!config.messageReceivedAvatars || !config.messageReceivedAvatars[avatarIndex]) {
-        console.warn(`[Avatar Preview] 头像配置不存在: index=${avatarIndex}`);
+        console.warn(`[Avatar Preview] Avatar config missing: index=${avatarIndex}`);
         return;
       }
 
       const avatar = config.messageReceivedAvatars[avatarIndex];
       const previewElement = document.querySelector(`[data-avatar-index="${avatarIndex}"] .avatar-preview-circle`);
       if (!previewElement) {
-        console.warn(`[Avatar Preview] 预览元素不存在: [data-avatar-index="${avatarIndex}"] .avatar-preview-circle`);
+        console.warn(`[Avatar Preview] Preview element missing: [data-avatar-index="${avatarIndex}"] .avatar-preview-circle`);
         return;
       }
 
-      // 格式化图片URL的函数（与generateCSS中的保持一致）
+      // Same URL formatter as generateCSS
       const formatImageUrl = url => {
         if (!url) return '';
         if (url.startsWith('data:')) return url;
-        return url; // 直接返回URL，不添加引号（CSS中需要引号，但style属性中不需要）
+        return url; // Return the URL unquoted (style attrs do not want quotes)
       };
 
-      // 获取背景图片
+      // Read background image
       const backgroundImage = avatar.backgroundImage || avatar.backgroundImageUrl;
       const formattedUrl = formatImageUrl(backgroundImage);
 
-      console.log(`[Avatar Preview] 更新头像预览 ${avatarIndex}:`, {
+      console.log(`[Avatar Preview] Updating avatar preview ${avatarIndex}:`, {
         name: avatar.name,
         originalUrl: backgroundImage,
         formattedUrl: formattedUrl,
@@ -4759,11 +4759,11 @@ ${
         scale: avatar.scale,
       });
 
-      // 获取变换参数
+      // Read transform values
       const rotation = parseFloat(avatar.rotation) || 0;
       const scale = parseFloat(avatar.scale) || 1;
 
-      // 应用样式
+      // Apply styles
       if (formattedUrl) {
         // @ts-ignore - HTMLElement style property
         previewElement.style.backgroundImage = `url(${formattedUrl})`;
@@ -4780,14 +4780,14 @@ ${
         previewElement.style.background = '#f0f0f0';
       }
 
-      // 应用变换
+      // Apply transform
       // @ts-ignore - HTMLElement style property
       previewElement.style.transform = `rotate(${rotation}deg) scale(${scale})`;
       // @ts-ignore - HTMLElement style property
       previewElement.style.transformOrigin = 'center center';
     }
 
-    // 更新头像属性
+    // Update avatar property
     updateAvatarProperty(avatarIndex, property, value) {
       const config = this.getConfig();
       if (!config.messageReceivedAvatars || !config.messageReceivedAvatars[avatarIndex]) return;
@@ -4795,7 +4795,7 @@ ${
       config.messageReceivedAvatars[avatarIndex][property] = value;
       this.updateConfig('messageReceivedAvatars', null, config.messageReceivedAvatars);
 
-      // 更新预览
+      // Update preview
       if (
         property === 'backgroundImage' ||
         property === 'backgroundImageUrl' ||
@@ -4805,30 +4805,30 @@ ${
         this.updateReceivedAvatarPreview(avatarIndex);
       }
 
-      // 如果是好友ID更改，更新状态指示器
+      // If friend ID changed, refresh the status indicator
       if (property === 'friendId') {
         this.updateAvatarStatusIndicator(avatarIndex, value);
       }
 
-      // 提示用户保存配置
-      this.updateStatus('配置已修改，点击另存为按钮保存更改', 'info');
+      // Prompt the user to save
+      this.updateStatus('Config changed — click Save As to keep it', 'info');
     }
 
-    // 更新头像状态指示器
+    // Update avatar status indicator
     updateAvatarStatusIndicator(avatarIndex, friendId) {
       const statusElement = document.querySelector(`[data-avatar-index="${avatarIndex}"] .field-status`);
       if (statusElement) {
         if (friendId && friendId.trim()) {
           statusElement.className = 'field-status valid';
-          statusElement.innerHTML = `✅ 配置有效 - CSS选择器: [data-friend-id="${friendId}"] 和 #message-avatar-${friendId}`;
+          statusElement.innerHTML = `✅ Valid — CSS: [data-friend-id="${friendId}"] and #message-avatar-${friendId}`;
         } else {
           statusElement.className = 'field-status invalid';
-          statusElement.innerHTML = `❌ 配置无效 - 请填写好友ID`;
+          statusElement.innerHTML = `❌ Invalid — enter a friend ID`;
         }
       }
     }
 
-    // 更新好友背景属性
+    // Update friend-background property
     updateBackgroundProperty(backgroundIndex, property, value) {
       const config = this.getConfig();
       if (!config.friendBackgrounds || !config.friendBackgrounds[backgroundIndex]) return;
@@ -4836,7 +4836,7 @@ ${
       config.friendBackgrounds[backgroundIndex][property] = value;
       this.updateConfig('friendBackgrounds', null, config.friendBackgrounds);
 
-      // 更新预览
+      // Update preview
       if (
         property === 'backgroundImage' ||
         property === 'backgroundImageUrl' ||
@@ -4847,30 +4847,30 @@ ${
         this.updateBackgroundPreview(backgroundIndex);
       }
 
-      // 如果是好友ID更改，更新状态指示器
+      // If friend ID changed, refresh the status indicator
       if (property === 'friendId') {
         this.updateBackgroundStatusIndicator(backgroundIndex, value);
       }
 
-      // 提示用户保存配置
-      this.updateStatus('配置已修改，点击另存为按钮保存更改', 'info');
+      // Prompt the user to save
+      this.updateStatus('Config changed — click Save As to keep it', 'info');
     }
 
-    // 更新好友背景状态指示器
+    // Update friend-background status indicator
     updateBackgroundStatusIndicator(backgroundIndex, friendId) {
       const statusElement = document.querySelector(`[data-background-index="${backgroundIndex}"] .field-status`);
       if (statusElement) {
         if (friendId && friendId.trim()) {
           statusElement.className = 'field-status valid';
-          statusElement.innerHTML = `✅ 配置有效 - CSS选择器: .message-detail-content[data-background-id="${friendId}"]`;
+          statusElement.innerHTML = `✅ Valid — CSS: .message-detail-content[data-background-id="${friendId}"]`;
         } else {
           statusElement.className = 'field-status invalid';
-          statusElement.innerHTML = `❌ 配置无效 - 请填写好友ID`;
+          statusElement.innerHTML = `❌ Invalid — enter a friend ID`;
         }
       }
     }
 
-    // 更新好友背景预览
+    // Update friend-background preview
     updateBackgroundPreview(backgroundIndex) {
       const config = this.getConfig();
       if (!config.friendBackgrounds || !config.friendBackgrounds[backgroundIndex]) return;
@@ -4885,7 +4885,7 @@ ${
       const backgroundImage = background.backgroundImage || background.backgroundImageUrl || '';
       const formattedUrl = formatImageUrl(backgroundImage);
 
-      console.log(`[Background Preview] 更新好友背景预览 ${backgroundIndex}:`, {
+      console.log(`[Background Preview] Updating friend-background preview ${backgroundIndex}:`, {
         name: background.name,
         originalUrl: backgroundImage,
         formattedUrl: formattedUrl,
@@ -4894,12 +4894,12 @@ ${
         position: background.backgroundPosition,
       });
 
-      // 获取变换参数
+      // Read transform values
       const rotation = parseFloat(background.rotation) || 0;
       const scale = parseFloat(background.scale) || 1;
       const backgroundPosition = background.backgroundPosition || 'center center';
 
-      // 应用样式
+      // Apply styles
       if (formattedUrl) {
         // @ts-ignore - HTMLElement style property
         previewElement.style.backgroundImage = `url(${formattedUrl})`;
@@ -4916,14 +4916,14 @@ ${
         previewElement.style.background = '#f0f0f0';
       }
 
-      // 应用变换
+      // Apply transform
       // @ts-ignore - HTMLElement style property
       previewElement.style.transform = `rotate(${rotation}deg) scale(${scale})`;
       // @ts-ignore - HTMLElement style property
       previewElement.style.transformOrigin = 'center center';
     }
 
-    // 处理头像文件上传
+    // Handle avatar file upload
     async handleAvatarFileUpload(fileInput) {
       const file = fileInput.files[0];
       if (!file) return;
@@ -4934,7 +4934,7 @@ ${
 
       if (avatarIndex === null || property === null) return;
 
-      console.log('[Style Config Manager] 开始处理头像图片上传:', {
+      console.log('[Style Config Manager] Starting avatar upload:', {
         name: file.name,
         type: file.type,
         size: file.size,
@@ -4942,38 +4942,38 @@ ${
         property: property,
       });
 
-      // 检查文件类型
+      // Check file type
       if (!file.type.startsWith('image/')) {
-        this.updateStatus('请选择图片文件', 'error');
-        console.warn('[Style Config Manager] 不支持的文件类型:', file.type);
+        this.updateStatus('Pick an image file', 'error');
+        console.warn('[Style Config Manager] Unsupported file type:', file.type);
         return;
       }
 
-      // 检查文件大小（限制5MB）
+      // Check file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        this.updateStatus('头像图片文件过大，请选择小于5MB的图片', 'error');
+        this.updateStatus('Avatar image is too large — use one under 5MB', 'error');
         return;
       }
 
-      // 验证文件扩展名
+      // Validate extension
       const validImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
       const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
 
       if (!validImageExtensions.includes(fileExtension)) {
-        this.updateStatus('不支持的头像图片格式，请选择 JPG、PNG、GIF、WebP 等格式', 'error');
+        this.updateStatus('Unsupported avatar format — use JPG, PNG, GIF, or WebP', 'error');
         return;
       }
 
       try {
-        this.updateStatus('正在上传头像图片...', 'loading');
+        this.updateStatus('Uploading avatar...', 'loading');
 
         let imageUrl;
         if (sillyTavernCoreImported && uploadFileAttachmentToServer) {
           try {
-            // 确保文件名正确格式化
+            // Normalize the filename
             let fileName = file.name;
 
-            // 如果文件名没有扩展名，从MIME类型推断
+            // Infer extension from MIME if missing
             if (!fileName.includes('.')) {
               const mimeToExt = {
                 'image/jpeg': '.jpg',
@@ -4988,63 +4988,63 @@ ${
               fileName = `${fileName}${extension}`;
             }
 
-            // 添加时间戳前缀以避免文件名冲突
+            // Timestamp prefix to avoid name clashes
             const timestamp = Date.now();
             const safeName = `avatar_${timestamp}_${fileName}`;
 
-            console.log('[Style Config Manager] 准备上传头像文件:', {
+            console.log('[Style Config Manager] Preparing avatar upload:', {
               originalName: file.name,
               processedName: safeName,
               type: file.type,
               size: file.size,
             });
 
-            // 创建一个新的File对象，确保正确的文件名和类型
+            // New File with the right name and type
             const imageFile = new File([file], safeName, {
               type: file.type,
               lastModified: file.lastModified,
             });
 
-            // 上传到SillyTavern Data Bank
+            // Upload to SillyTavern Data Bank
             imageUrl = await uploadFileAttachmentToServer(imageFile, 'global');
 
-            console.log('[Style Config Manager] Data Bank返回头像URL:', imageUrl);
+            console.log('[Style Config Manager] Data Bank avatar URL:', imageUrl);
 
-            // 严格验证返回的URL - 必须是图片格式
+            // Returned URL must look like an image
             const isValidImageUrl =
               imageUrl &&
               (imageUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i) ||
-                imageUrl.includes(safeName.replace(/\.[^.]+$/, ''))); // 至少包含我们的文件名前缀
+                imageUrl.includes(safeName.replace(/\.[^.]+$/, ''))); // Must include our filename prefix
 
             if (!isValidImageUrl) {
-              console.warn('[Style Config Manager] ❌ Data Bank返回了错误的头像URL格式，可能是txt文件:', imageUrl);
-              console.warn('[Style Config Manager] 预期的文件名应包含:', safeName);
-              // 强制使用base64备用方案
+              console.warn('[Style Config Manager] ❌ Data Bank returned a bad avatar URL (maybe TXT):', imageUrl);
+              console.warn('[Style Config Manager] Expected filename to contain:', safeName);
+              // Force the base64 fallback
               imageUrl = null;
             } else {
-              console.log('[Style Config Manager] ✅ Data Bank头像上传成功，URL格式正确');
+              console.log('[Style Config Manager] ✅ Data Bank avatar upload OK');
             }
           } catch (uploadError) {
-            console.warn('[Style Config Manager] 头像图片上传到Data Bank失败，使用base64:', uploadError);
+            console.warn('[Style Config Manager] Avatar Data Bank upload failed — using base64:', uploadError);
             imageUrl = null;
           }
         }
 
         if (!imageUrl) {
-          console.log('[Style Config Manager] 使用base64方案处理头像图片');
+          console.log('[Style Config Manager] Using base64 for avatar');
           imageUrl = await this.fileToBase64(file);
         }
 
-        // 更新头像配置
+        // Update avatar config
         this.updateAvatarProperty(avatarIndex, property, imageUrl);
-        this.updateStatus('头像图片上传成功，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Avatar uploaded — click Save As', 'info');
       } catch (error) {
-        console.error('[Style Config Manager] 头像图片上传失败:', error);
-        this.updateStatus('头像图片上传失败', 'error');
+        console.error('[Style Config Manager] Avatar upload failed:', error);
+        this.updateStatus('Avatar upload failed', 'error');
       }
     }
 
-    // 处理头像图片移除
+    // Handle avatar image remove
     handleAvatarImageRemove(removeBtn) {
       // @ts-ignore - Event target
       const avatarIndex = parseInt(removeBtn.getAttribute('data-avatar-index'));
@@ -5052,14 +5052,14 @@ ${
 
       if (avatarIndex !== null && property) {
         this.updateAvatarProperty(avatarIndex, property, '');
-        this.updateStatus('头像图片已移除，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Avatar removed — click Save As', 'info');
 
-        // 重新渲染界面以更新按钮状态
+        // Rerender so button state matches
         this.refreshEditorInterface();
       }
     }
 
-    // 处理好友背景文件上传
+    // Handle friend-background file upload
     async handleBackgroundFileUpload(fileInput) {
       const file = fileInput.files[0];
       if (!file) return;
@@ -5070,31 +5070,31 @@ ${
 
       if (backgroundIndex === null || !property) return;
 
-      // 验证文件类型
+      // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        this.updateStatus('不支持的背景图片格式，请选择 JPG、PNG、GIF、WebP 等格式', 'error');
+        this.updateStatus('Unsupported background format — use JPG, PNG, GIF, or WebP', 'error');
         return;
       }
 
       try {
-        this.updateStatus('正在上传好友背景图片...', 'loading');
+        this.updateStatus('Uploading friend background...', 'loading');
 
         let imageUrl;
-        // 使用Base64方案处理背景图片
-        console.log('[Style Config Manager] 使用base64方案处理好友背景图片');
+        // Use base64 for the background image
+        console.log('[Style Config Manager] Using base64 for friend background');
         imageUrl = await this.fileToBase64(file);
 
-        // 更新背景配置
+        // Update background config
         this.updateBackgroundProperty(backgroundIndex, property, imageUrl);
-        this.updateStatus('好友背景图片上传成功，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Friend background uploaded — click Save As', 'info');
       } catch (error) {
-        console.error('[Style Config Manager] 好友背景图片上传失败:', error);
-        this.updateStatus('好友背景图片上传失败', 'error');
+        console.error('[Style Config Manager] Friend background upload failed:', error);
+        this.updateStatus('Friend background upload failed', 'error');
       }
     }
 
-    // 处理好友背景图片移除
+    // Handle friend-background image remove
     handleBackgroundImageRemove(removeBtn) {
       // @ts-ignore - Event target
       const backgroundIndex = parseInt(removeBtn.getAttribute('data-background-index'));
@@ -5102,64 +5102,64 @@ ${
 
       if (backgroundIndex !== null && property) {
         this.updateBackgroundProperty(backgroundIndex, property, '');
-        this.updateStatus('好友背景图片已移除，点击另存为按钮保存更改', 'info');
+        this.updateStatus('Friend background removed — click Save As', 'info');
 
-        // 重新渲染界面以更新按钮状态
+        // Rerender so button state matches
         this.refreshEditorInterface();
       }
     }
 
-    // 处理图片上传
+    // Handle image upload
     async handleImageUpload(fileInput) {
       const file = fileInput.files[0];
       if (!file) return;
 
-      console.log('[Style Config Manager] 开始处理图片上传:', {
+      console.log('[Style Config Manager] Starting image upload:', {
         name: file.name,
         type: file.type,
         size: file.size,
       });
 
-      // 检查文件类型
+      // Check file type
       if (!file.type.startsWith('image/')) {
-        this.updateStatus('请选择图片文件', 'error');
-        console.warn('[Style Config Manager] 不支持的文件类型:', file.type);
+        this.updateStatus('Pick an image file', 'error');
+        console.warn('[Style Config Manager] Unsupported file type:', file.type);
         return;
       }
 
-      // 检查文件大小（限制5MB）
+      // Check file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        this.updateStatus('图片文件过大，请选择小于5MB的图片', 'error');
+        this.updateStatus('Image is too large — use one under 5MB', 'error');
         return;
       }
 
-      // 验证文件扩展名
+      // Validate extension
       const validImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
       const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
 
       if (!validImageExtensions.includes(fileExtension)) {
-        this.updateStatus('不支持的图片格式，请选择 JPG、PNG、GIF、WebP 等格式', 'error');
+        this.updateStatus('Unsupported image format — use JPG, PNG, GIF, or WebP', 'error');
         return;
       }
 
       try {
-        this.updateStatus('正在上传图片...', 'loading');
+        this.updateStatus('Uploading image...', 'loading');
 
         let imageUrl;
 
-        // 检查用户选择的上传模式
+        // Read the chosen upload mode
         const uploadModeInput = document.querySelector('input[name="imageUploadMode"]:checked');
         // @ts-ignore - HTMLInputElement value property
         const uploadMode = uploadModeInput ? uploadModeInput.value : 'auto';
 
-        console.log('[Style Config Manager] 用户选择的上传模式:', uploadMode);
+        console.log('[Style Config Manager] Upload mode:', uploadMode);
 
         if (uploadMode === 'auto' && sillyTavernCoreImported && uploadFileAttachmentToServer) {
           try {
-            // 确保文件名正确格式化
+            // Normalize the filename
             let fileName = file.name;
 
-            // 如果文件名没有扩展名，从MIME类型推断
+            // Infer extension from MIME if missing
             if (!fileName.includes('.')) {
               const mimeToExt = {
                 'image/jpeg': '.jpg',
@@ -5174,73 +5174,73 @@ ${
               fileName = `${fileName}${extension}`;
             }
 
-            // 添加时间戳前缀以避免文件名冲突
+            // Timestamp prefix to avoid name clashes
             const timestamp = Date.now();
             const safeName = `mobile_bg_${timestamp}_${fileName}`;
 
-            console.log('[Style Config Manager] 准备上传文件:', {
+            console.log('[Style Config Manager] Preparing upload:', {
               originalName: file.name,
               processedName: safeName,
               type: file.type,
               size: file.size,
             });
 
-            // 创建一个新的File对象，确保正确的文件名和类型
+            // New File with the right name and type
             const imageFile = new File([file], safeName, {
               type: file.type,
               lastModified: file.lastModified,
             });
 
-            // 上传到SillyTavern Data Bank
+            // Upload to SillyTavern Data Bank
             imageUrl = await uploadFileAttachmentToServer(imageFile, 'global');
 
-            console.log('[Style Config Manager] Data Bank返回URL:', imageUrl);
+            console.log('[Style Config Manager] Data Bank URL:', imageUrl);
 
-            // 严格验证返回的URL - 必须是图片格式
+            // Returned URL must look like an image
             const isValidImageUrl =
               imageUrl &&
               (imageUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i) ||
-                imageUrl.includes(safeName.replace(/\.[^.]+$/, ''))); // 至少包含我们的文件名前缀
+                imageUrl.includes(safeName.replace(/\.[^.]+$/, ''))); // Must include our filename prefix
 
             if (!isValidImageUrl) {
-              console.warn('[Style Config Manager] ❌ Data Bank返回了错误的URL格式，可能是txt文件:', imageUrl);
-              console.warn('[Style Config Manager] 预期的文件名应包含:', safeName);
-              // 强制使用base64备用方案
+              console.warn('[Style Config Manager] ❌ Data Bank returned a bad URL (maybe TXT):', imageUrl);
+              console.warn('[Style Config Manager] Expected filename to contain:', safeName);
+              // Force the base64 fallback
               imageUrl = null;
             } else {
-              console.log('[Style Config Manager] ✅ Data Bank上传成功，URL格式正确');
+              console.log('[Style Config Manager] ✅ Data Bank upload OK');
             }
           } catch (uploadError) {
-            console.warn('[Style Config Manager] Data Bank上传失败:', uploadError);
+            console.warn('[Style Config Manager] Data Bank upload failed:', uploadError);
             imageUrl = null;
           }
         }
 
         if (!imageUrl) {
-          // 备用方案或用户选择：转换为base64
+          // Fallback / user choice: convert to base64
           if (uploadMode === 'base64') {
-            console.log('[Style Config Manager] 用户选择base64模式，直接转换');
+            console.log('[Style Config Manager] User chose base64 — converting directly');
           } else {
-            console.log('[Style Config Manager] Data Bank上传失败或格式错误，使用base64备用方案');
+            console.log('[Style Config Manager] Data Bank upload failed or bad format — using base64');
           }
           imageUrl = await this.fileToBase64(file);
-          console.log('[Style Config Manager] base64转换完成，长度:', imageUrl.length);
+          console.log('[Style Config Manager] base64 length:', imageUrl.length);
         }
 
-        // 最终验证和配置更新
+        // Final validate and write config
         const targetFieldId = fileInput.getAttribute('data-target');
         const targetInput = document.getElementById(targetFieldId);
 
         if (targetInput && imageUrl) {
-          // 最后一次验证URL有效性
+          // Last URL validity check
           const isFinalValidUrl =
-            imageUrl.startsWith('data:') || // base64格式
-            imageUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i) || // 图片扩展名
-            (imageUrl.startsWith('/user/files/') && !imageUrl.endsWith('.txt')); // 不是txt文件
+            imageUrl.startsWith('data:') || // base64
+            imageUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i) || // image extension
+            (imageUrl.startsWith('/user/files/') && !imageUrl.endsWith('.txt')); // not a txt file
 
           if (!isFinalValidUrl) {
-            console.error('[Style Config Manager] ❌ 最终URL验证失败，拒绝保存:', imageUrl);
-            this.updateStatus('图片URL格式无效，请重试', 'error');
+            console.error('[Style Config Manager] ❌ Final URL check failed — not saving:', imageUrl);
+            this.updateStatus('Invalid image URL — try again', 'error');
             return;
           }
 
@@ -5255,21 +5255,21 @@ ${
             this.updateImagePreview(targetFieldId, imageUrl);
 
             if (imageUrl.startsWith('data:')) {
-              this.updateStatus('图片已转换为base64格式保存', 'success');
-              console.log('[Style Config Manager] ✅ 使用base64格式保存图片');
+              this.updateStatus('Image saved as base64', 'success');
+              console.log('[Style Config Manager] ✅ Saved image as base64');
             } else {
-              this.updateStatus('图片上传成功！', 'success');
-              console.log('[Style Config Manager] ✅ 使用文件URL保存图片:', imageUrl);
+              this.updateStatus('Image uploaded', 'success');
+              console.log('[Style Config Manager] ✅ Saved image via file URL:', imageUrl);
             }
           }
         }
       } catch (error) {
-        console.error('[Style Config Manager] 图片上传失败:', error);
-        this.updateStatus('图片上传失败', 'error');
+        console.error('[Style Config Manager] Image upload failed:', error);
+        this.updateStatus('Image upload failed', 'error');
       }
     }
 
-    // 处理图片移除
+    // Handle image remove
     handleImageRemove(removeBtn) {
       const targetFieldId = removeBtn.getAttribute('data-target');
       const targetInput = document.getElementById(targetFieldId);
@@ -5284,12 +5284,12 @@ ${
         if (key && property) {
           this.updateConfig(key, property, '');
           this.updateImagePreview(targetFieldId, '');
-          this.updateStatus('背景图片已移除', 'info');
+          this.updateStatus('Background image removed', 'info');
         }
       }
     }
 
-    // 文件转base64
+    // File to base64
     fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -5299,20 +5299,20 @@ ${
       });
     }
 
-    // 更新图片预览
+    // Update image preview
     updateImagePreview(fieldId, imageUrl) {
       const previewContainer = document.querySelector(`[data-field-id="${fieldId}"]`);
       if (previewContainer) {
         if (imageUrl) {
-          previewContainer.innerHTML = `<img src="${imageUrl}" alt="背景预览" />`;
+          previewContainer.innerHTML = `<img src="${imageUrl}" alt="Background preview" />`;
 
-          // 更新移除按钮
+          // Update remove button
           const controlsContainer = previewContainer.nextElementSibling;
           if (controlsContainer && !controlsContainer.querySelector('.remove-btn')) {
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
             removeBtn.className = 'remove-btn';
-            removeBtn.innerHTML = '🗑️ 移除';
+            removeBtn.innerHTML = '🗑️ Remove';
             removeBtn.setAttribute('data-target', fieldId);
             removeBtn.addEventListener('click', e => {
               this.handleImageRemove(e.target);
@@ -5320,9 +5320,9 @@ ${
             controlsContainer.appendChild(removeBtn);
           }
         } else {
-          previewContainer.innerHTML = '<div class="no-image">📷 暂无图片</div>';
+          previewContainer.innerHTML = '<div class="no-image">📷 No image</div>';
 
-          // 移除移除按钮
+          // Remove the remove button
           const controlsContainer = previewContainer.nextElementSibling;
           if (controlsContainer) {
             const removeBtn = controlsContainer.querySelector('.remove-btn');
@@ -5334,18 +5334,18 @@ ${
       }
     }
 
-    // 预览样式
+    // Preview styles
     previewStyles() {
       this.applyStyles();
-      this.updateStatus('样式预览已应用，如需永久保存请点击保存按钮', 'success');
+      this.updateStatus('Preview applied — click Save to keep it', 'success');
     }
 
-    // 重置样式
+    // Reset styles
     resetStyles() {
-      if (confirm('确定要重置为默认样式吗？这将清除所有自定义配置。')) {
+      if (confirm('Reset to default styles? This clears all custom settings.')) {
         this.resetToDefault();
 
-        // 更新界面输入框
+        // Refresh form inputs
         document.querySelectorAll('.config-input').forEach(input => {
           const key = input.getAttribute('data-config-key');
           const property = input.getAttribute('data-config-property');
@@ -5357,11 +5357,11 @@ ${
         });
 
         this.applyStyles();
-        this.updateStatus('已重置为默认样式', 'info');
+        this.updateStatus('Reset to default styles', 'info');
       }
     }
 
-    // 更新状态显示
+    // Update status
     updateStatus(message, type = 'info') {
       const statusElement = document.getElementById('config-status');
       if (!statusElement) return;
@@ -5381,15 +5381,15 @@ ${
 
       statusElement.className = `config-status ${type}`;
 
-      // 自动清除成功和错误状态
+      // Auto-clear success/error status
       if (type === 'success' || type === 'error') {
         setTimeout(() => {
-          this.updateStatus('调整完成后点击另存为按钮', 'info');
+          this.updateStatus('Click Save As when you are done', 'info');
         }, 3000);
       }
     }
 
-    // 分发就绪事件
+    // Dispatch ready event
     dispatchReadyEvent() {
       const event = new CustomEvent('styleConfigManagerReady', {
         detail: {
@@ -5400,7 +5400,7 @@ ${
       window.dispatchEvent(event);
     }
 
-    // 分发样式应用事件
+    // Dispatch styles-applied event
     dispatchStyleAppliedEvent() {
       const event = new CustomEvent('mobileStylesApplied', {
         detail: {
@@ -5411,17 +5411,17 @@ ${
       window.dispatchEvent(event);
     }
 
-    // 获取CSS样式表
+    // Get stylesheet
     getStyleSheet() {
       return this.generateCSS();
     }
 
-    // 检查是否已准备就绪
+    // Check ready
     isConfigReady() {
       return this.isReady && this.configLoaded;
     }
 
-    // 等待配置加载完成
+    // Wait until config is loaded
     async waitForReady() {
       if (this.isConfigReady()) {
         return;
@@ -5438,77 +5438,77 @@ ${
     }
   }
 
-  // 创建全局实例
-  // @ts-ignore - 全局构造函数
+  // Create global instance
+  // @ts-ignore - Global constructor
   window.StyleConfigManager = StyleConfigManager;
 
-  // 为settings应用提供的接口
-  // @ts-ignore - 添加全局函数
+  // Settings-app API
+  // @ts-ignore - Add global functions
   window.getStyleConfigAppContent = function () {
-    console.log('[Style Config Manager] 获取样式配置应用内容');
+    console.log('[Style Config Manager] Getting style config app content');
 
-    // @ts-ignore - 全局对象属性
+    // @ts-ignore - Window global
     if (!window.styleConfigManager) {
-      console.log('[Style Config Manager] 创建样式配置管理器实例');
-      // @ts-ignore - 全局对象属性
+      console.log('[Style Config Manager] Creating style config manager');
+      // @ts-ignore - Window global
       window.styleConfigManager = new StyleConfigManager();
     }
 
-    // 始终返回完整界面，让内部组件处理加载状态
-    // @ts-ignore - 全局对象属性
+    // Always return the full UI; internals handle loading
+    // @ts-ignore - Window global
     return window.styleConfigManager.getSettingsAppContent();
   };
 
-  // @ts-ignore - 添加全局函数
+  // @ts-ignore - Add global functions
   window.bindStyleConfigEvents = function () {
-    console.log('[Style Config Manager] 绑定样式配置事件');
+    console.log('[Style Config Manager] Binding style config events');
 
-    // @ts-ignore - 全局对象属性
+    // @ts-ignore - Window global
     if (!window.styleConfigManager) {
-      console.log('[Style Config Manager] 创建样式配置管理器实例');
-      // @ts-ignore - 全局对象属性
+      console.log('[Style Config Manager] Creating style config manager');
+      // @ts-ignore - Window global
       window.styleConfigManager = new StyleConfigManager();
     }
 
-    // 不管是否准备就绪，都直接绑定事件
-    // @ts-ignore - 全局对象属性
+    // Bind events even if not fully ready
+    // @ts-ignore - Window global
     window.styleConfigManager.bindSettingsEvents();
-    console.log('[Style Config Manager] 事件绑定完成');
+    console.log('[Style Config Manager] Events bound');
 
-    // 如果还没准备就绪，等待准备就绪后再执行一次绑定
-    // @ts-ignore - 全局对象属性
+    // If not ready, wait then bind again
+    // @ts-ignore - Window global
     if (!window.styleConfigManager.isConfigReady()) {
-      console.log('[Style Config Manager] 配置管理器未准备就绪，等待准备完成...');
-      // @ts-ignore - 全局对象属性
+      console.log('[Style Config Manager] Manager not ready — waiting...');
+      // @ts-ignore - Window global
       window.styleConfigManager
         .waitForReady()
         .then(() => {
-          console.log('[Style Config Manager] 配置管理器已准备就绪，重新绑定事件');
-          // @ts-ignore - 全局对象属性
+          console.log('[Style Config Manager] Manager ready — rebinding events');
+          // @ts-ignore - Window global
           window.styleConfigManager.bindSettingsEvents();
         })
         .catch(error => {
-          console.error('[Style Config Manager] 等待准备就绪失败:', error);
+          console.error('[Style Config Manager] waitForReady failed:', error);
         });
     }
   };
 
-  // 自动初始化
+  // Auto-init
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      // @ts-ignore - 全局对象属性
+      // @ts-ignore - Window global
       window.styleConfigManager = new StyleConfigManager();
     });
   } else {
-    // DOM已经加载完成
+    // DOM already ready
     setTimeout(() => {
-      // @ts-ignore - 全局对象属性
+      // @ts-ignore - Window global
       if (!window.styleConfigManager) {
-        // @ts-ignore - 全局对象属性
+        // @ts-ignore - Window global
         window.styleConfigManager = new StyleConfigManager();
       }
     }, 1000);
   }
 
-  console.log('[Style Config Manager] 样式配置管理器模块加载完成');
-} // 结束 if (typeof window.StyleConfigManager === 'undefined') 检查
+  console.log('[Style Config Manager] Style config manager module loaded');
+} // End StyleConfigManager guard
