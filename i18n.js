@@ -158,6 +158,63 @@
         '道具': 'Items',
         '消耗品': 'Consumables',
         '其他': 'Other',
+
+        '发新帖': 'New post',
+        '请输入帖子标题...': 'Post title...',
+        '分享你的想法...': 'Share your thoughts...',
+        '暂无帖子': 'No posts yet',
+        '点击右上角发帖按钮开始讨论吧～': 'Tap the post button to start a thread',
+        '删除帖子': 'Delete post',
+        '帖子不存在': 'Post not found',
+        '帖子详情': 'Post',
+        '全部回复': 'All replies',
+        '留下你的想法吧': 'Leave a reply',
+        '暂无回复，来抢沙发吧～': 'No replies yet — be first',
+        '写下你的回复...': 'Write a reply...',
+        '回复': 'Reply',
+        '条回复': 'replies',
+        '请输入回复内容': 'Enter a reply',
+        '无法找到当前帖子信息': 'Could not find this post',
+        '回复已发送': 'Reply sent',
+        '发送回复失败，请重试': 'Failed to send reply',
+        '回复功能不可用': 'Reply is unavailable',
+        '回复功能不可用，请检查论坛管理器配置': 'Reply unavailable — check Forum manager',
+        '请填写标题和内容': 'Title and body are required',
+        '论坛管理器未初始化，请稍后再试': 'Forum manager is not ready',
+        '帖子已发布': 'Post published',
+        '发帖失败，请重试': 'Failed to publish',
+        '发帖功能不可用': 'Posting is unavailable',
+        '帖子已删除': 'Post deleted',
+        '删除失败': 'Delete failed',
+        '论坛设置': 'Forum settings',
+        '选择论坛风格': 'Forum style',
+        '自定义前缀': 'Custom prefix',
+        '在此输入自定义前缀，将添加到风格提示词前面...': 'Custom prefix added in front of the style prompt...',
+        '提示: 可以用来添加特殊指令、角色设定或生成要求': 'Tip: extra instructions, role notes, or generation rules',
+        '消息阈值': 'Message threshold',
+        '触发论坛生成的消息数量': 'Messages before auto-generate',
+        '当新消息数量达到此值时自动生成论坛内容': 'Auto-generate forum when this many new messages arrive',
+        '自动生成论坛内容': 'Auto-generate forum',
+        '操作面板': 'Actions',
+        'API设置': 'API settings',
+        '状态信息': 'Status',
+        '就绪': 'Ready',
+        '生成中...': 'Generating...',
+        '清除中...': 'Clearing...',
+        '论坛管理器未加载，请刷新页面重试': 'Forum manager not loaded — refresh and retry',
+        '确定要清除所有论坛内容吗？此操作不可恢复。': 'Clear all forum posts? This cannot be undone.',
+        'API配置模块未加载': 'API module not loaded',
+        '预设风格': 'Preset styles',
+        '自定义风格': 'Custom styles',
+        '贴吧老哥': 'Tieba veteran',
+        '知乎精英': 'Zhihu elite',
+        '小红书种草': 'Xiaohongshu recs',
+        '抖音达人': 'Douyin creator',
+        'B站UP主': 'Bilibili UP',
+        '海角老司机': 'Old hand',
+        '八卦小报记者': 'Gossip reporter',
+        '天涯老涯友': 'Tianya old-timer',
+        '校园论坛': 'Campus forum',
     };
 
     const dict = lang === 'zh' ? {} : EN;
@@ -172,9 +229,21 @@
             return dict[counted[1].trim()] + counted[2];
         }
 
-        var labeled = raw.match(/^([一-鿿]+)\s*[\uff1a:]\s*(.*)$/);
+        var labeled = raw.match(/^([一-鿿A-Za-z]+)\s*[：:]\s*(.*)$/);
         if (labeled && dict[labeled[1]]) {
             return dict[labeled[1]] + ': ' + labeled[2];
+        }
+
+        var floor = raw.match(/^(\d+)\s*楼$/);
+        if (floor) return '#' + floor[1];
+
+        var nReplies = raw.match(/^(\d+)\s*条回复$/);
+        if (nReplies) return nReplies[1] + ' replies';
+
+        var customStyle = raw.match(/^(.*)\s*\(自定义\)$/);
+        if (customStyle) {
+            var name = customStyle[1].trim();
+            return (dict[name] || name) + ' (custom)';
         }
 
         return text;
