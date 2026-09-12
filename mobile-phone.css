@@ -1738,14 +1738,13 @@
   background: #c3c3c3;
 }
 
-/* Live app: no page scroll */
-.app-content:has(.live-app) {
+/* Live / Watch Live: parent is a fixed pane; inner lists scroll */
+.app-content:has(.live-app),
+.app-content[data-app='live'],
+.app-content[data-app='watch-live'] {
   overflow: hidden !important;
-}
-
-/* Fallback via attribute selector */
-.app-content[data-app='live'] {
-  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 0;
 }
 
 /* Loading placeholder */
