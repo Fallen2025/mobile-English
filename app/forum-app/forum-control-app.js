@@ -1,6 +1,6 @@
 /**
- * Forum Control App - 论坛控制应用
- * 为mobile-phone.js提供论坛控制功能
+ * Forum Control App - forum control panel
+ * Provides forum controls for mobile-phone.js
  */
 
 class ForumControlApp {
@@ -10,10 +10,9 @@ class ForumControlApp {
   }
 
   init() {
-    console.log('[Forum Control App] 论坛控制应用初始化');
+    console.log('[Forum Control App] forum control app init');
   }
 
-  // 获取应用内容
   getAppContent() {
     switch (this.currentView) {
       case 'control':
@@ -23,9 +22,7 @@ class ForumControlApp {
     }
   }
 
-  // 渲染论坛控制面板
   renderForumControl() {
-    // 获取当前设置
     const currentSettings = window.forumManager
       ? window.forumManager.currentSettings
       : {
@@ -34,33 +31,31 @@ class ForumControlApp {
           autoUpdate: true,
         };
 
-    // 获取自定义前缀
     const customPrefix = window.forumStyles ? window.forumStyles.getCustomPrefix() : '';
 
     return `
             <div class="forum-control-app">
                 <div class="control-section">
-                    <h3 class="section-title">📰 论坛设置</h3>
+                    <h3 class="section-title">📰 Forum settings</h3>
 
                     <div class="form-group">
-                        <label class="form-label">选择论坛风格</label>
+                        <label class="form-label">Forum style</label>
                         <select id="forum-style-select" class="form-select">
-                            <!-- 风格选项将通过JavaScript动态加载 -->
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">自定义前缀</label>
-                        <textarea id="forum-custom-prefix" class="form-textarea" placeholder="在此输入自定义前缀，将添加到风格提示词前面...">${customPrefix}</textarea>
-                        <div class="form-hint">提示: 可以用来添加特殊指令、角色设定或生成要求</div>
+                        <label class="form-label">Custom prefix</label>
+                        <textarea id="forum-custom-prefix" class="form-textarea" placeholder="Custom prefix added in front of the style prompt...">${customPrefix}</textarea>
+                        <div class="form-hint">Tip: extra instructions, role notes, or generation rules</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">消息阈值</label>
+                        <label class="form-label">Message threshold</label>
                         <input type="number" id="forum-threshold" class="form-input" value="${
                           currentSettings.threshold
-                        }" min="1" max="100" placeholder="触发论坛生成的消息数量">
-                        <div class="form-hint">当新消息数量达到此值时自动生成论坛内容</div>
+                        }" min="1" max="100" placeholder="Messages before auto-generate">
+                        <div class="form-hint">Auto-generate forum when this many new messages arrive</div>
                     </div>
 
                     <div class="form-group">
@@ -68,46 +63,43 @@ class ForumControlApp {
                             <input type="checkbox" id="forum-auto-update" ${
                               currentSettings.autoUpdate ? 'checked' : ''
                             }>
-                            <span class="checkbox-label">自动生成论坛内容</span>
+                            <span class="checkbox-label">Auto-generate forum</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="control-section">
-                    <h3 class="section-title">🔧 操作面板</h3>
+                    <h3 class="section-title">🔧 Actions</h3>
 
                     <div class="button-group">
                         <button id="generate-forum-now" class="control-btn primary">
                             <span class="btn-icon">🚀</span>
-                            <span>立即生成论坛</span>
+                            <span>Generate forum now</span>
                         </button>
                         <button id="clear-forum-content" class="control-btn danger">
                             <span class="btn-icon">🗑️</span>
-                            <span>清除论坛内容</span>
+                            <span>Clear forum</span>
                         </button>
                         <button id="forum-settings" class="control-btn secondary">
                             <span class="btn-icon">⚙️</span>
-                            <span>API设置</span>
+                            <span>API settings</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="control-section">
-                    <h3 class="section-title">📊 状态信息</h3>
+                    <h3 class="section-title">📊 Status</h3>
                     <div id="forum-status" class="status-display">
-                        状态: 就绪
+                        Status: Ready
                     </div>
                 </div>
             </div>
         `;
   }
 
-  // 绑定事件
   bindEvents() {
-    // 初始化风格选择器
     this.initializeStyleSelector();
 
-    // 风格选择
     const styleSelect = document.getElementById('forum-style-select');
     if (styleSelect) {
       styleSelect.addEventListener('change', e => {
@@ -118,7 +110,6 @@ class ForumControlApp {
       });
     }
 
-    // 自定义前缀
     const customPrefixTextarea = document.getElementById('forum-custom-prefix');
     if (customPrefixTextarea) {
       customPrefixTextarea.addEventListener('input', e => {
@@ -128,7 +119,6 @@ class ForumControlApp {
       });
     }
 
-    // 消息阈值
     const thresholdInput = document.getElementById('forum-threshold');
     if (thresholdInput) {
       thresholdInput.addEventListener('change', e => {
@@ -139,7 +129,6 @@ class ForumControlApp {
       });
     }
 
-    // 自动更新开关
     const autoUpdateCheckbox = document.getElementById('forum-auto-update');
     if (autoUpdateCheckbox) {
       autoUpdateCheckbox.addEventListener('change', e => {
@@ -150,51 +139,34 @@ class ForumControlApp {
       });
     }
 
-    // 立即生成论坛
     const generateBtn = document.getElementById('generate-forum-now');
     if (generateBtn) {
       generateBtn.addEventListener('click', async () => {
-        console.log('[Forum Control] 🔘 立即生成按钮被点击');
-        console.log('[Forum Control] 🔍 检查MobileContext:', !!window.MobileContext);
-        console.log('[Forum Control] 🔍 检查forceGenerateForum:', !!window.MobileContext?.forceGenerateForum);
-        console.log('[Forum Control] 🔍 检查forumManager:', !!window.forumManager);
-
         try {
           generateBtn.disabled = true;
-          generateBtn.textContent = '生成中...';
+          generateBtn.textContent = 'Generating...';
 
           if (window.MobileContext && window.MobileContext.forceGenerateForum) {
-            console.log('[Forum Control] 🚀 调用强制生成命令');
             const result = await window.MobileContext.forceGenerateForum();
             if (!result) {
-              console.warn('[Forum Control] 强制生成返回false');
-            } else {
-              console.log('[Forum Control] ✅ 强制生成成功');
+              console.warn('[Forum Control] forceGenerateForum returned false');
             }
           } else if (window.forumManager) {
-            console.log('[Forum Control] 🚀 调用强制生成方法，force=true');
-            const result = await window.forumManager.generateForumContent(true); // 强制生成，不检查消息增量
+            const result = await window.forumManager.generateForumContent(true);
             if (!result) {
-              console.warn('[Forum Control] 生成论坛内容返回false');
-            } else {
-              console.log('[Forum Control] ✅ 生成成功');
+              console.warn('[Forum Control] generateForumContent returned false');
             }
           } else {
-            console.error('[Forum Control] 论坛管理器和控制台命令都未找到');
-            alert('论坛管理器未加载，请刷新页面重试');
+            alert('Forum manager not loaded — refresh and retry');
           }
         } catch (error) {
-          console.error('[Forum Control] 强制生成出错:', error);
-          alert(`生成失败: ${error.message}`);
+          console.error('[Forum Control] generate error:', error);
+          alert(`Generate failed: ${error.message}`);
         } finally {
-          // 恢复按钮状态
           generateBtn.disabled = false;
-          generateBtn.innerHTML = '<span class="btn-icon">🚀</span><span>立即生成论坛</span>';
-
-          // 强制重置forumManager状态，防止卡住
+          generateBtn.innerHTML = '<span class="btn-icon">🚀</span><span>Generate forum now</span>';
           setTimeout(() => {
             if (window.forumManager && window.forumManager.isProcessing) {
-              console.warn('[Forum Control] 强制重置处理状态');
               window.forumManager.isProcessing = false;
             }
           }, 3000);
@@ -202,36 +174,28 @@ class ForumControlApp {
       });
     }
 
-    // 清除论坛内容
     const clearBtn = document.getElementById('clear-forum-content');
     if (clearBtn) {
       clearBtn.addEventListener('click', async () => {
         try {
-          if (!confirm('确定要清除所有论坛内容吗？此操作不可恢复。')) {
+          if (!confirm('Clear all forum posts? This cannot be undone.')) {
             return;
           }
-
           clearBtn.disabled = true;
-          clearBtn.textContent = '清除中...';
-
+          clearBtn.textContent = 'Clearing...';
           if (window.forumManager) {
             await window.forumManager.clearForumContent();
           } else {
-            console.error('[Forum Control] forumManager未找到');
-            alert('论坛管理器未加载，请刷新页面重试');
+            alert('Forum manager not loaded — refresh and retry');
           }
         } catch (error) {
-          console.error('[Forum Control] 清除论坛内容出错:', error);
-          alert(`清除失败: ${error.message}`);
+          console.error('[Forum Control] clear error:', error);
+          alert(`Clear failed: ${error.message}`);
         } finally {
-          // 恢复按钮状态
           clearBtn.disabled = false;
-          clearBtn.innerHTML = '<span class="btn-icon">🗑️</span><span>清除论坛内容</span>';
-
-          // 强制重置forumManager状态，防止卡住
+          clearBtn.innerHTML = '<span class="btn-icon">🗑️</span><span>Clear forum</span>';
           setTimeout(() => {
             if (window.forumManager && window.forumManager.isProcessing) {
-              console.warn('[Forum Control] 强制重置处理状态');
               window.forumManager.isProcessing = false;
             }
           }, 3000);
@@ -239,20 +203,18 @@ class ForumControlApp {
       });
     }
 
-    // API设置
     const settingsBtn = document.getElementById('forum-settings');
     if (settingsBtn) {
       settingsBtn.addEventListener('click', () => {
         if (window.mobileCustomAPIConfig) {
           window.mobileCustomAPIConfig.showAPIPanel();
         } else {
-          alert('API配置模块未加载');
+          alert('API module not loaded');
         }
       });
     }
   }
 
-  // 更新状态显示
   updateStatus(message, type = 'info') {
     const statusEl = document.getElementById('forum-status');
     if (statusEl) {
@@ -262,13 +224,11 @@ class ForumControlApp {
         warning: '#f39c12',
         error: '#e74c3c',
       };
-
-      statusEl.textContent = `状态: ${message}`;
+      statusEl.textContent = `Status: ${message}`;
       statusEl.style.color = colors[type] || colors.info;
     }
   }
 
-  // 获取当前状态
   getStatus() {
     return {
       currentView: this.currentView,
@@ -278,61 +238,62 @@ class ForumControlApp {
     };
   }
 
-  // 初始化风格选择器
   initializeStyleSelector() {
     const styleSelect = document.getElementById('forum-style-select');
     if (!styleSelect) return;
 
     try {
-      // 获取当前选中的风格
       const currentStyle = window.forumManager?.currentSettings?.selectedStyle || '贴吧老哥';
-
-      // 清空现有选项
       styleSelect.innerHTML = '';
 
-      // 添加预设风格
       if (window.forumStyles && window.forumStyles.styles) {
         const presetStyles = Object.keys(window.forumStyles.styles);
         if (presetStyles.length > 0) {
           const presetGroup = document.createElement('optgroup');
-          presetGroup.label = '预设风格';
-
+          presetGroup.label = 'Preset styles';
+          const STYLE_LABELS = {
+            '贴吧老哥': 'Tieba veteran',
+            '知乎精英': 'Zhihu elite',
+            '小红书种草': 'Xiaohongshu recs',
+            '抖音达人': 'Douyin creator',
+            'B站UP主': 'Bilibili UP',
+            '海角老司机': 'Old hand',
+            '八卦小报记者': 'Gossip reporter',
+            '天涯老涯友': 'Tianya old-timer',
+            '校园论坛': 'Campus forum',
+            '微博': 'Weibo',
+          };
           presetStyles.forEach(styleName => {
             const option = document.createElement('option');
             option.value = styleName;
-            option.textContent = styleName;
+            option.textContent = STYLE_LABELS[styleName] || styleName;
             if (styleName === currentStyle) {
               option.selected = true;
             }
             presetGroup.appendChild(option);
           });
-
           styleSelect.appendChild(presetGroup);
         }
       }
 
-      // 添加自定义风格
       if (window.forumStyles && window.forumStyles.getAllCustomStyles) {
         const customStyles = window.forumStyles.getAllCustomStyles();
         if (customStyles.length > 0) {
           const customGroup = document.createElement('optgroup');
-          customGroup.label = '自定义风格';
-
+          customGroup.label = 'Custom styles';
           customStyles.forEach(style => {
             const option = document.createElement('option');
             option.value = style.name;
-            option.textContent = `${style.name} (自定义)`;
+            option.textContent = `${style.name} (custom)`;
             if (style.name === currentStyle) {
               option.selected = true;
             }
             customGroup.appendChild(option);
           });
-
           styleSelect.appendChild(customGroup);
         }
       }
 
-      // 如果没有找到当前风格，默认选择第一个
       if (!styleSelect.value && styleSelect.options.length > 0) {
         styleSelect.selectedIndex = 0;
         if (window.forumManager) {
@@ -340,43 +301,33 @@ class ForumControlApp {
           window.forumManager.saveSettings();
         }
       }
-
-      console.log('[ForumControlApp] 风格选择器已初始化，共', styleSelect.options.length, '个选项');
     } catch (error) {
-      console.error('[ForumControlApp] 初始化风格选择器失败:', error);
-
-      // 降级处理：添加默认风格
-      styleSelect.innerHTML = '<option value="贴吧老哥">贴吧老哥</option>';
+      console.error('[ForumControlApp] style selector init failed:', error);
+      styleSelect.innerHTML = '<option value="贴吧老哥">Tieba veteran</option>';
       styleSelect.value = '贴吧老哥';
     }
   }
 
-  // 刷新风格选择器（供外部调用）
   refreshStyleSelector() {
     this.initializeStyleSelector();
   }
 }
 
-// 创建全局实例
 window.forumControlApp = new ForumControlApp();
 
-// 获取论坛控制应用内容的全局函数
 window.getForumControlAppContent = function () {
   return window.forumControlApp.getAppContent();
 };
 
-// 绑定论坛控制应用事件的全局函数
 window.bindForumControlEvents = function () {
   window.forumControlApp.bindEvents();
 };
 
-// 创建全局实例
 window.ForumControlApp = ForumControlApp;
 window.forumControlApp = new ForumControlApp();
 
-// 导出类
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ForumControlApp;
 }
 
-console.log('[Forum Control App] 论坛控制应用模块加载完成');
+console.log('[Forum Control App] forum control app loaded');
