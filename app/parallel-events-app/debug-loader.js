@@ -1,39 +1,39 @@
-// 平行事件应用调试加载器
-console.log('🔍 [Debug Loader] 开始调试平行事件应用加载过程...');
+// Parallel Events debug loader
+console.log('🔍 [Debug Loader] Starting Parallel Events load debug...');
 
-// 检查当前环境
-console.log('📋 [Debug Loader] 环境检查:');
-console.log('  - 当前URL:', window.location.href);
-console.log('  - 用户代理:', navigator.userAgent);
+// Environment
+console.log('📋 [Debug Loader] Environment:');
+console.log('  - URL:', window.location.href);
+console.log('  - User agent:', navigator.userAgent);
 
-// 检查文件路径
+// Expected paths
 const expectedPaths = [
     './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-app.css',
     './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-styles.js',
     './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-app.js'
 ];
 
-console.log('📁 [Debug Loader] 预期文件路径:');
+console.log('📁 [Debug Loader] Expected paths:');
 expectedPaths.forEach((path, index) => {
     console.log(`  ${index + 1}. ${path}`);
 });
 
-// 测试文件是否可访问
+// Probe whether files are reachable
 async function testFileAccess() {
-    console.log('🌐 [Debug Loader] 测试文件访问性...');
+    console.log('🌐 [Debug Loader] Probing file access...');
     
     for (let i = 0; i < expectedPaths.length; i++) {
         const path = expectedPaths[i];
         try {
             const response = await fetch(path);
-            console.log(`  ✅ ${path} - 状态: ${response.status}`);
+            console.log(`  ✅ ${path} - status: ${response.status}`);
         } catch (error) {
-            console.log(`  ❌ ${path} - 错误: ${error.message}`);
+            console.log(`  ❌ ${path} - error: ${error.message}`);
         }
     }
 }
 
-// 监控全局变量变化
+// Watch globals
 const checkGlobals = () => {
     const globals = {
         'ParallelEventsApp': window.ParallelEventsApp,
@@ -43,7 +43,7 @@ const checkGlobals = () => {
         'bindParallelEventsAppEvents': window.bindParallelEventsAppEvents
     };
     
-    console.log('🔍 [Debug Loader] 全局变量状态:');
+    console.log('🔍 [Debug Loader] 全局变量status:');
     Object.entries(globals).forEach(([name, value]) => {
         const type = typeof value;
         const exists = value !== undefined;
@@ -53,36 +53,36 @@ const checkGlobals = () => {
     return globals;
 };
 
-// 初始检查
+// First pass
 checkGlobals();
 
-// 测试文件访问
+// Probe files
 testFileAccess();
 
-// 定期检查全局变量变化
+// Poll globals
 let checkCount = 0;
 const maxChecks = 20;
 const checkInterval = setInterval(() => {
     checkCount++;
-    console.log(`🔄 [Debug Loader] 检查 ${checkCount}/${maxChecks}:`);
+    console.log(`🔄 [Debug Loader] Check ${checkCount}/${maxChecks}:`);
     
     const globals = checkGlobals();
     
-    // 如果所有变量都存在，停止检查
+    // 如果所有变量都存在，停止Check
     const allExists = Object.values(globals).every(v => v !== undefined);
     if (allExists) {
-        console.log('🎉 [Debug Loader] 所有全局变量已就绪！');
+        console.log('🎉 [Debug Loader] All globals ready');
         clearInterval(checkInterval);
         
         // 尝试调用调试函数
         if (window.debugParallelEventsApp) {
-            console.log('🔧 [Debug Loader] 调用调试函数...');
+            console.log('🔧 [Debug Loader] Calling debug helper...');
             window.debugParallelEventsApp();
         }
     } else if (checkCount >= maxChecks) {
-        console.log('⏰ [Debug Loader] 检查超时，停止监控');
+        console.log('⏰ [Debug Loader] Check超时，停止监控');
         clearInterval(checkInterval);
     }
 }, 1000);
 
-console.log('🔍 [Debug Loader] 调试加载器已启动，将监控全局变量变化...');
+console.log('🔍 [Debug Loader] Debug loader running — watching globals...');
