@@ -1,13 +1,13 @@
 // ==Mobile Custom API Config==
 // @name         Mobile Custom API Configuration
 // @version      1.0.0
-// @description  移动端自定义API配置管理器，支持多种API服务商
+// @description  Mobile custom API config manager with multiple providers
 // @author       cd
 // @license      MIT
 
 /**
- * 移动端自定义API配置管理器
- * 移植自论坛应用和real-time-status-bar插件的API配置功能
+ * Mobile custom API config manager
+ * Ported from the forum app and real-time-status-bar plugin
  */
 class MobileCustomAPIConfig {
     constructor() {
@@ -15,22 +15,22 @@ class MobileCustomAPIConfig {
         this.currentSettings = this.getDefaultSettings();
         this.supportedProviders = this.getSupportedProviders();
 
-        // 初始化Gemini的内置URL
+        // Init Gemini's built-in URL
         this.geminiUrl = this.supportedProviders.gemini.defaultUrl;
 
-        // 绑定到全局窗口对象
+        // Bind to window
         window.mobileCustomAPIConfig = this;
 
-        console.log('[Mobile API Config] 自定义API配置管理器已创建');
+        console.log('[Mobile API Config] Custom API config manager created');
     }
 
     /**
-     * 获取默认设置
+     * Get default settings
      */
     getDefaultSettings() {
         return {
             enabled: false,
-            provider: 'openai', // 修改：默认使用OpenAI
+            provider: 'openai', // Default provider: OpenAI
             apiUrl: '',
             apiKey: '',
             model: '',
@@ -40,7 +40,7 @@ class MobileCustomAPIConfig {
             proxyUrl: '',
             timeout: 30000,
             retryCount: 3,
-            // 高级设置
+            // Advanced settings
             customHeaders: {},
             systemPrompt: '',
             streamEnabled: false
@@ -48,7 +48,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 获取支持的API服务商配置
+     * Supported API providers
      */
     getSupportedProviders() {
         return {
@@ -72,8 +72,25 @@ class MobileCustomAPIConfig {
                 requiresKey: true,
                 icon: '💎'
             },
+            openrouter: {
+                name: 'OpenRouter',
+                defaultUrl: 'https://openrouter.ai/api',
+                urlSuffix: 'v1/chat/completions',
+                modelsEndpoint: 'v1/models',
+                defaultModels: [
+                    'openai/gpt-4o',
+                    'openai/gpt-4o-mini',
+                    'anthropic/claude-3.5-sonnet',
+                    'google/gemini-2.0-flash-001',
+                    'deepseek/deepseek-chat',
+                    'meta-llama/llama-3.3-70b-instruct'
+                ],
+                authType: 'Bearer',
+                requiresKey: true,
+                icon: '🛣️'
+            },
             custom: {
-                name: '自定义API',
+                name: 'Custom API',
                 defaultUrl: '',
                 urlSuffix: 'chat/completions',
                 modelsEndpoint: 'models',
@@ -86,7 +103,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 初始化API配置管理器
+     * Initialize API config manager
      */
     async initialize() {
         try {
@@ -95,24 +112,24 @@ class MobileCustomAPIConfig {
             this.bindEvents();
             this.isInitialized = true;
 
-            console.log('[Mobile API Config] ✅ 自定义API配置管理器初始化完成');
-            console.log('[Mobile API Config] 📋 当前设置:', {
+            console.log('[Mobile API Config] ✅ Custom API config manager initialized');
+            console.log('[Mobile API Config] 📋 Current settings:', {
                 provider: this.currentSettings.provider,
                 enabled: this.currentSettings.enabled,
-                apiUrl: this.currentSettings.apiUrl || '(未设置)',
+                apiUrl: this.currentSettings.apiUrl || '(not set)',
                 hasApiKey: !!this.currentSettings.apiKey,
-                model: this.currentSettings.model || '(未设置)',
-                支持的服务商: Object.keys(this.supportedProviders)
+                model: this.currentSettings.model || '(not set)',
+                Supported providers: Object.keys(this.supportedProviders)
             });
             return true;
         } catch (error) {
-            console.error('[Mobile API Config] ❌ 初始化失败:', error);
+            console.error('[Mobile API Config] ❌ Init failed:', error);
             return false;
         }
     }
 
     /**
-     * 加载设置
+     * Load settings
      */
     async loadSettings() {
         try {
@@ -121,49 +138,49 @@ class MobileCustomAPIConfig {
                 this.currentSettings = { ...this.getDefaultSettings(), ...JSON.parse(savedSettings) };
             }
 
-            console.log('[Mobile API Config] 设置已加载:', this.currentSettings);
+            console.log('[Mobile API Config] Settings loaded:', this.currentSettings);
         } catch (error) {
-            console.error('[Mobile API Config] 加载设置失败:', error);
+            console.error('[Mobile API Config] Failed to load settings:', error);
             this.currentSettings = this.getDefaultSettings();
         }
     }
 
     /**
-     * 保存设置
+     * Save settings
      */
     async saveSettings() {
         try {
             localStorage.setItem('mobile_custom_api_settings', JSON.stringify(this.currentSettings));
-            console.log('[Mobile API Config] 设置已保存');
+            console.log('[Mobile API Config] Settings saved');
 
-            // 触发设置更新事件
+            // Dispatch settings-updated event
             document.dispatchEvent(new CustomEvent('mobile-api-config-updated', {
                 detail: this.currentSettings
             }));
 
             return true;
         } catch (error) {
-            console.error('[Mobile API Config] 保存设置失败:', error);
+            console.error('[Mobile API Config] Failed to save settings:', error);
             return false;
         }
     }
 
     /**
-     * 创建API配置UI
+     * Create API config UI
      */
     createUI() {
-        // 创建触发按钮
+        // Create trigger button
         this.createTriggerButton();
 
-        // 创建配置面板
+        // Create config panel
         this.createConfigPanel();
     }
 
     /**
-     * 创建触发按钮
+     * Create trigger button
      */
     createTriggerButton() {
-        // 检查是否已存在按钮
+        // Skip if button already exists
         if (document.getElementById('mobile-api-config-trigger')) {
             return;
         }
@@ -172,7 +189,7 @@ class MobileCustomAPIConfig {
         triggerButton.id = 'mobile-api-config-trigger';
         triggerButton.className = 'mobile-api-config-btn';
         triggerButton.innerHTML = '🔧';
-        triggerButton.title = 'API配置';
+        triggerButton.title = 'API config';
         triggerButton.style.cssText = `
             position: fixed;
             bottom: 200px;
@@ -193,7 +210,7 @@ class MobileCustomAPIConfig {
             justify-content: center;
         `;
 
-        // 悬停效果
+        // Hover
         triggerButton.addEventListener('mouseenter', function() {
             this.style.transform = 'scale(1.1)';
             this.style.boxShadow = '0 6px 25px rgba(0,0,0,0.4)';
@@ -204,17 +221,17 @@ class MobileCustomAPIConfig {
             this.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
         });
 
-        // 点击事件
+        // Click
         triggerButton.addEventListener('click', () => {
             this.showConfigPanel();
         });
 
         document.body.appendChild(triggerButton);
-        console.log('[Mobile API Config] ✅ 触发按钮已创建');
+        console.log('[Mobile API Config] ✅ Trigger button created');
     }
 
     /**
-     * 创建配置面板
+     * Create config panel
      */
     createConfigPanel() {
         if (document.getElementById('mobile-api-config-panel')) {
@@ -256,11 +273,11 @@ class MobileCustomAPIConfig {
         panel.appendChild(content);
         document.body.appendChild(panel);
 
-        console.log('[Mobile API Config] ✅ 配置面板已创建');
+        console.log('[Mobile API Config] ✅ Config panel created');
     }
 
     /**
-     * 获取配置面板HTML
+     * Config panel HTML
      */
     getConfigPanelHTML() {
         const providers = this.supportedProviders;
@@ -269,7 +286,7 @@ class MobileCustomAPIConfig {
         return `
             <div class="mobile-api-config-header">
                 <h3 style="margin: 0 0 20px 0; color: #333; text-align: center;">
-                    ⚙️ API配置
+                    ⚙️ API config
                 </h3>
                 <button id="close-api-config" style="
                     position: absolute;
@@ -284,17 +301,17 @@ class MobileCustomAPIConfig {
             </div>
 
             <div class="mobile-api-config-form">
-                <!-- 启用开关 -->
+                <!-- Enable toggle -->
                 <div style="margin-bottom: 20px;">
                     <label style="display: flex; align-items: center; gap: 10px; font-weight: 500;">
                         <input type="checkbox" id="api-enabled" ${settings.enabled ? 'checked' : ''}>
-                        启用自定义API
+                        Enable custom API
                     </label>
                 </div>
 
-                <!-- 服务商选择 -->
+                <!-- Provider select -->
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">API服务商:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Provider:</label>
                     <select id="api-provider" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; background-color: #fff; color: #000;">
                         ${Object.entries(providers).map(([key, provider]) =>
                             `<option value="${key}" ${key === settings.provider ? 'selected' : ''}>${provider.icon} ${provider.name}</option>`
@@ -308,14 +325,14 @@ class MobileCustomAPIConfig {
                     <input type="text" id="api-url" placeholder="https://api.openai.com"
                            value="${settings.apiUrl}"
                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;background-color: #fff;color: #000;">
-                    <small style="color: #666; font-size: 12px;">留空使用默认URL</small>
+                    <small style="color: #666; font-size: 12px;">Leave blank to use the default URL</small>
                 </div>
 
-                <!-- API密钥 -->
+                <!-- API key -->
                 <div style="margin-bottom: 15px;" id="api-key-section">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">API密钥:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">API key:</label>
                     <div style="position: relative;">
-                        <input type="password" id="api-key" placeholder="sk-... 或 AIza..."
+                        <input type="password" id="api-key" placeholder="sk-... or AIza..."
                                value="${settings.apiKey}"
                                style="width: 100%; padding: 8px 35px 8px 8px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;background-color: #fff;color: #000;">
                         <button type="button" id="toggle-api-key" style="
@@ -331,12 +348,12 @@ class MobileCustomAPIConfig {
                     </div>
                 </div>
 
-                <!-- 模型选择 -->
+                <!-- Model select -->
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">模型:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Model:</label>
                     <div style="display: flex; gap: 10px;">
                         <select id="api-model" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                            <option value="">选择模型...</option>
+                            <option value="">Select a model...</option>
                         </select>
                         <button type="button" id="refresh-models" style="
                             padding: 8px 15px;
@@ -349,39 +366,39 @@ class MobileCustomAPIConfig {
                     </div>
                 </div>
 
-                <!-- 高级设置 -->
+                <!-- Advanced settings -->
                 <details style="margin-bottom: 15px;">
-                    <summary style="cursor: pointer; font-weight: 500; margin-bottom: 10px;color: #000;">⚙️ 高级设置</summary>
+                    <summary style="cursor: pointer; font-weight: 500; margin-bottom: 10px;color: #000;">⚙️ Advanced settings</summary>
 
                     <div style="margin-left: 15px;">
-                        <!-- 温度 -->
+                        <!-- Temperature -->
                         <div style="margin-bottom: 10px;">
-                            <label style="display: block; margin-bottom: 5px;color: #000;">温度 (0-2):</label>
+                            <label style="display: block; margin-bottom: 5px;color: #000;">Temperature (0-2):</label>
                             <input type="range" id="api-temperature" min="0" max="2" step="0.1"
                                    value="${settings.temperature}"
                                    style="width: 100%;">
                             <span id="temperature-value" style="font-size: 12px; color: #666;">${settings.temperature}</span>
                         </div>
 
-                        <!-- 最大令牌数 -->
+                        <!-- Max tokens -->
                         <div style="margin-bottom: 10px;">
-                            <label style="display: block; margin-bottom: 5px;">最大令牌数:</label>
+                            <label style="display: block; margin-bottom: 5px;">Max tokens:</label>
                             <input type="number" id="api-max-tokens" min="1" max="80000"
                                    value="${settings.maxTokens}"
                                    style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px;background-color: #fff;color: #000;">
                         </div>
 
-                        <!-- 系统提示词 -->
+                        <!-- System prompt -->
                         <div style="margin-bottom: 10px;">
-                            <label style="display: block; margin-bottom: 5px;">系统提示词:</label>
+                            <label style="display: block; margin-bottom: 5px;">System prompt:</label>
                             <textarea id="api-system-prompt" rows="3"
-                                      placeholder="可选的系统提示词..."
+                                      placeholder="Optional system prompt..."
                                       style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px; resize: vertical; box-sizing: border-box;">${settings.systemPrompt}</textarea>
                         </div>
                     </div>
                 </details>
 
-                <!-- 按钮组 -->
+                <!-- Buttons -->
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="button" id="test-api-connection" style="
                         flex: 1;
@@ -392,7 +409,7 @@ class MobileCustomAPIConfig {
                         border-radius: 5px;
                         cursor: pointer;
                         font-weight: 500;
-                    ">🧪 测试连接</button>
+                    ">🧪 Test connection</button>
 
                     <button type="button" id="save-api-config" style="
                         flex: 1;
@@ -403,10 +420,10 @@ class MobileCustomAPIConfig {
                         border-radius: 5px;
                         cursor: pointer;
                         font-weight: 500;
-                    ">💾 保存配置</button>
+                    ">💾 Save config</button>
                 </div>
 
-                <!-- 状态显示 -->
+                <!-- Status -->
                 <div id="api-config-status" style="
                     margin-top: 15px;
                     padding: 10px;
@@ -421,27 +438,27 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 绑定事件
+     * Bind events
      */
     bindEvents() {
-        // 关闭面板
+        // Close panel
         $(document).on('click', '#close-api-config', () => {
             this.hideConfigPanel();
         });
 
-        // 点击面板外部关闭
+        // Click outside to close
         $(document).on('click', '#mobile-api-config-panel', (e) => {
             if (e.target.id === 'mobile-api-config-panel') {
                 this.hideConfigPanel();
             }
         });
 
-        // 服务商选择变化
+        // Provider changed
         $(document).on('change', '#api-provider', (e) => {
             this.onProviderChange(e.target.value);
         });
 
-        // 密钥显示切换
+        // Toggle key visibility
         $(document).on('click', '#toggle-api-key', () => {
             const keyInput = document.getElementById('api-key');
             const isPassword = keyInput.type === 'password';
@@ -449,29 +466,29 @@ class MobileCustomAPIConfig {
             document.getElementById('toggle-api-key').textContent = isPassword ? '🙈' : '👁️';
         });
 
-        // 温度滑块
+        // Temperature slider
         $(document).on('input', '#api-temperature', (e) => {
             document.getElementById('temperature-value').textContent = e.target.value;
         });
 
-        // 刷新模型列表
+        // Refresh model list
         $(document).on('click', '#refresh-models', () => {
             this.refreshModels();
         });
 
-        // 测试连接
+        // Test connection
         $(document).on('click', '#test-api-connection', () => {
             this.testConnection();
         });
 
-        // 保存配置
+        // Save config
         $(document).on('click', '#save-api-config', () => {
             this.saveConfigFromUI();
         });
     }
 
     /**
-     * 显示配置面板
+     * Show config panel
      */
     showConfigPanel() {
         const panel = document.getElementById('mobile-api-config-panel');
@@ -479,14 +496,14 @@ class MobileCustomAPIConfig {
             panel.style.display = 'block';
             this.updateUIFromSettings();
 
-            // 确保URL显示状态正确
+            // Keep URL visibility in sync
             const currentProvider = this.currentSettings.provider;
             this.onProviderChange(currentProvider);
         }
     }
 
     /**
-     * 隐藏配置面板
+     * Hide config panel
      */
     hideConfigPanel() {
         const panel = document.getElementById('mobile-api-config-panel');
@@ -496,64 +513,66 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 当服务商选择变化时
+     * On provider change
      */
     onProviderChange(providerKey) {
         const provider = this.supportedProviders[providerKey];
         if (!provider) return;
 
-        console.log('[Mobile API Config] 服务商切换:', providerKey, provider);
+        console.log('[Mobile API Config] Provider switched:', providerKey, provider);
 
-        // 处理URL输入框的显示/隐藏
+        // Show/hide URL field
         const urlSection = document.getElementById('api-url-section');
         const urlInput = document.getElementById('api-url');
 
         if (providerKey === 'gemini') {
-            // Gemini: 隐藏URL输入框，使用内置URL
+            // Gemini: hide URL field, use built-in URL
             if (urlSection) {
                 urlSection.style.display = 'none';
             }
-            // 内部设置Gemini的URL，但不显示给用户
+            // Set Gemini URL internally; don't show it
             this.geminiUrl = provider.defaultUrl;
         } else {
-            // OpenAI和自定义API: 显示URL输入框让用户编辑
+            // OpenAI / OpenRouter / custom: show editable URL
             if (urlSection) {
                 urlSection.style.display = 'block';
             }
 
-            // 恢复或设置非Gemini服务商的URL
+            // Restore or set non-Gemini URL
             if (urlInput) {
-                // 如果之前保存过这个服务商的URL，则恢复；否则使用默认值
+                // Restore last saved URL for this provider, else use default
                 const savedUrl = this.getNonGeminiUrl(providerKey);
                 urlInput.value = savedUrl || provider.defaultUrl;
                 urlInput.placeholder = provider.defaultUrl;
             }
         }
 
-        // 更新API密钥占位符
+        // Update API key placeholder
         const keyInput = document.getElementById('api-key');
         if (keyInput) {
             if (providerKey === 'openai') {
                 keyInput.placeholder = 'sk-...';
             } else if (providerKey === 'gemini') {
                 keyInput.placeholder = 'AIza...';
+            } else if (providerKey === 'openrouter') {
+                keyInput.placeholder = 'sk-or-...';
             } else {
-                keyInput.placeholder = '输入API密钥...';
+                keyInput.placeholder = 'Enter API key...';
             }
         }
 
-        // 显示/隐藏密钥输入框
+        // Show/hide key field
         const keySection = document.getElementById('api-key-section');
         if (keySection) {
             keySection.style.display = provider.requiresKey ? 'block' : 'none';
         }
 
-        // 更新模型列表
+        // Update model list
         this.updateModelList(provider.defaultModels);
     }
 
     /**
-     * 获取非Gemini服务商的保存URL
+     * Get saved URL for a non-Gemini provider
      */
     getNonGeminiUrl(providerKey) {
         const saved = localStorage.getItem(`mobile_api_url_${providerKey}`);
@@ -561,7 +580,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 保存非Gemini服务商的URL
+     * Save URL for a non-Gemini provider
      */
     saveNonGeminiUrl(providerKey, url) {
         if (providerKey !== 'gemini') {
@@ -569,14 +588,30 @@ class MobileCustomAPIConfig {
         }
     }
 
+
     /**
-     * 更新模型列表
+     * Extra headers for OpenRouter (recommended by their API docs)
+     */
+    getProviderHeaders(provider, apiKey) {
+        const headers = { 'Content-Type': 'application/json' };
+        if (provider !== 'gemini' && apiKey) {
+            headers['Authorization'] = `Bearer ${apiKey}`;
+        }
+        if (provider === 'openrouter') {
+            headers['HTTP-Referer'] = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'https://sillytavern.app';
+            headers['X-Title'] = 'SillyTavern Mobile';
+        }
+        return headers;
+    }
+
+    /**
+     * Update model list
      */
     updateModelList(models) {
         const modelSelect = document.getElementById('api-model');
         if (!modelSelect) return;
 
-        modelSelect.innerHTML = '<option value="">选择模型...</option>';
+        modelSelect.innerHTML = '<option value="">Select a model...</option>';
 
         models.forEach(model => {
             const option = document.createElement('option');
@@ -590,12 +625,12 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 从UI更新设置
+     * Sync UI from settings
      */
     updateUIFromSettings() {
         const settings = this.currentSettings;
 
-        // 更新各个字段
+        // Update fields
         const elements = {
             'api-enabled': settings.enabled,
             'api-provider': settings.provider,
@@ -618,7 +653,7 @@ class MobileCustomAPIConfig {
             }
         });
 
-        // 更新温度显示
+        // Update temperature label
         const tempValue = document.getElementById('temperature-value');
         if (tempValue) {
             tempValue.textContent = settings.temperature;
@@ -626,7 +661,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 从UI保存配置
+     * Save config from UI
      */
     async saveConfigFromUI() {
         try {
@@ -634,15 +669,15 @@ class MobileCustomAPIConfig {
             let apiUrl;
 
             if (provider === 'gemini') {
-                // Gemini使用内置的URL
+                // Gemini uses the built-in URL
                 apiUrl = this.geminiUrl || this.supportedProviders.gemini.defaultUrl;
             } else {
-                // 其他服务商从输入框获取URL并保存
+                // Other providers: read URL from the field and save it
                 apiUrl = document.getElementById('api-url')?.value || '';
                 this.saveNonGeminiUrl(provider, apiUrl);
             }
 
-            // 收集UI数据
+            // Collect form data
             const formData = {
                 enabled: document.getElementById('api-enabled')?.checked || false,
                 provider: provider,
@@ -654,116 +689,116 @@ class MobileCustomAPIConfig {
                 systemPrompt: document.getElementById('api-system-prompt')?.value || ''
             };
 
-            // 验证必填字段
+            // Validate required fields
             const providerConfig = this.supportedProviders[formData.provider];
             if (providerConfig?.requiresKey && !formData.apiKey) {
-                this.showStatus('❌ 请填写API密钥', 'error');
+                this.showStatus('❌ Enter an API key', 'error');
                 return;
             }
 
-            // 更新设置
+            // Update settings
             this.currentSettings = { ...this.currentSettings, ...formData };
 
-            // 保存到localStorage
+            // Save to localStorage
             const saved = await this.saveSettings();
 
             if (saved) {
-                this.showStatus('✅ 配置已保存', 'success');
+                this.showStatus('✅ Config saved', 'success');
                 setTimeout(() => {
                     this.hideConfigPanel();
                 }, 1500);
             } else {
-                this.showStatus('❌ 保存失败', 'error');
+                this.showStatus('❌ Save failed', 'error');
             }
 
         } catch (error) {
-            console.error('[Mobile API Config] 保存配置失败:', error);
-            this.showStatus('❌ 保存失败: ' + error.message, 'error');
+            console.error('[Mobile API Config] Failed to save config:', error);
+            this.showStatus('❌ Save failed: ' + error.message, 'error');
         }
     }
 
     /**
-     * 刷新模型列表
+     * Refresh model list
      */
     async refreshModels() {
         const provider = document.getElementById('api-provider')?.value || this.currentSettings.provider;
         let apiUrl;
 
         if (provider === 'gemini') {
-            // Gemini使用内置的URL，不从输入框获取
+            // Gemini uses the built-in URL, not the input field
             apiUrl = this.geminiUrl || this.supportedProviders.gemini.defaultUrl;
         } else {
-            // 其他服务商从输入框获取URL
+            // Other providers read URL from the input
             apiUrl = document.getElementById('api-url')?.value || '';
         }
 
         const apiKey = document.getElementById('api-key')?.value || '';
 
-        console.log('[Mobile API Config] 开始刷新模型列表:', {
+        console.log('[Mobile API Config] Refreshing model list:', {
             provider,
-            apiUrl: apiUrl ? '已设置' : '未设置',
-            apiKey: apiKey ? '已设置' : '未设置',
+            apiUrl: apiUrl ? 'set' : 'not set',
+            apiKey: apiKey ? 'set' : 'not set',
             isGemini: provider === 'gemini'
         });
 
         if (!apiUrl) {
-            this.showStatus('❌ 请先填写API URL', 'error');
+            this.showStatus('❌ Enter an API URL first', 'error');
             return;
         }
 
         if (!apiKey) {
-            this.showStatus('❌ 请先填写API密钥', 'error');
+            this.showStatus('❌ Enter an API key first', 'error');
             return;
         }
 
-        this.showStatus('🔄 正在获取模型列表...', 'info');
+        this.showStatus('🔄 Fetching model list...', 'info');
 
         try {
             const models = await this.fetchModels(provider, apiUrl, apiKey);
 
             if (models && models.length > 0) {
                 this.updateModelList(models);
-                this.showStatus(`✅ 已获取 ${models.length} 个模型`, 'success');
-                console.log('[Mobile API Config] 成功获取模型列表:', models);
+                this.showStatus(`✅ Fetched ${models.length} models`, 'success');
+                console.log('[Mobile API Config] Model list fetched:', models);
             } else {
-                // 使用默认模型列表
+                // Using default model list
                 const defaultModels = this.supportedProviders[provider]?.defaultModels || [];
                 this.updateModelList(defaultModels);
-                this.showStatus(`⚠️ 使用默认模型列表 (${defaultModels.length} 个)`, 'warning');
-                console.warn('[Mobile API Config] 使用默认模型列表:', defaultModels);
+                this.showStatus(`⚠️ Using default model list (${defaultModels.length} )`, 'warning');
+                console.warn('[Mobile API Config] Using default model list:', defaultModels);
             }
         } catch (error) {
-            console.error('[Mobile API Config] 获取模型失败:', error);
+            console.error('[Mobile API Config] Failed to fetch models:', error);
 
-            // 使用默认模型列表作为备选
+            // Fall back to default model list
             const defaultModels = this.supportedProviders[provider]?.defaultModels || [];
             if (defaultModels.length > 0) {
                 this.updateModelList(defaultModels);
-                this.showStatus(`⚠️ 网络请求失败，使用默认模型列表 (${defaultModels.length} 个)`, 'warning');
+                this.showStatus(`⚠️ Network request failed; using default model list (${defaultModels.length} )`, 'warning');
             } else {
-                this.showStatus('❌ 获取模型失败: ' + error.message, 'error');
+                this.showStatus('❌ Failed to fetch models: ' + error.message, 'error');
             }
         }
     }
 
         /**
-     * 获取模型列表 (完全兼容real-time-status-bar逻辑)
+     * Fetch model list (same logic as real-time-status-bar)
      */
     async fetchModels(provider, apiUrl, apiKey) {
         const providerConfig = this.supportedProviders[provider];
         if (!providerConfig) {
-            throw new Error('不支持的服务商');
+            throw new Error('Unsupported provider');
         }
 
-        // 构建模型列表URL
+        // Build models URL
         let modelsUrl = apiUrl.trim();
         if (!modelsUrl.endsWith('/')) {
             modelsUrl += '/';
         }
 
-        // 根据不同服务商构建正确的URL
+        // Build the correct URL per provider
         if (provider === 'gemini') {
-            // Gemini API使用特殊的URL结构
+            // Gemini uses a special URL shape
             if (!modelsUrl.includes('/v1beta/models')) {
                 if (modelsUrl.endsWith('/v1/')) {
                     modelsUrl = modelsUrl.replace('/v1/', '/v1beta/models');
@@ -772,7 +807,7 @@ class MobileCustomAPIConfig {
                 }
             }
         } else {
-            // OpenAI和自定义API使用标准URL构建
+            // OpenAI / OpenRouter / custom use the standard URL shape
             if (modelsUrl.endsWith('/v1/')) {
                 modelsUrl += 'models';
             } else if (!modelsUrl.includes('/models')) {
@@ -780,21 +815,13 @@ class MobileCustomAPIConfig {
             }
         }
 
-        // 构建请求头
-        const headers = { 'Content-Type': 'application/json' };
-
-        // 根据服务商设置正确的认证方式
-        if (providerConfig.requiresKey && apiKey) {
-            if (provider === 'gemini') {
-                // Gemini API使用URL参数传递key
-                modelsUrl += `?key=${apiKey}`;
-            } else {
-                // OpenAI和自定义API使用Bearer认证
-                headers['Authorization'] = `Bearer ${apiKey}`;
-            }
+        // Build headers + auth
+        const headers = this.getProviderHeaders(provider, apiKey);
+        if (providerConfig.requiresKey && apiKey && provider === 'gemini') {
+            modelsUrl += `?key=${apiKey}`;
         }
 
-        console.log('[Mobile API Config] 请求模型列表:', {
+        console.log('[Mobile API Config] Requesting model list:', {
             provider: provider,
             url: modelsUrl.replace(apiKey || '', '[HIDDEN]'),
             headers: { ...headers, Authorization: headers.Authorization ? 'Bearer [HIDDEN]' : undefined }
@@ -804,12 +831,12 @@ class MobileCustomAPIConfig {
             const response = await fetch(modelsUrl, {
                 method: 'GET',
                 headers: headers
-                // 移除timeout，因为某些浏览器不支持
+                // No timeout option — some browsers reject it
             });
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('[Mobile API Config] 模型列表请求失败:', {
+                console.error('[Mobile API Config] Model list request failed:', {
                     status: response.status,
                     statusText: response.statusText,
                     error: errorText
@@ -818,59 +845,59 @@ class MobileCustomAPIConfig {
             }
 
             const data = await response.json();
-            console.log('[Mobile API Config] 模型列表原始响应:', data);
+            console.log('[Mobile API Config] Raw model list response:', data);
 
-            // 根据不同服务商解析响应
+            // Parse response per provider
             let models = [];
             if (provider === 'gemini') {
-                // Gemini API响应格式：{ models: [{ name: "models/gemini-pro", ... }] }
+                // Gemini response: { models: [{ name: "models/gemini-pro", ... }] }
                 if (data.models && Array.isArray(data.models)) {
                     models = data.models
                         .filter(model => model.supportedGenerationMethods?.includes('generateContent'))
                         .map(model => model.name.replace('models/', ''));
                 } else {
-                    console.warn('[Mobile API Config] Gemini API响应格式异常:', data);
-                    // 如果没有返回期望的格式，使用默认模型
+                    console.warn('[Mobile API Config] Unexpected Gemini response shape:', data);
+                    // Unexpected shape — use default models
                     models = providerConfig.defaultModels;
                 }
             } else {
-                // OpenAI兼容格式
+                // OpenAI-compatible format
                 if (data.data && Array.isArray(data.data)) {
-                    // 标准OpenAI格式
+                    // Standard OpenAI shape
                     models = data.data.map(model => model.id);
                 } else if (Array.isArray(data)) {
-                    // 直接数组格式
+                    // Bare array shape
                     models = data.map(model => model.id || model.name || model);
                 } else {
-                    console.warn('[Mobile API Config] OpenAI兼容API响应格式异常:', data);
+                    console.warn('[Mobile API Config] Unexpected OpenAI-compatible response shape:', data);
                     models = providerConfig.defaultModels;
                 }
             }
 
             const filteredModels = models.filter(model => typeof model === 'string' && model.length > 0);
-            console.log('[Mobile API Config] 解析后的模型列表:', filteredModels);
+            console.log('[Mobile API Config] Parsed model list:', filteredModels);
 
             return filteredModels.length > 0 ? filteredModels : providerConfig.defaultModels;
 
         } catch (fetchError) {
-            console.error('[Mobile API Config] 网络请求失败:', fetchError);
-            // 如果网络请求失败，返回默认模型列表
+            console.error('[Mobile API Config] Network request failed:', fetchError);
+            // On network failure, return default models
             return providerConfig.defaultModels;
         }
     }
 
     /**
-     * 测试API连接
+     * Test API connection
      */
     async testConnection() {
         const provider = document.getElementById('api-provider')?.value || this.currentSettings.provider;
         let apiUrl;
 
         if (provider === 'gemini') {
-            // Gemini使用内置的URL，不从输入框获取
+            // Gemini uses the built-in URL, not the input field
             apiUrl = this.geminiUrl || this.supportedProviders.gemini.defaultUrl;
         } else {
-            // 其他服务商从输入框获取URL
+            // Other providers read URL from the input
             apiUrl = document.getElementById('api-url')?.value || '';
         }
 
@@ -878,72 +905,67 @@ class MobileCustomAPIConfig {
         const model = document.getElementById('api-model')?.value || '';
 
         if (!apiUrl) {
-            this.showStatus('❌ 请先填写API URL', 'error');
+            this.showStatus('❌ Enter an API URL first', 'error');
             return;
         }
 
         const providerConfig = this.supportedProviders[provider];
         if (providerConfig?.requiresKey && !apiKey) {
-            this.showStatus('❌ 请先填写API密钥', 'error');
+            this.showStatus('❌ Enter an API key first', 'error');
             return;
         }
 
         if (!model) {
-            this.showStatus('❌ 请先选择模型', 'error');
+            this.showStatus('❌ Select a model first', 'error');
             return;
         }
 
-        this.showStatus('🧪 正在测试连接...', 'info');
+        this.showStatus('🧪 Testing connection...', 'info');
 
         try {
             const result = await this.testAPICall(provider, apiUrl, apiKey, model);
             if (result.success) {
-                this.showStatus('✅ 连接测试成功!', 'success');
+                this.showStatus('✅ Connection test succeeded!', 'success');
             } else {
-                this.showStatus('❌ 连接测试失败: ' + result.error, 'error');
+                this.showStatus('❌ Connection test failed: ' + result.error, 'error');
             }
         } catch (error) {
-            console.error('[Mobile API Config] 连接测试失败:', error);
-            this.showStatus('❌ 连接测试失败: ' + error.message, 'error');
+            console.error('[Mobile API Config] Connection test failed:', error);
+            this.showStatus('❌ Connection test failed: ' + error.message, 'error');
         }
     }
 
     /**
-     * 执行API测试调用
+     * Run a test API call
      */
     async testAPICall(provider, apiUrl, apiKey, model) {
         const providerConfig = this.supportedProviders[provider];
 
-        // 构建请求URL
+        // Build request URL
         let requestUrl = apiUrl.trim();
         if (!requestUrl.endsWith('/')) {
             requestUrl += '/';
         }
 
-        // 根据不同服务商构建URL
+        // Build URL per provider
         if (provider === 'gemini') {
-            // Gemini API使用特殊的URL结构，并通过URL参数传递API key
+            // Gemini uses a special URL and passes the key as a query param
             requestUrl += providerConfig.urlSuffix.replace('{model}', model);
             if (apiKey) {
                 requestUrl += `?key=${apiKey}`;
             }
         } else {
-            // OpenAI和自定义API使用标准URL构建
+            // OpenAI / OpenRouter / custom use the standard URL shape
             requestUrl += providerConfig.urlSuffix.replace('{model}', model);
         }
 
-        // 构建请求头
-        const headers = { 'Content-Type': 'application/json' };
+        // Build headers + auth (OpenRouter also gets HTTP-Referer / X-Title)
+        const headers = this.getProviderHeaders(provider, apiKey);
 
-        // 根据服务商设置正确的认证方式
-        if (providerConfig.requiresKey && apiKey && provider !== 'gemini') {
-            headers['Authorization'] = `Bearer ${apiKey}`;
-        }
-
-        // 构建请求体
+        // Build request
         const requestBody = this.buildTestRequestBody(provider, model);
 
-        console.log('[Mobile API Config] 测试请求:', {
+        console.log('[Mobile API Config] Test request:', {
             provider: provider,
             url: requestUrl.replace(apiKey || '', '[HIDDEN]'),
             headers: { ...headers, Authorization: headers.Authorization ? 'Bearer [HIDDEN]' : undefined },
@@ -963,19 +985,19 @@ class MobileCustomAPIConfig {
         }
 
         const data = await response.json();
-        console.log('[Mobile API Config] 测试响应:', data);
+        console.log('[Mobile API Config] Test response:', data);
 
         return { success: true, data: data };
     }
 
     /**
-     * 构建测试请求体 (OpenAI兼容格式)
+     * Build test request body (OpenAI-compatible)
      */
     buildTestRequestBody(provider, model) {
         const testMessage = "Hello! This is a test message from Mobile API Config.";
 
         if (provider === 'gemini') {
-            // Gemini API格式
+            // Gemini API format
             return {
                 contents: [{
                     parts: [{ text: testMessage }]
@@ -986,7 +1008,7 @@ class MobileCustomAPIConfig {
                 }
             };
         } else {
-            // OpenAI兼容格式（用于OpenAI和自定义API）
+            // OpenAI-compatible format (OpenAI, OpenRouter, custom)
             return {
                 model: model,
                 messages: [{ role: 'user', content: testMessage }],
@@ -997,7 +1019,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 显示状态信息
+     * Show status
      */
     showStatus(message, type = 'info') {
         const statusDiv = document.getElementById('api-config-status');
@@ -1014,7 +1036,7 @@ class MobileCustomAPIConfig {
         statusDiv.style.color = colors[type] || colors.info;
         statusDiv.textContent = message;
 
-        // 自动隐藏成功消息
+        // Auto-hide success messages
         if (type === 'success') {
             setTimeout(() => {
                 statusDiv.style.display = 'none';
@@ -1023,28 +1045,28 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 获取当前API配置（供外部调用）
+     * Get current API config (for other modules)
      */
     getCurrentConfig() {
         return { ...this.currentSettings };
     }
 
     /**
-     * 执行API调用（供其他模块使用）
+     * Call the API (for other modules)
      */
     async callAPI(messages, options = {}) {
         if (!this.currentSettings.enabled) {
-            throw new Error('自定义API未启用');
+            throw new Error('Custom API is not enabled');
         }
 
         const provider = this.currentSettings.provider;
         let apiUrl;
 
         if (provider === 'gemini') {
-            // Gemini使用内置的URL
+            // Gemini uses the built-in URL
             apiUrl = this.geminiUrl || this.supportedProviders.gemini.defaultUrl;
         } else {
-            // 其他服务商使用配置中的URL
+            // Other providers use the saved URL
             apiUrl = this.currentSettings.apiUrl || this.supportedProviders[provider]?.defaultUrl;
         }
 
@@ -1052,44 +1074,39 @@ class MobileCustomAPIConfig {
         const model = this.currentSettings.model;
 
         if (!apiUrl || !model) {
-            throw new Error('API配置不完整');
+            throw new Error('API config is incomplete');
         }
 
         const providerConfig = this.supportedProviders[provider];
         if (providerConfig?.requiresKey && !apiKey) {
-            throw new Error('缺少API密钥');
+            throw new Error('API key is missing');
         }
 
-        // CORS警告检查
+        // CORS warning
         if (provider === 'gemini' && window.location.protocol === 'http:') {
-            console.warn('⚠️ [Mobile API Config] CORS警告: 从浏览器直接调用Gemini API可能被CORS策略阻止');
-            console.warn('建议通过后端代理或使用HTTPS来避免CORS问题');
+            console.warn('⚠️ [Mobile API Config] CORS warning: calling Gemini from the browser may be blocked');
+            console.warn('Use a backend proxy or HTTPS to avoid CORS issues');
         }
 
-        // 构建请求
+        // Build request
         let requestUrl = apiUrl.trim();
         if (!requestUrl.endsWith('/')) {
             requestUrl += '/';
         }
 
-        // 根据不同服务商构建URL
+        // Build URL per provider
         if (provider === 'gemini') {
-            // Gemini API使用特殊的URL结构，并通过URL参数传递API key
+            // Gemini uses a special URL and passes the key as a query param
             requestUrl += providerConfig.urlSuffix.replace('{model}', model);
             if (apiKey) {
                 requestUrl += `?key=${apiKey}`;
             }
         } else {
-            // OpenAI和自定义API使用标准URL构建
+            // OpenAI / OpenRouter / custom use the standard URL shape
             requestUrl += providerConfig.urlSuffix.replace('{model}', model);
         }
 
-        const headers = { 'Content-Type': 'application/json' };
-
-        // 根据服务商设置正确的认证方式
-        if (providerConfig.requiresKey && apiKey && provider !== 'gemini') {
-            headers['Authorization'] = `Bearer ${apiKey}`;
-        }
+        const headers = this.getProviderHeaders(provider, apiKey);
 
         const requestBody = this.buildRequestBody(provider, model, messages, options);
 
@@ -1102,7 +1119,7 @@ class MobileCustomAPIConfig {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`API调用失败: HTTP ${response.status} - ${errorText}`);
+            throw new Error(`API call failed: HTTP ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
@@ -1110,19 +1127,19 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 构建API请求体 (OpenAI兼容格式)
+     * Build API request body (OpenAI-compatible)
      */
     buildRequestBody(provider, model, messages, options) {
         const settings = this.currentSettings;
 
         if (provider === 'gemini') {
-            // Gemini API格式
+            // Gemini API format
             const contents = [];
 
-            // 转换消息格式
+            // Convert message format
             messages.forEach(msg => {
                 if (msg.role === 'system') {
-                    // 系统消息作为第一个用户消息的前缀
+                    // Prefix the first user message with the system text
                     if (contents.length === 0) {
                         contents.push({
                             parts: [{ text: msg.content + '\n\n' }]
@@ -1131,7 +1148,7 @@ class MobileCustomAPIConfig {
                 } else if (msg.role === 'user') {
                     const existingText = contents.length > 0 ? contents[contents.length - 1].parts[0].text : '';
                     if (contents.length > 0 && !contents[contents.length - 1].role) {
-                        // 合并到现有的系统消息中
+                        // Merge into the existing system message
                         contents[contents.length - 1].parts[0].text = existingText + msg.content;
                     } else {
                         contents.push({
@@ -1146,7 +1163,7 @@ class MobileCustomAPIConfig {
                 }
             });
 
-            // 添加系统提示词
+            // Add system prompt
             if (settings.systemPrompt && contents.length === 0) {
                 contents.push({
                     parts: [{ text: settings.systemPrompt }]
@@ -1162,7 +1179,7 @@ class MobileCustomAPIConfig {
                 }
             };
         } else {
-            // OpenAI兼容格式（用于OpenAI和自定义API）
+            // OpenAI-compatible format (OpenAI, OpenRouter, custom)
             const body = {
                 model: model,
                 messages: messages,
@@ -1171,7 +1188,7 @@ class MobileCustomAPIConfig {
                 ...options.customParams
             };
 
-            // 添加系统提示词
+            // Add system prompt
             if (settings.systemPrompt) {
                 body.messages = [
                     { role: 'system', content: settings.systemPrompt },
@@ -1184,17 +1201,17 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 解析API响应 (OpenAI兼容格式)
+     * Parse API response (OpenAI-compatible)
      */
     parseAPIResponse(provider, data) {
         if (provider === 'gemini') {
-            // Gemini API响应格式
+            // Gemini response format
             return {
                 content: data.candidates?.[0]?.content?.parts?.[0]?.text || '',
                 usage: data.usageMetadata
             };
         } else {
-            // OpenAI兼容格式（用于OpenAI和自定义API）
+            // OpenAI-compatible format (OpenAI, OpenRouter, custom)
             return {
                 content: data.choices?.[0]?.message?.content || '',
                 usage: data.usage
@@ -1203,7 +1220,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 检查API是否可用
+     * Check whether the API is ready
      */
     isAPIAvailable() {
         return this.currentSettings.enabled &&
@@ -1216,7 +1233,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 获取调试信息
+     * Get debug info
      */
     getDebugInfo() {
         return {
@@ -1229,48 +1246,48 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 调试函数：检查当前配置状态
+     * Debug: inspect current config
      */
     debugConfig() {
-        console.group('🔧 [Mobile API Config] 配置调试信息');
-        console.log('✅ 初始化状态:', this.isInitialized);
-        console.log('📋 当前设置:', {
+        console.group('🔧 [Mobile API Config] Config debug');
+        console.log('✅ Initialized:', this.isInitialized);
+        console.log('📋 Current settings:', {
             provider: this.currentSettings.provider,
             enabled: this.currentSettings.enabled,
-            apiUrl: this.currentSettings.apiUrl || '(未设置)',
+            apiUrl: this.currentSettings.apiUrl || '(not set)',
             hasApiKey: !!this.currentSettings.apiKey,
-            model: this.currentSettings.model || '(未设置)',
+            model: this.currentSettings.model || '(not set)',
             temperature: this.currentSettings.temperature,
             maxTokens: this.currentSettings.maxTokens
         });
-        console.log('🌐 支持的服务商:', Object.keys(this.supportedProviders));
-        console.log('⚙️ 当前Provider配置:', this.supportedProviders[this.currentSettings.provider]);
-        console.log('🔗 API可用性:', this.isAPIAvailable());
+        console.log('🌐 Supported providers:', Object.keys(this.supportedProviders));
+        console.log('⚙️ Current provider config:', this.supportedProviders[this.currentSettings.provider]);
+        console.log('🔗 API available:', this.isAPIAvailable());
 
-        // 获取当前UI中的值
+        // Read current UI values
         const currentProvider = document.getElementById('api-provider')?.value;
         const currentUrl = document.getElementById('api-url')?.value;
         const currentKey = document.getElementById('api-key')?.value;
 
-        console.log('🔧 UI元素状态:', {
-            'api-provider': currentProvider || '(未找到)',
-            'api-url': currentUrl || '(未找到)',
-            'api-key': document.getElementById('api-key') ? (currentKey ? '已填写' : '未填写') : '(未找到)',
-            'api-model': document.getElementById('api-model')?.value || '(未找到)'
+        console.log('🔧 UI element state:', {
+            'api-provider': currentProvider || '(not found)',
+            'api-url': currentUrl || '(not found)',
+            'api-key': document.getElementById('api-key') ? (currentKey ? 'filled' : 'empty') : '(not found)',
+            'api-model': document.getElementById('api-model')?.value || '(not found)'
         });
 
-        // 测试URL构建
+        // Test URL build
         const provider = currentProvider || this.currentSettings.provider || 'gemini';
         const apiUrl = currentUrl || this.currentSettings.apiUrl || this.supportedProviders[provider]?.defaultUrl;
         if (apiUrl) {
             const modelsUrl = this.buildModelsUrl(provider, apiUrl);
-            console.log('🔗 当前Provider:', provider);
-            console.log('🔗 基础URL:', apiUrl);
-            console.log('🔗 预期的模型URL:', modelsUrl);
+            console.log('🔗 Current provider:', provider);
+            console.log('🔗 Base URL:', apiUrl);
+            console.log('🔗 Expected models URL:', modelsUrl);
 
-            // 检查URL是否正确
+            // Validate URL
             if (provider === 'gemini' && !modelsUrl.includes('v1beta')) {
-                console.warn('⚠️ 警告: Gemini URL应该包含v1beta，当前URL可能不正确');
+                console.warn('⚠️ Warning: Gemini URL should include v1beta');
             }
         }
 
@@ -1278,7 +1295,7 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 构建模型列表URL（用于调试）
+     * Build models URL (debug)
      */
     buildModelsUrl(provider, apiUrl) {
         let modelsUrl = apiUrl.trim();
@@ -1306,90 +1323,90 @@ class MobileCustomAPIConfig {
     }
 
     /**
-     * 手动测试模型获取（调试用）
+     * Manual model-fetch test (debug)
      */
     async testModelFetch() {
-        console.log('[Mobile API Config] 🧪 开始手动测试模型获取...');
+        console.log('[Mobile API Config] 🧪 Starting manual model-fetch test...');
 
         const provider = document.getElementById('api-provider')?.value || this.currentSettings.provider;
         const apiUrl = document.getElementById('api-url')?.value || this.currentSettings.apiUrl;
         const apiKey = document.getElementById('api-key')?.value || this.currentSettings.apiKey;
 
-        console.log('测试参数:', { provider, apiUrl: apiUrl ? '已设置' : '未设置', apiKey: apiKey ? '已设置' : '未设置' });
+        console.log('Test params:', { provider, apiUrl: apiUrl ? 'set' : 'not set', apiKey: apiKey ? 'set' : 'not set' });
 
         if (!apiUrl || !apiKey) {
-            console.error('缺少必要参数');
+            console.error('Missing required params');
             return;
         }
 
         try {
             const models = await this.fetchModels(provider, apiUrl, apiKey);
-            console.log('✅ 测试成功，获取到模型:', models);
+            console.log('✅ Test succeeded, models:', models);
             return models;
         } catch (error) {
-            console.error('❌ 测试失败:', error);
+            console.error('❌ Test failed:', error);
             return null;
         }
     }
 }
 
-// 自动初始化
+// Auto-init
 jQuery(document).ready(() => {
-    // 等待一小段时间确保其他模块加载完成
+    // Wait briefly so other modules can load
     setTimeout(() => {
         if (!window.mobileCustomAPIConfig) {
             const apiConfig = new MobileCustomAPIConfig();
             apiConfig.initialize().then(success => {
                 if (success) {
-                    console.log('[Mobile API Config] ✅ 自定义API配置模块已就绪');
+                    console.log('[Mobile API Config] ✅ Custom API config module ready');
                 } else {
-                    console.error('[Mobile API Config] ❌ 自定义API配置模块初始化失败');
+                    console.error('[Mobile API Config] ❌ Custom API config module failed to init');
                 }
             });
-            // 将实例设置为全局变量
+            // Expose instance on window
             window.mobileCustomAPIConfig = apiConfig;
         }
     }, 1000);
 });
 
-// 导出类和实例到全局作用域
+// Export class and instance to window
 window.MobileCustomAPIConfig = MobileCustomAPIConfig;
 
-// 全局辅助函数
+// Global helpers
 window.fixGeminiConfig = function() {
-    console.log('🔧 正在修复Gemini配置...');
+    console.log('🔧 Fixing Gemini config...');
 
     const config = window.mobileCustomAPIConfig;
     if (!config) {
-        console.error('❌ API配置管理器未初始化');
+        console.error('❌ API config manager not initialized');
         return;
     }
 
-    // 强制设置正确的Gemini配置
+    // Force the correct Gemini config
     const providerSelect = document.getElementById('api-provider');
 
     if (providerSelect) {
         providerSelect.value = 'gemini';
     }
 
-    // 触发provider change事件（这会自动隐藏URL输入框并设置内置URL）
+    // Fire provider-change (hides URL field, sets built-in URL)
     config.onProviderChange('gemini');
 
-    console.log('✅ 配置已修复，请确保：');
-    console.log('1. 已选择💎 Google Gemini服务商');
-    console.log('2. URL输入框已隐藏（使用内置URL）');
-    console.log('3. API密钥: 以AIza开头的Google AI API密钥');
-    console.log('4. 点击📥按钮获取模型列表');
+    console.log('✅ Config fixed. Check that:');
+    console.log('1. 💎 Google Gemini is selected');
+    console.log('2. URL field is hidden (built-in URL)');
+    console.log('3. API key starts with AIza (Google AI)');
+    console.log('4. Click 📥 to fetch models');
 
-    // 显示调试信息
+    // Show debug info
     config.debugConfig();
 };
 
-// 添加控制台提示
+// Console hint
 console.log(`
-🚀 [Mobile API Config] 可用的调试命令:
+🚀 [Mobile API Config] Debug commands:
 
-   查看配置状态: window.mobileCustomAPIConfig.debugConfig()
-   手动测试获取: await window.mobileCustomAPIConfig.testModelFetch()
-   修复Gemini配置: window.fixGeminiConfig()
+   Inspect config: window.mobileCustomAPIConfig.debugConfig()
+   Manual fetch test: await window.mobileCustomAPIConfig.testModelFetch()
+   Fix Gemini config: window.fixGeminiConfig()
 `);
