@@ -712,7 +712,7 @@ if (typeof window.MessageSender === 'undefined') {
         const messageElements = document.querySelectorAll('.mes_text, .mes_block');
         let latestGroupInfo = null;
 
-        // 创建正则表达式匹配该群的Messages：[群聊|群名|群号|成员列表] 或 [Create group|群号|群名|成员列表]
+        // 创建正则表达式匹配该群的Messages：[群聊|群名|群号|成员列表] 或 [创建群聊|群号|群名|成员列表]
         const groupRegex1 = new RegExp(`\\[群聊\\|([^\\|]+)\\|${this.currentFriendId}\\|([^\\]]+)\\]`, 'g');
         const groupRegex2 = new RegExp(`\\[Create group\\|${this.currentFriendId}\\|([^\\|]+)\\|([^\\]]+)\\]`, 'g');
 
@@ -735,7 +735,7 @@ if (typeof window.MessageSender === 'undefined') {
             break;
           }
 
-          // 尝试匹配第二种格式：[Create group|群号|群名|成员列表]
+          // 尝试匹配第二种格式：[创建群聊|群号|群名|成员列表]
           match = groupRegex2.exec(messageText);
           if (match) {
             latestGroupInfo = {
