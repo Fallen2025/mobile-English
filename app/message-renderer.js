@@ -1,3 +1,30 @@
+
+window.normalizePhoneProtocol = window.normalizePhoneProtocol || function normalizePhoneProtocol(text) {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    .replace(/\[(?:Live)\|(?:viewers?|viewerCount|view count)\|/gi, '[直播|本场人数|')
+    .replace(/\[(?:Live)\|(?:content|title|stream)\|/gi, '[直播|直播内容|')
+    .replace(/\[(?:Live)\|([^\]|]+)\|(?:chat|danmaku|comment)\|/gi, '[直播|$1|弹幕|')
+    .replace(/\[(?:Live)\|([^\]|]+)\|(?:tip|gift|donate)\|/gi, '[直播|$1|打赏|')
+    .replace(/\[(?:Live)\|(?:suggest(?:ed)?|prompt|cta)\|/gi, '[直播|推荐互动|')
+    .replace(/\[(?:TheirMessage|OtherMessage|Reply|Incoming)\|/gi, '[对方消息|')
+    .replace(/\[(?:MyMessage|Outgoing)\|/gi, '[我方消息|')
+    .replace(/\[(?:GroupMessage|GroupChat)\|/gi, '[群聊消息|')
+    .replace(/\[(?:MyGroupMessage)\|/gi, '[我方群聊消息|')
+    .replace(/\[(?:FriendId|Friend)\|/gi, '[好友id|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:text|txt)\|/gi, '[$1|$2|$3|文字|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:sticker|emoji)\|/gi, '[$1|$2|$3|表情包|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:voice|audio)\|/gi, '[$1|$2|$3|语音|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:redpack|redpacket|hongbao)\|/gi, '[$1|$2|$3|红包|');
+};
+
+window.contentForPhoneParse = window.contentForPhoneParse || function contentForPhoneParse(text) {
+  const norm = window.normalizePhoneProtocol(text);
+  const stripped = norm.replace(/<think>[\s\S]*?<\/think>|<thinking>[\s\S]*?<\/thinking>/gi, '');
+  if (/\[[^\]]+\|/.test(stripped)) return stripped;
+  return norm;
+};
+
 /**
  * Message Renderer - 消息渲染器
  * 从上下文中提取并渲染具体的聊天消息
@@ -255,7 +282,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         }
 
         // 定义正则表达式匹配动态提取的格式
-        const friendPattern = /\[好友id\|([^|]+)\|(\d+)\]/g;
+        const friendPattern = /\[(?:好友id|FriendId|Friend)\|([^|]+)\|(\d+)\]/gi;
         const groupPattern = /\[群聊\|([^|]+)\|([^|]+)\|([^\]]+)\]/g;
 
         context.chat.forEach(message => {
@@ -603,7 +630,7 @@ if (typeof window.MessageRenderer === 'undefined') {
 
         // 分别统计我方、对方和群聊消息
         const myMessages = friendMessages.filter(msg => msg.fullMatch && msg.fullMatch.startsWith('[我方消息'));
-        const otherMessages = friendMessages.filter(msg => msg.fullMatch && msg.fullMatch.startsWith('[对方消息'));
+        const otherMessages = friendMessages.filter(msg => msg.fullMatch && msg.fullMatch.startsWith('[对方消息') || (msg.fullMatch||'').startsWith('[TheirMessage') || (msg.fullMatch||'').startsWith('[Reply') || (msg.fullMatch||'').startsWith('[Incoming'));
         const groupMessages = friendMessages.filter(
           msg => msg.fullMatch && (msg.fullMatch.startsWith('[群聊消息') || msg.fullMatch.startsWith('[我方群聊消息')),
         );
@@ -703,7 +730,7 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       // 分别统计
       const myMessages = friendMessages.filter(msg => msg.fullMatch && msg.fullMatch.startsWith('[我方消息'));
-      const otherMessages = friendMessages.filter(msg => msg.fullMatch && msg.fullMatch.startsWith('[对方消息'));
+      const otherMessages = friendMessages.filter(msg => msg.fullMatch && msg.fullMatch.startsWith('[对方消息') || (msg.fullMatch||'').startsWith('[TheirMessage') || (msg.fullMatch||'').startsWith('[Reply') || (msg.fullMatch||'').startsWith('[Incoming'));
       const groupMessages = friendMessages.filter(
         msg => msg.fullMatch && (msg.fullMatch.startsWith('[群聊消息') || msg.fullMatch.startsWith('[我方群聊消息')),
       );
