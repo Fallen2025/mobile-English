@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>平行事件应用加载测试</title>
+    <title>Parallel Events load test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,36 +42,36 @@
     </style>
 </head>
 <body>
-    <h1>🧪 平行事件应用加载测试</h1>
+    <h1>🧪 Parallel Events load test</h1>
     
     <div class="test-section">
-        <h2>1. 文件加载测试</h2>
-        <button onclick="testFileLoading()">开始测试文件加载</button>
+        <h2>1. File load test</h2>
+        <button onclick="testFileLoading()">Test file load</button>
         <div id="file-test-result"></div>
     </div>
     
     <div class="test-section">
-        <h2>2. 全局变量检查</h2>
-        <button onclick="checkGlobalVariables()">检查全局变量</button>
+        <h2>2. Globals check</h2>
+        <button onclick="checkGlobalVariables()">Check globals</button>
         <div id="global-vars-result"></div>
     </div>
     
     <div class="test-section">
-        <h2>3. 管理器初始化测试</h2>
-        <button onclick="testManagerInitialization()">测试管理器初始化</button>
+        <h2>3. Manager init test</h2>
+        <button onclick="testManagerInitialization()">Test manager init</button>
         <div id="manager-test-result"></div>
     </div>
     
     <div class="test-section">
-        <h2>4. 控制台日志</h2>
-        <button onclick="clearConsole()">清空控制台</button>
-        <p>请打开浏览器开发者工具查看详细日志</p>
+        <h2>4. Console</h2>
+        <button onclick="clearConsole()">Clear console</button>
+        <p>Open DevTools for detail logs</p>
     </div>
 
     <script>
-        console.log('🧪 [Test] 平行事件应用测试页面已加载');
+        console.log('🧪 [Test] Parallel Events test page loaded');
         
-        // 模拟一些必要的全局变量（用于测试）
+        // Stub globals for the test page
         window.mobileContextEditor = { test: true };
         window.mobileCustomAPIConfig = { test: true };
         window.showMobileToast = function(message, type) {
@@ -80,7 +80,7 @@
         
         async function testFileLoading() {
             const resultDiv = document.getElementById('file-test-result');
-            resultDiv.innerHTML = '<p>正在测试文件加载...</p>';
+            resultDiv.innerHTML = '<p>Testing file load...</p>';
             
             const files = [
                 './parallel-events-styles.js',
@@ -96,17 +96,17 @@
                     
                     await new Promise((resolve, reject) => {
                         script.onload = () => {
-                            results.push(`<span class="success">✅ ${file} - 加载成功</span>`);
+                            results.push(`<span class="success">✅ ${file} - loaded</span>`);
                             resolve();
                         };
                         script.onerror = () => {
-                            results.push(`<span class="error">❌ ${file} - 加载失败</span>`);
+                            results.push(`<span class="error">❌ ${file} - failed</span>`);
                             reject();
                         };
                         document.head.appendChild(script);
                     });
                 } catch (error) {
-                    results.push(`<span class="error">❌ ${file} - 错误: ${error.message}</span>`);
+                    results.push(`<span class="error">❌ ${file} - error: ${error.message}</span>`);
                 }
             }
             
@@ -138,44 +138,44 @@
         
         async function testManagerInitialization() {
             const resultDiv = document.getElementById('manager-test-result');
-            resultDiv.innerHTML = '<p>正在测试管理器初始化...</p>';
+            resultDiv.innerHTML = '<p>Testing manager init...</p>';
             
             try {
                 if (!window.ParallelEventsApp) {
-                    throw new Error('ParallelEventsApp 类未找到');
+                    throw new Error('ParallelEventsApp class missing');
                 }
                 
                 if (!window.parallelEventsManager) {
-                    console.log('[Test] 创建管理器实例...');
+                    console.log('[Test] Creating manager...');
                     window.parallelEventsManager = new window.ParallelEventsApp();
                 }
                 
                 if (!window.parallelEventsManager.isInitialized) {
-                    console.log('[Test] 初始化管理器...');
+                    console.log('[Test] Initializing manager...');
                     await window.parallelEventsManager.initialize();
                 }
                 
                 resultDiv.innerHTML = `
-                    <span class="success">✅ 管理器初始化成功</span><br>
+                    <span class="success">✅ Manager initialized</span><br>
                     <span class="success">✅ isInitialized: ${window.parallelEventsManager.isInitialized}</span><br>
                     <span class="success">✅ isListening: ${window.parallelEventsManager.isListening}</span>
                 `;
                 
             } catch (error) {
-                resultDiv.innerHTML = `<span class="error">❌ 管理器初始化失败: ${error.message}</span>`;
-                console.error('[Test] 管理器初始化失败:', error);
+                resultDiv.innerHTML = `<span class="error">❌ Manager init failed: ${error.message}</span>`;
+                console.error('[Test] Manager init failed:', error);
             }
         }
         
         function clearConsole() {
             console.clear();
-            console.log('🧪 [Test] 控制台已清空');
+            console.log('🧪 [Test] Console cleared');
         }
         
-        // 页面加载完成后自动检查
+        // Auto-check after load
         window.addEventListener('load', () => {
             setTimeout(() => {
-                console.log('🧪 [Test] 页面加载完成，开始自动检查...');
+                console.log('🧪 [Test] Page loaded — running auto-check...');
                 checkGlobalVariables();
             }, 1000);
         });
