@@ -1,7 +1,7 @@
-/* ==平行事件应用样式== */
+/* ==Parallel Events app styles== */
 /* @name         Parallel Events App Styles */
 /* @version      1.0.0 */
-/* @description  平行事件应用的样式文件 */
+/* @description  Styles for the Parallel Events app */
 /* @author       Assistant */
 
 .parallel-events-app {
@@ -406,7 +406,7 @@
     opacity: 0.8;
 }
 
-/* 响应式设计 */
+/* Responsive */
 @media (max-width: 480px) {
     .parallel-events-content {
         padding: 16px;
