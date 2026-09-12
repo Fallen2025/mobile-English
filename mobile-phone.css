@@ -25,7 +25,7 @@
   box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6);
 }
 
-/* Phone container */
+/* Phone container — fills the host, frame sizes itself inside */
 .mobile-phone-container {
   position: absolute;
   top: 0;
@@ -36,6 +36,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 12px;
+  box-sizing: border-box;
   opacity: 0;
   transform: scale(0.9);
   transition: all 0.3s ease;
@@ -55,12 +57,31 @@
   height: 100%;
 }
 
-/* Phone frame */
+/* Phone frame
+   Preferred ratio is 375/737, but never larger than the available host.
+   Height is viewport-capped first so the bezel is not clipped; width follows.
+   Inner screen stays a flex column so app text scrolls instead of cutting off. */
 .mobile-phone-frame {
+  --phone-ratio: 375 / 737;
+  --phone-max-w: 375px;
   position: relative;
-  width: 70%;
-  max-width: 375px;
-  aspect-ratio: 375/737;
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  width: min(
+    var(--phone-max-w),
+    calc(100% - 0px),
+    calc((100dvh - 24px) * 375 / 737),
+    calc((100vh - 24px) * 375 / 737)
+  );
+  height: min(
+    calc(100dvh - 24px),
+    calc(100vh - 24px),
+    calc(100% - 0px),
+    calc(min(var(--phone-max-w), 100%) * 737 / 375)
+  );
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: auto;
   background: #333;
   border-radius: 40px;
   padding: 8px;
@@ -152,14 +173,17 @@
 /* Main content */
 .mobile-content {
   flex: 1;
+  min-height: 0;
   position: relative;
   overflow: hidden;
-  height: 100%;
+  height: auto;
   padding-bottom: 0.4rem;
 }
 
 .home-screen {
-  height: 101%;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -1368,9 +1392,9 @@
 
 .app-content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  height: calc(100% - 40px);
-  /* height calc 48px → 40px */
+  height: auto;
   padding-bottom: 0;
 }
 
@@ -1658,8 +1682,13 @@
   }
 
   .mobile-phone-frame {
-    width: 80%;
-    max-width: 300px;
+    --phone-max-w: 300px;
+    width: min(
+      300px,
+      100%,
+      calc((100dvh - 16px) * 375 / 737),
+      calc((100vh - 16px) * 375 / 737)
+    );
   }
 
   .mobile-phone-trigger {
