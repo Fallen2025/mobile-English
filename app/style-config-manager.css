@@ -1,4 +1,4 @@
-/* Style Config Manager CSS - 样式配置管理器样式 */
+/* Style Config Manager CSS */
 
 .style-config-app {
     max-width: 100%;
@@ -9,7 +9,7 @@
     overflow-y: auto;
 }
 
-/* 头部区域 */
+/* Header */
 .style-config-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -32,13 +32,13 @@
     font-size: 14px;
 }
 
-/* 内容区域 */
+/* Content */
 .style-config-content {
     padding: 0 0;
     margin-bottom: 20px;
 }
 
-/* 配置区段 */
+/* Config section */
 .config-section {
     background: white;
     border-radius: 15px;
@@ -76,7 +76,7 @@
     padding: 20px;
 }
 
-/* 配置字段 */
+/* Config field */
 .config-field {
     margin-bottom: 20px;
 }
@@ -122,7 +122,7 @@
     background: white;
 }
 
-/* 颜色选择器按钮 */
+/* Color picker button */
 .color-picker-btn {
     padding: 12px;
     border: 2px solid #e1e5e9;
@@ -146,7 +146,7 @@
     transform: scale(0.95);
 }
 
-/* 底部区域 */
+/* Footer */
 .style-config-footer {
     position: sticky;
     bottom: 0;
@@ -156,7 +156,7 @@
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
-/* 操作按钮 */
+/* Action buttons */
 .config-actions {
     display: flex;
     gap: 10px;
@@ -218,7 +218,7 @@
     transform: translateY(0);
 }
 
-/* 状态显示 */
+/* Status */
 .config-status {
     display: flex;
     align-items: center;
@@ -262,7 +262,7 @@
     flex: 1;
 }
 
-/* 加载占位符 */
+/* Loading placeholder */
 .loading-placeholder {
     display: flex;
     flex-direction: column;
@@ -289,7 +289,7 @@
     font-weight: 500;
 }
 
-/* 响应式设计 */
+/* Responsive */
 @media (max-width: 768px) {
     .style-config-header {
         padding: 15px;
@@ -355,7 +355,7 @@
     }
 }
 
-/* 动画效果 */
+/* Motion */
 .style-config-app * {
     box-sizing: border-box;
 }
@@ -375,7 +375,7 @@
     }
 }
 
-/* 自定义滚动条 */
+/* Scrollbar */
 .style-config-app::-webkit-scrollbar {
     width: 8px;
 }
@@ -394,7 +394,7 @@
     background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-/* 焦点可访问性 */
+/* Focus accessibility */
 .config-btn:focus,
 .config-input:focus,
 .color-picker-btn:focus {
@@ -402,7 +402,7 @@
     outline-offset: 2px;
 }
 
-/* 高对比度支持 */
+/* High contrast */
 @media (prefers-contrast: high) {
     .style-config-app {
         background: #f0f0f0;
@@ -421,7 +421,7 @@
     }
 }
 
-/* 减少动画偏好 */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .config-section,
     .config-btn,
@@ -436,7 +436,7 @@
     }
 }
 
-/* 深色模式支持 */
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
     .style-config-app {
         background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
