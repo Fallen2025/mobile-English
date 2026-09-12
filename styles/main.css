@@ -1,4 +1,4 @@
-/* Mobile插件主样式文件 */
+/* Mobile plugin main stylesheet */
 
 /* Mobile Context Monitor Plugin Styles */
 
@@ -81,7 +81,7 @@ inputP {
   font-weight: bold;
 }
 
-/* 兼容深色主题 */
+/* Dark theme compatibility */
 @media (prefers-color-scheme: dark) {
   #mobile_context_settings {
     color: #fff;
@@ -122,7 +122,7 @@ inputP {
 .m-tab-content{background: #fff;}
 .mobile-content input ,.mobile-content select,.mobile-content textarea{background: #f3f3f3 !important;}
 .mobile-content .tab-btn{border-radius: 0;}
-button.app-header-btn[title="保存"]{display: none;}
+button.app-header-btn[title="Save"]{display: none;}
 .mobile-content .tab-navigation{margin-bottom: 10px;}
 .message-item{border-bottom:1px solid #f6f6f6}
 .product-grid img,.backpack-grid img{margin-top: 10px;}
