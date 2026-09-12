@@ -1,12 +1,12 @@
 {
-    "display_name": "外置手机3.0",
+    "display_name": "External Phone 3.0",
     "loading_order": 100,
     "requires": [],
     "optional": [],
-    "js": "index.js",
+    "js": "english-boot.js",
     "css": "styles/main.css",
-    "author": "沉淀/夜宵宵夜",
-    "version": "3.0",
-    "homePage": "https://github.com/yexiaoxiaoye/mobile.git",
-    "description": "实时监控 SillyTavern 上下文变化的移动端插件，集成文件上传功能，支持数据提取和可爱手机界面"
+    "author": "沉淀/夜宵宵夜; EN fork Fallen2025",
+    "version": "3.0-en",
+    "homePage": "https://github.com/Fallen2025/mobile-English",
+    "description": "Floating phone overlay for SillyTavern with an English UI layer. Upstream: yexiaoxiaoye/mobile."
 }
