@@ -2023,11 +2023,43 @@ if (typeof window.WatchLiveApp === 'undefined') {
     /**
      * 发送推荐弹幕
      */
+
+    appendLocalUserChat(text, kind = 'normal') {
+      try {
+        if (!this.stateManager) return;
+        if (!this.stateManager.isLiveActive) this.stateManager.startLive();
+        const item = {
+          id: Date.now(),
+          username: 'You',
+          content: String(text || ''),
+          type: kind === 'gift' ? 'gift' : 'normal',
+          timestamp: new Date().toLocaleString(),
+        };
+        const exists = (this.stateManager.danmakuList || []).some(
+          d => d.username === item.username && d.content === item.content && d.type === item.type,
+        );
+        if (!exists) {
+          this.stateManager.danmakuList = (this.stateManager.danmakuList || []).concat(item);
+        }
+        if (kind === 'gift') {
+          this.stateManager.giftList = (this.stateManager.giftList || []).concat({
+            username: 'You',
+            gift: String(text || ''),
+            timestamp: item.timestamp,
+          });
+        }
+        if (typeof this.updateAppContent === 'function') this.updateAppContent();
+      } catch (e) {
+        console.warn('[Watch Live App] local chat append failed:', e);
+      }
+    }
+
     async sendDanmaku(danmaku) {
       try {
         console.log('[Watch Live App] Sending suggested chat:', danmaku);
+        this.appendLocalUserChat(danmaku);
 
-        const message = `用户正在Watch Live，并发送弹幕"${danmaku}"，请勿重复或替用户发送弹幕。请按照正确的直播格式要求生成本场人数，直播内容，其余弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动，内容为用户可能会发送的弹幕。禁止使用错误格式。
+        const message = `The user is watching live and sent chat "${danmaku}". Do not repeat or send chat on the user's behalf. Generate live data in the required format: 本场人数, 直播内容, other danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines (chat the viewer might send). Do not use any other format.
 [直播|{{user}}|弹幕|${danmaku}]`;
 
         await this.sendToSillyTavern(message);
@@ -2044,8 +2076,9 @@ if (typeof window.WatchLiveApp === 'undefined') {
     async sendCustomDanmaku(danmaku) {
       try {
         console.log('[Watch Live App] Sending custom chat:', danmaku);
+        this.appendLocalUserChat(danmaku);
 
-        const message = `用户正在Watch Live，并发送弹幕"${danmaku}"，请勿重复或替用户发送弹幕。请按照正确的直播格式要求生成本场人数，直播内容，其余弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动，内容为用户可能会发送的弹幕。禁止使用错误格式。
+        const message = `The user is watching live and sent chat "${danmaku}". Do not repeat or send chat on the user's behalf. Generate live data in the required format: 本场人数, 直播内容, other danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines (chat the viewer might send). Do not use any other format.
 [直播|{{user}}|弹幕|${danmaku}]`;
 
         await this.sendToSillyTavern(message);
@@ -2168,6 +2201,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         const giftMessage = document.getElementById('gift-message-input')?.value.trim() || '';
 
         console.log('[Watch Live App] Sending gift:', selectedGifts);
+        this.appendLocalUserChat(giftDescriptions, 'gift');
 
         // 构建礼物描述
         const giftDescriptions = selectedGifts
@@ -2179,8 +2213,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         if (giftMessage) {
           message += `, tip message: "${giftMessage}"`;
         }
-        message += `，请勿重复或替用户发送弹幕。请按照正确的直播格式要求生成本场人数，直播内容，其余弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动，内容为用户可能会发送的弹幕。禁止使用错误格式。
-`;
+        message += `. Do not repeat or send chat on the user's behalf. Generate live data in the required format: 本场人数, 直播内容, other danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines (chat the viewer might send). Do not use any other format.`;
 
         // 添加打赏格式 - 每种礼物一条记录
         selectedGifts.forEach(gift => {
@@ -2446,24 +2479,31 @@ if (typeof window.WatchLiveApp === 'undefined') {
 
     async sendToSillyTavern(message) {
       try {
-        const packed = (this.collectLiveContextSnippet ? this.collectLiveContextSnippet() : '') + message;
-        console.log('[Live App] Sending to SillyTavern:', packed);
+        const raw = message == null ? '' : String(message);
+        if (!raw.trim() || raw.trim() === 'undefined') {
+          console.error('[Live App] Refusing to send empty/undefined live prompt');
+          throw new Error('Live prompt was empty (got undefined). Prompt never built.');
+        }
 
-        // 尝试找到文本输入框
+        const prefix =
+          '[Watch Live] {{user}} is using Watch Live. Continue the current story and live session. Do not restart Crossing or open a new prologue.\n\n';
+        const context = this.collectLiveContextSnippet ? this.collectLiveContextSnippet() || '' : '';
+        const packed = prefix + context + raw;
+        console.log('[Live App] Sending to SillyTavern:', packed.slice(0, 400));
+
         const textarea = document.querySelector('#send_textarea');
         if (!textarea) {
           console.error('[Live App] Message box not found');
           throw new Error('Message box not found');
         }
 
-        // 设置消息内容
-        textarea.value = packed;
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+        if (setter) setter.call(textarea, packed);
+        else textarea.value = packed;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        textarea.dispatchEvent(new Event('change', { bubbles: true }));
         textarea.focus();
 
-        // 触发输入事件
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-
-        // 触发发送按钮点击
         const sendButton = document.querySelector('#send_but');
         if (sendButton) {
           sendButton.click();

@@ -39,7 +39,7 @@ if (typeof window.MessageRenderer === 'undefined') {
       this.messageCache = new Map(); // 消息缓存
       this.renderCache = new Map(); // 渲染缓存
 
-      // 🔥 新增：好友姓名到ID的映射
+      // 🔥 新增：Friends姓名到ID的映射
       this.friendNameToIdMap = new Map();
       this.groupNameToIdMap = new Map();
       this.generatedUserIds = new Map(); // 缓存生成的用户ID
@@ -81,7 +81,7 @@ if (typeof window.MessageRenderer === 'undefined') {
           msgType = field3; // 消息类型
           content = field4; // 消息内容
         } else {
-          // 普通消息格式：[我方消息|我|好友号|消息内容|时间] 或 [对方消息|好友名|好友号|消息类型|消息内容]
+          // 普通消息格式：[我方消息|我|Friends号|消息内容|时间] 或 [对方消息|Friends名|Friends号|消息类型|消息内容]
           sender = field1;
           number = field2;
           msgType = field3;
@@ -191,8 +191,8 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 🔥 新增：建立好友姓名到ID的映射关系
-     * 从动态提取的数据格式中解析好友和群聊信息
+     * 🔥 新增：建立Friends姓名到ID的映射关系
+     * 从动态提取的数据格式中解析Friends和群聊Messages
      */
     buildFriendNameToIdMapping() {
       const friendMap = new Map();
@@ -210,18 +210,18 @@ if (typeof window.MessageRenderer === 'undefined') {
               console.log(`[Message Renderer] 群聊映射: ${contact.name} -> ${contact.number}`);
             }
           } else {
-            // 好友：记录好友名到好友ID的映射
+            // Friends：记录Friends名到FriendsID的映射
             friendMap.set(contact.name, contact.number);
             if (window.DEBUG_MESSAGE_RENDERER) {
-              console.log(`[Message Renderer] 好友映射: ${contact.name} -> ${contact.number}`);
+              console.log(`[Message Renderer] Friends映射: ${contact.name} -> ${contact.number}`);
             }
           }
         });
       }
 
-      // 如果没有提取到信息，尝试从上下文中直接解析
+      // 如果没有提取到Messages，尝试从上下文中直接解析
       if (friendMap.size === 0 && groupMap.size === 0) {
-        console.log('[Message Renderer] 尝试从上下文中直接解析好友和群聊信息');
+        console.log('[Message Renderer] 尝试从上下文中直接解析Friends和群聊Messages');
         this.parseFriendDataFromContext(friendMap, groupMap);
       }
 
@@ -230,13 +230,13 @@ if (typeof window.MessageRenderer === 'undefined') {
       this.groupNameToIdMap = groupMap;
 
       if (window.DEBUG_MESSAGE_RENDERER) {
-        console.log(`[Message Renderer] 建立了 ${friendMap.size} 个好友映射和 ${groupMap.size} 个群聊映射`);
+        console.log(`[Message Renderer] 建立了 ${friendMap.size} 个Friends映射和 ${groupMap.size} 个群聊映射`);
       }
       return { friendMap, groupMap };
     }
 
     /**
-     * 🔥 新增：从上下文中直接解析好友和群聊数据
+     * 🔥 新增：从上下文中直接解析Friends和群聊数据
      */
     parseFriendDataFromContext(friendMap, groupMap) {
       try {
@@ -255,7 +255,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         }
 
         // 定义正则表达式匹配动态提取的格式
-        const friendPattern = /\[好友id\|([^|]+)\|(\d+)\]/g;
+        const friendPattern = /\[Friendsid\|([^|]+)\|(\d+)\]/g;
         const groupPattern = /\[群聊\|([^|]+)\|([^|]+)\|([^\]]+)\]/g;
 
         context.chat.forEach(message => {
@@ -263,7 +263,7 @@ if (typeof window.MessageRenderer === 'undefined') {
             // 移除thinking标签
             const messageForMatching = this.removeThinkingTags ? this.removeThinkingTags(message.mes) : message.mes;
 
-            // 提取好友信息：[好友id|络络|555555]
+            // 提取FriendsMessages：[好友id|络络|555555]
             const friendMatches = [...messageForMatching.matchAll(friendPattern)];
             friendMatches.forEach(match => {
               const friendName = match[1];
@@ -271,7 +271,7 @@ if (typeof window.MessageRenderer === 'undefined') {
               friendMap.set(friendName, friendId);
             });
 
-            // 提取群聊信息：[群聊|一家人|123456|我、络络、江叙之]
+            // 提取群聊Messages：[群聊|一家人|123456|我、络络、江叙之]
             const groupMatches = [...messageForMatching.matchAll(groupPattern)];
             groupMatches.forEach(match => {
               const groupName = match[1];
@@ -287,7 +287,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                   .map(name => name.trim())
                   .filter(name => name);
                 members.forEach(memberName => {
-                  // 如果成员不在好友映射中，生成一个唯一ID
+                  // 如果成员不在Friends映射中，生成一个唯一ID
                   if (!friendMap.has(memberName) && memberName !== '我') {
                     const generatedId = this.generateUserIdFromName(memberName);
                     friendMap.set(memberName, generatedId);
@@ -299,7 +299,7 @@ if (typeof window.MessageRenderer === 'undefined') {
           }
         });
       } catch (error) {
-        console.error('[Message Renderer] 解析好友数据时出错:', error);
+        console.error('[Message Renderer] 解析Friends数据时出错:', error);
       }
     }
 
@@ -318,7 +318,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         // 这里可能需要根据当前聊天上下文来确定群ID
         return this.currentFriendId || '';
       } else {
-        // 对于私聊消息，从好友映射中查找
+        // 对于私聊消息，从Friends映射中查找
         return this.friendNameToIdMap.get(senderName) || '';
       }
     }
@@ -334,15 +334,15 @@ if (typeof window.MessageRenderer === 'undefined') {
 
     /**
      * 🔥 新增：为用户姓名生成唯一ID
-     * 用于群聊中没有明确好友关系的成员
+     * 用于群聊中没有明确Friends关系的成员
      */
     generateUserIdFromName(userName) {
       if (!userName) return '';
 
-      // 方法1：使用简单哈希算法生成数字ID
+      // 方法1：使用简单哈希算法生成Numeric ID
       let hash = this.simpleHash(userName);
 
-      // 确保ID是6位数字，添加固定前缀避免与真实ID冲突
+      // 确保ID是6位数字，Add固定前缀避免与真实ID冲突
       let generatedId = '8' + (hash % 100000).toString().padStart(5, '0');
 
       console.log(`[Message Renderer] 为用户 "${userName}" 生成ID: ${generatedId}`);
@@ -400,12 +400,12 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 提取指定好友的所有消息
-     * @param {string|string[]} friendId - 好友ID，可以是单个ID或ID数组
+     * 提取指定Friends的所有消息
+     * @param {string|string[]} friendId - FriendsID，可以是单个ID或ID数组
      */
     async extractMessagesForFriend(friendId) {
       if (!this.contextMonitor) {
-        throw new Error('上下文监控器未加载');
+        throw new Error('Context monitor not loaded');
       }
 
       try {
@@ -413,7 +413,7 @@ if (typeof window.MessageRenderer === 'undefined') {
           console.log('[Message Renderer] 🔥 开始使用统一提取法，保持原始穿插顺序');
         }
 
-        // 🔥 新增：在提取消息前建立好友映射
+        // 🔥 新增：在提取消息前建立Friends映射
         this.buildFriendNameToIdMapping();
 
         // 🔥 核心修复：使用统一提取法，一次性提取所有消息
@@ -453,7 +453,7 @@ if (typeof window.MessageRenderer === 'undefined') {
           });
         }
 
-        // 过滤出指定好友的消息（保持原始顺序）
+        // 过滤出指定Friends的消息（保持原始顺序）
         let friendMessages = [];
 
         allExtractions.forEach((msg, originalIndex) => {
@@ -490,7 +490,7 @@ if (typeof window.MessageRenderer === 'undefined') {
             msgIdentifier = String(msg.number || '');
           }
 
-          // 修复：只在调试模式下输出群聊消息调试信息
+          // 修复：只在调试模式下输出群聊消息调试Messages
           if (
             window.DEBUG_MESSAGE_RENDERER &&
             msg.fullMatch &&
@@ -505,7 +505,7 @@ if (typeof window.MessageRenderer === 'undefined') {
             });
           }
 
-          // 支持单个好友ID或好友ID数组
+          // 支持单个FriendsID或FriendsID数组
           const targetIds = Array.isArray(friendId) ? friendId.map(String) : [String(friendId)];
           const isMatch = targetIds.includes(msgIdentifier);
 
@@ -519,14 +519,14 @@ if (typeof window.MessageRenderer === 'undefined') {
               );
             }
 
-            // 为消息添加原始位置信息
+            // 为消息Add原始位置Messages
             msg.originalIndex = originalIndex;
             friendMessages.push(msg);
           }
         });
 
         if (window.DEBUG_MESSAGE_RENDERER) {
-          console.log('过滤后的好友消息数量:', friendMessages.length);
+          console.log('过滤后的Friends消息数量:', friendMessages.length);
           console.log(
             '过滤后的消息顺序:',
             friendMessages.map((msg, i) => ({
@@ -582,9 +582,9 @@ if (typeof window.MessageRenderer === 'undefined') {
         }
 
         if (window.DEBUG_MESSAGE_RENDERER) {
-          console.log('过滤并排序后的好友消息数量:', friendMessages.length);
+          console.log('过滤并排序后的Friends消息数量:', friendMessages.length);
           console.log(
-            '排序后的消息详细信息:',
+            '排序后的消息详细Messages:',
             friendMessages.map((msg, index) => ({
               排序位置: index,
               globalIndex: msg.globalIndex,
@@ -592,7 +592,7 @@ if (typeof window.MessageRenderer === 'undefined') {
               fullMatch: msg.fullMatch?.substring(0, 50) + '...',
               isMyMessage: msg.fullMatch?.startsWith('[我方消息'),
               isGroupMessage: msg.fullMatch?.startsWith('[群聊消息'),
-              // 🔥 添加name和extra信息，用于统一性检查
+              // 🔥 Addname和extraMessages，用于统一性检查
               originalMessageName: msg.originalMessageName,
               originalMessageExtra: msg.originalMessageExtra,
               originalMessageIndex: msg.originalMessageIndex,
@@ -668,7 +668,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         return aIndex - bIndex;
       });
 
-      // 过滤出指定好友的消息
+      // 过滤出指定Friends的消息
       let friendMessages = [];
       extractionResults.forEach((msg, originalIndex) => {
         let msgIdentifier;
@@ -759,7 +759,7 @@ if (typeof window.MessageRenderer === 'undefined') {
           console.log(`[Message Renderer] 获取到 ${latestMessages.length} 条最新消息`);
         }
 
-        // 修复：只在调试模式下显示最新消息的顺序
+        // 修复：只在调试模式下Showing latest消息的顺序
         if (window.DEBUG_MESSAGE_RENDERER && latestMessages.length > 0) {
           console.log('[Message Renderer] 最新消息顺序验证:');
           console.log('第一条显示的消息:', latestMessages[0]?.content?.substring(0, 30) + '...');
@@ -787,14 +787,14 @@ if (typeof window.MessageRenderer === 'undefined') {
                     </div>
                     <div class="message-detail-footer">
                         <div class="message-stats">
-                            显示最新 ${latestMessages.length}/${totalCount} 条消息
-                            (我方: ${messageData.myMessages.length}, 对方: ${messageData.otherMessages.length}, 群聊: ${
+                            Showing latest ${latestMessages.length}/${totalCount} 条消息
+                            (我方: ${messageData.myMessages.length}, them: ${messageData.otherMessages.length}, group: ${
           messageData.groupMessages.length
         })
                         </div>
                         <div class="message-send-area">
                             <div class="send-input-container">
-                                <textarea id="message-send-input" placeholder="发送消息..." maxlength="1000"></textarea>
+                                <textarea id="message-send-input" placeholder="send message..." maxlength="1000"></textarea>
                                 <div class="send-tools">
                                     <button class="send-tool-btn" id="send-emoji-btn" title="表情"><i class="fas fa-smile"></i></button>
                                     <button class="send-tool-btn" id="send-sticker-btn" title="表情包"><i class="fas fa-image"></i></button>
@@ -857,8 +857,8 @@ if (typeof window.MessageRenderer === 'undefined') {
       // 修复：只在调试模式下显示消息时间顺序验证
       if (window.DEBUG_MESSAGE_RENDERER && allMessages.length > 0) {
         console.log('[Message Renderer] 消息时间顺序验证:');
-        console.log('第一条消息:', allMessages[0]?.content?.substring(0, 30) + '...');
-        console.log('最后一条消息:', allMessages[allMessages.length - 1]?.content?.substring(0, 30) + '...');
+        console.log('第一 messages:', allMessages[0]?.content?.substring(0, 30) + '...');
+        console.log('最后一 messages:', allMessages[allMessages.length - 1]?.content?.substring(0, 30) + '...');
       }
     }
 
@@ -1030,7 +1030,7 @@ if (typeof window.MessageRenderer === 'undefined') {
       const mustRemove = oldLen - prefix - suffix; // 需要替换的旧节点数量
       const mustInsert = newKeys.length - prefix - suffix; // 需要插入的新节点数量
 
-      // 删除中间需要替换的旧节点（从 prefix 到 oldLen - suffix - 1）
+      // Delete中间需要替换的旧节点（从 prefix 到 oldLen - suffix - 1）
       for (let r = 0; r < mustRemove; r++) {
         const nodeToRemove = container.children[prefix];
         if (nodeToRemove) container.removeChild(nodeToRemove);
@@ -1084,14 +1084,14 @@ if (typeof window.MessageRenderer === 'undefined') {
                 <button id="load-more-messages-btn"
                         class="load-more-btn"
                         style="padding: 10px 20px; border: 1px solid #ddd; border-radius: 20px; background: #f8f9fa; color: #333; cursor: pointer; font-size: 14px; transition: all 0.3s ease;">
-                    加载更多消息 (${this.pagination.currentPage + 1}/${this.pagination.totalPages})
+                    Load more (${this.pagination.currentPage + 1}/${this.pagination.totalPages})
                 </button>
             </div>
         `;
     }
 
     /**
-     * 渲染加载历史消息按钮（向上加载老消息）
+     * 渲染Load earlier按钮（向上加载老消息）
      */
     renderLoadOlderButton() {
       // 计算剩余可加载的页数
@@ -1106,7 +1106,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                 <button id="load-older-messages-btn"
                         class="load-older-btn"
                         style="padding: 10px 20px; border: 1px solid #ddd; border-radius: 20px; background: #f8f9fa; color: #333; cursor: pointer; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                    📜 加载历史消息 (还有${remainingPages}页)
+                    📜 Load earlier (还有${remainingPages}页)
                 </button>
             </div>
         `;
@@ -1149,7 +1149,7 @@ if (typeof window.MessageRenderer === 'undefined') {
       // 提取字段值
       // 🔥 修复：统一使用 message.number 字段，它在字段映射过程中已经正确设置
       // 对于群聊消息，number 字段包含群ID
-      // 对于普通消息，number 字段包含好友ID
+      // 对于普通消息，number 字段包含FriendsID
       let friendId = message.number || '';
       const messageType = message.messageType || '';
       const content = message.content || '';
@@ -1169,7 +1169,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         } else if (isGroupMessage) {
           // 如果是群聊消息但找不到发送者的个人ID，则使用群ID作为备用
           friendId = this.currentFriendId || '';
-          console.log(`[Message Renderer] 群聊消息找不到 "${senderName}" 的个人ID，使用群ID: ${friendId}`);
+          console.log(`[Message Renderer] 群聊消息找不到 "${senderName}" 的个人ID，使用Group ID: ${friendId}`);
         }
       }
 
@@ -1213,7 +1213,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                         <div class="message-content">
                         <div class="message-meta">
                             <span class="message-type">图片</span>
-                            ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                            ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                         </div>
                             <div class="image-message-content">
                                 ${imageContent}
@@ -1234,7 +1234,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                     <div class="message-meta">
                         <span class="message-sender">${senderName}</span>
                         <span class="message-type">图片</span>
-                        ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                        ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                     </div>
                         <div class="image-message-content">
                             ${imageContent}
@@ -1275,7 +1275,7 @@ if (typeof window.MessageRenderer === 'undefined') {
               const fileName = match[1].trim();
               console.log(`[Message Renderer] 🔍 从消息解析到图片文件名:`, fileName);
 
-              // 获取好友名称（优先从消息中获取，否则使用当前好友名）
+              // 获取Name（优先从消息中获取，否则使用当前Friends名）
               let friendName = senderName;
               if (message.fullMatch) {
                 const friendMatch = message.fullMatch.match(/\[我方消息\|([^|]+)\|/);
@@ -1325,7 +1325,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                         <div class="message-content">
                         <div class="message-meta">
                             <span class="message-type">附件</span>
-                            ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                            ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                         </div>
                             <div class="attachment-message-content">
                                 ${processedContent}
@@ -1346,7 +1346,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                     <div class="message-meta">
                         <span class="message-sender">${senderName}</span>
                         <span class="message-type">附件</span>
-                        ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                        ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                     </div>
                         <div class="attachment-message-content">
                             ${processedContent}
@@ -1370,7 +1370,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                         <div class="message-content">
                         <div class="message-meta">
                             <span class="message-type">${messageType}</span>
-                            ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                            ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                         </div>
                             <img src="${content}"
                                  data-filename="${content}"
@@ -1397,7 +1397,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                     <div class="message-meta">
                         <span class="message-sender">${senderName}</span>
                         <span class="message-type">${messageType}</span>
-                        ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                        ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                     </div>
                         <img src="${content}"
                              data-filename="${content}"
@@ -1424,7 +1424,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                     <div class="message-content">
                         <div class="message-meta">
                             <span class="message-type">${messageType}</span>
-                            ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                            ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                         </div>
                         <div class="message-text">${content}</div>
                     </div>
@@ -1444,7 +1444,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                     <div class="message-meta">
                         <span class="message-sender">${senderName}</span>
                         <span class="message-type">${messageType}</span>
-                        ${isGroupMessage ? '<span class="group-badge">群聊</span>' : ''}
+                        ${isGroupMessage ? '<span class="group-badge">Group</span>' : ''}
                     </div>
                     <div class="message-text">${content}</div>
                 </div>
@@ -1480,11 +1480,11 @@ if (typeof window.MessageRenderer === 'undefined') {
       const diffDays = Math.floor(diffHours / 24);
 
       if (diffMins < 1) {
-        return '刚刚';
+        return 'just now';
       } else if (diffMins < 60) {
-        return `${diffMins}分钟前`;
+        return `${diffMins}m ago`;
       } else if (diffHours < 24) {
-        return `${diffHours}小时前`;
+        return `${diffHours}h ago`;
       } else if (diffDays < 7) {
         return `${diffDays}天前`;
       } else {
@@ -1506,17 +1506,17 @@ if (typeof window.MessageRenderer === 'undefined') {
                 <div class="message-detail-content" id="message-detail-content" data-background-id="${friendId}">
                     <div class="empty-messages">
                         <div class="empty-icon">💬</div>
-                        <div class="empty-text">暂无消息记录</div>
-                        <div class="empty-hint">开始发送消息来建立聊天记录</div>
+                        <div class="empty-text">No messages yet记录</div>
+                        <div class="empty-hint">开始send message来建立聊天记录</div>
                     </div>
                 </div>
                 <div class="message-detail-footer">
                     <div class="message-stats">
-                        共 0 条消息 (我方: 0, 对方: 0, 群聊: 0)
+                        共 0  messages (me: 0, them: 0, group: 0)
                     </div>
                     <div class="message-send-area">
                         <div class="send-input-container">
-                            <textarea id="message-send-input" placeholder="发送消息..." maxlength="1000"></textarea>
+                            <textarea id="message-send-input" placeholder="send message..." maxlength="1000"></textarea>
                             <div class="send-tools">
                                 <button class="send-tool-btn" id="send-emoji-btn" title="表情"><i class="fas fa-smile"></i></button>
                                 <button class="send-tool-btn" id="send-sticker-btn" title="表情包"><i class="fas fa-image"></i></button>
@@ -1549,11 +1549,11 @@ if (typeof window.MessageRenderer === 'undefined') {
                 </div>
                 <div class="message-detail-footer">
                     <div class="message-stats">
-                        加载失败，但您仍可以发送消息
+                        加载失败，但您仍可以send message
                     </div>
                     <div class="message-send-area">
                         <div class="send-input-container">
-                            <textarea id="message-send-input" placeholder="发送消息..." maxlength="1000"></textarea>
+                            <textarea id="message-send-input" placeholder="send message..." maxlength="1000"></textarea>
                             <div class="send-tools">
                                 <button class="send-tool-btn" id="send-emoji-btn" title="表情"><i class="fas fa-smile"></i></button>
                                 <button class="send-tool-btn" id="send-sticker-btn" title="表情包"><i class="fas fa-image"></i></button>
@@ -1586,7 +1586,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         });
       }
 
-      // 刷新按钮
+      // Refresh按钮
       const refreshBtn = appContent.querySelector('#refresh-messages-btn');
       if (refreshBtn) {
         refreshBtn.addEventListener('click', async () => {
@@ -1595,30 +1595,30 @@ if (typeof window.MessageRenderer === 'undefined') {
               refreshBtn.innerHTML = '<span>⏳</span>';
               refreshBtn.disabled = true;
 
-              // 重新渲染当前好友的消息
+              // 重新渲染当前Friends的消息
               const friendName = this.getCurrentFriendName();
               const newContent = await this.renderMessageDetail(this.currentFriendId, friendName);
               appContent.innerHTML = newContent;
               this.bindMessageDetailEvents();
             } catch (error) {
-              console.error('[Message Renderer] 刷新消息失败:', error);
+              console.error('[Message Renderer] Refresh消息失败:', error);
             }
           }
         });
       }
 
-      // 绑定加载历史消息事件
+      // 绑定Load earlier事件
       this.bindLoadOlderEvent();
 
       // 初始化懒加载
       this.initLazyLoading();
 
-      // 消息详情内容区域滚动到底部（显示最新消息）
+      // 消息详情内容区域滚动到底部（Showing latest消息）
       const messageDetailContent = appContent.querySelector('.message-detail-content');
       if (messageDetailContent) {
         setTimeout(() => {
           messageDetailContent.scrollTop = messageDetailContent.scrollHeight;
-          console.log('[Message Renderer] 已滚动到底部显示最新消息');
+          console.log('[Message Renderer] 已滚动到底部Showing latest消息');
         }, 100);
       }
 
@@ -1693,7 +1693,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                 // @ts-ignore
                 window.messageSender.adjustTextareaHeight(sendInput);
                 this.updateCharCount(sendInput);
-                // 发送成功后刷新消息列表
+                // 发送成功后Refresh消息列表
                 setTimeout(() => this.refreshCurrentMessages(), 1000);
               }
             }
@@ -1935,7 +1935,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                         <button id="refresh-sticker-btn" onclick="window.messageRenderer.refreshStickerConfig()"
                                 style="background: #667eea; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;"
                                 title="从世界书重新加载表情包配置">
-                            <i class="fas fa-sync-alt"></i> 刷新
+                            <i class="fas fa-sync-alt"></i> Refresh
                         </button>
                         <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()"
                                 style="background: none; border: none; font-size: 20px; cursor: pointer; color: #999; padding: 5px;">✕</button>
@@ -2107,13 +2107,13 @@ if (typeof window.MessageRenderer === 'undefined') {
         return;
       }
 
-      // 生成语音消息格式 [我方消息|我|好友ID|语音|内容]
+      // 生成语音消息格式 [我方消息|我|FriendsID|语音|内容]
       // 获取当前聊天对象的ID和群聊状态
       let targetId = null;
       let isGroup = false;
       let groupName = '';
 
-      // 尝试从 MessageSender 获取当前好友ID和群聊状态
+      // 尝试从 MessageSender 获取当前FriendsID和群聊状态
       if (window.messageSender && window.messageSender.currentFriendId) {
         targetId = window.messageSender.currentFriendId;
         isGroup = window.messageSender.isGroup || false;
@@ -2132,8 +2132,8 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       // 如果还是没有，使用默认值
       if (!targetId) {
-        targetId = '223456'; // 默认好友ID
-        console.warn('[Message Renderer] 未能获取当前好友ID，使用默认值:', targetId);
+        targetId = '223456'; // 默认FriendsID
+        console.warn('[Message Renderer] 未能获取当前FriendsID，使用默认值:', targetId);
       }
 
       // 生成语音消息格式 - 区分群聊和私聊
@@ -2222,7 +2222,7 @@ if (typeof window.MessageRenderer === 'undefined') {
       let isGroup = false;
       let groupName = '';
 
-      // 尝试从 MessageSender 获取当前好友ID和群聊状态
+      // 尝试从 MessageSender 获取当前FriendsID和群聊状态
       if (window.messageSender && window.messageSender.currentFriendId) {
         targetId = window.messageSender.currentFriendId;
         isGroup = window.messageSender.isGroup || false;
@@ -2241,8 +2241,8 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       // 如果还是没有，使用默认值
       if (!targetId) {
-        targetId = '223456'; // 默认好友ID
-        console.warn('[Message Renderer] 未能获取当前好友ID，使用默认值:', targetId);
+        targetId = '223456'; // 默认FriendsID
+        console.warn('[Message Renderer] 未能获取当前FriendsID，使用默认值:', targetId);
       }
 
       // 🔥 修改：生成表情包消息格式 - 使用完整路径
@@ -2299,7 +2299,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         });
         stickerDetailEntries.push(...commentEntries);
 
-        // 🔥 优先级2：查找关键词包含"表情包详情"的条目（排除已添加的）
+        // 🔥 优先级2：查找关键词包含"表情包详情"的条目（排除已Add的）
         const keywordEntries = allEntries.filter(entry => {
           if (stickerDetailEntries.includes(entry)) return false; // 避免重复
           if (entry.key && Array.isArray(entry.key)) {
@@ -2309,7 +2309,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         });
         stickerDetailEntries.push(...keywordEntries);
 
-        // 🔥 优先级3：查找内容以"表情包详情"开头的条目（排除已添加的）
+        // 🔥 优先级3：查找内容以"表情包详情"开头的条目（排除已Add的）
         const contentEntries = allEntries.filter(entry => {
           if (stickerDetailEntries.includes(entry)) return false; // 避免重复
           return entry.content && entry.content.trim().startsWith('表情包详情');
@@ -2342,7 +2342,7 @@ if (typeof window.MessageRenderer === 'undefined') {
           try {
             const stickerImages = this.parseStickerDetails(entry.content);
             if (stickerImages.length > 0) {
-              // 为每个表情包添加来源信息
+              // 为每个表情包Add来源Messages
               const imagesWithSource = stickerImages.map(img => ({
                 ...img,
                 source: entry.comment,
@@ -2491,7 +2491,7 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       console.log(`[Message Renderer] 总共获取到 ${allEntries.length} 个世界书条目`);
 
-      // 🔥 新增：为调试提供详细信息
+      // 🔥 新增：为调试提供详细Messages
       if (allEntries.length > 0) {
         console.log('[Message Renderer] 世界书条目预览:', allEntries.slice(0, 3).map(entry => ({
           comment: entry.comment,
@@ -2556,7 +2556,7 @@ if (typeof window.MessageRenderer === 'undefined') {
       const entries = [];
 
       try {
-        // 🔥 修复：使用正确的SillyTavern全局变量获取角色信息
+        // 🔥 修复：使用正确的SillyTavern全局变量获取角色Messages
         let character = null;
         let characterId = null;
 
@@ -2576,7 +2576,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         }
 
         if (!character) {
-          console.log('[Message Renderer] 无法获取当前角色信息');
+          console.log('[Message Renderer] 无法获取当前角色Messages');
           return entries;
         }
 
@@ -3051,7 +3051,7 @@ if (typeof window.MessageRenderer === 'undefined') {
       let isGroup = false;
       let groupName = '';
 
-      // 尝试从 MessageSender 获取当前好友ID和群聊状态
+      // 尝试从 MessageSender 获取当前FriendsID和群聊状态
       if (window.messageSender && window.messageSender.currentFriendId) {
         targetId = window.messageSender.currentFriendId;
         isGroup = window.messageSender.isGroup || false;
@@ -3070,8 +3070,8 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       // 如果还是没有，使用默认值
       if (!targetId) {
-        targetId = '223456'; // 默认好友ID
-        console.warn('[Message Renderer] 未能获取当前好友ID，使用默认值:', targetId);
+        targetId = '223456'; // 默认FriendsID
+        console.warn('[Message Renderer] 未能获取当前FriendsID，使用默认值:', targetId);
       }
 
       // 生成红包消息格式 - 区分群聊和私聊
@@ -3106,7 +3106,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 加载更多消息（向下，实际上在反向分页中不常用）
+     * Load more（向下，实际上在反向分页中不常用）
      */
     async loadMoreMessages() {
       if (this.pagination.isLoading || this.pagination.currentPage >= this.pagination.totalPages - 1) {
@@ -3128,20 +3128,20 @@ if (typeof window.MessageRenderer === 'undefined') {
         this.pagination.currentPage++;
         const newMessages = this.getPageMessages(this.pagination.currentPage);
 
-        // 批量添加新消息到DOM
+        // 批量Add新消息到DOM
         await this.appendMessagesToContainer(newMessages);
 
         // 更新加载更多按钮
         this.updateLoadMoreButton();
       } catch (error) {
-        console.error('[Message Renderer] 加载更多消息失败:', error);
+        console.error('[Message Renderer] Load more失败:', error);
       } finally {
         this.pagination.isLoading = false;
       }
     }
 
     /**
-     * 加载历史消息（向上滚动）
+     * Load earlier（向上滚动）
      */
     async loadOlderMessages() {
       if (this.pagination.isLoading) {
@@ -3176,13 +3176,13 @@ if (typeof window.MessageRenderer === 'undefined') {
         const olderMessages = this.getOlderMessages();
 
         if (olderMessages.length > 0) {
-          // 将历史消息添加到容器顶部
+          // 将历史消息Add到容器顶部
           await this.prependMessagesToContainer(olderMessages);
 
           // 增加已加载页数
           this.pagination.loadedPages = (this.pagination.loadedPages || 1) + 1;
 
-          // 更新加载历史消息按钮
+          // 更新Load earlier按钮
           this.updateLoadOlderButton();
 
           // 保持滚动位置（关键：防止跳动）
@@ -3195,14 +3195,14 @@ if (typeof window.MessageRenderer === 'undefined') {
           console.log('[Message Renderer] 没有更多历史消息可加载');
         }
       } catch (error) {
-        console.error('[Message Renderer] 加载历史消息失败:', error);
+        console.error('[Message Renderer] Load earlier失败:', error);
       } finally {
         this.pagination.isLoading = false;
       }
     }
 
     /**
-     * 将新消息添加到容器底部
+     * 将新消息Add到容器底部
      */
     async appendMessagesToContainer(newMessages) {
       const container = document.getElementById('messages-container');
@@ -3214,22 +3214,22 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       tempDiv.innerHTML = this.renderMessagesBatch(newMessages);
 
-      // 将新消息元素添加到fragment
+      // 将新消息元素Add到fragment
       while (tempDiv.firstChild) {
         fragment.appendChild(tempDiv.firstChild);
       }
 
-      // 一次性添加到DOM
+      // 一次性Add到DOM
       container.appendChild(fragment);
 
-      // 为新添加的图片初始化懒加载
+      // 为新Add的图片初始化懒加载
       this.initLazyLoadingForNewMessages();
 
-      console.log(`[Message Renderer] 已添加 ${newMessages.length} 条新消息到底部`);
+      console.log(`[Message Renderer] 已Add ${newMessages.length} 条新消息到底部`);
     }
 
     /**
-     * 将历史消息添加到容器顶部
+     * 将历史消息Add到容器顶部
      */
     async prependMessagesToContainer(olderMessages) {
       const container = document.getElementById('messages-container');
@@ -3241,18 +3241,18 @@ if (typeof window.MessageRenderer === 'undefined') {
 
       tempDiv.innerHTML = this.renderMessagesBatch(olderMessages);
 
-      // 将历史消息元素添加到fragment
+      // 将历史消息元素Add到fragment
       while (tempDiv.firstChild) {
         fragment.appendChild(tempDiv.firstChild);
       }
 
-      // 一次性添加到DOM顶部
+      // 一次性Add到DOM顶部
       container.insertBefore(fragment, container.firstChild);
 
-      // 为新添加的图片初始化懒加载
+      // 为新Add的图片初始化懒加载
       this.initLazyLoadingForNewMessages();
 
-      console.log(`[Message Renderer] 已添加 ${olderMessages.length} 条历史消息到顶部`);
+      console.log(`[Message Renderer] 已Add ${olderMessages.length} 条历史消息到顶部`);
     }
 
     /**
@@ -3266,7 +3266,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         // 没有更多消息，移除按钮
         loadMoreContainer.innerHTML = `
                 <div style="text-align: center; padding: 10px; color: #999; font-size: 12px;">
-                    已显示所有消息
+                    All messages shown
                 </div>
             `;
       } else {
@@ -3275,7 +3275,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                 <button id="load-more-messages-btn"
                         class="load-more-btn"
                         style="padding: 10px 20px; border: 1px solid #ddd; border-radius: 20px; background: #f8f9fa; color: #333; cursor: pointer; font-size: 14px; transition: all 0.3s ease;">
-                    加载更多消息 (${this.pagination.currentPage + 1}/${this.pagination.totalPages})
+                    Load more (${this.pagination.currentPage + 1}/${this.pagination.totalPages})
                 </button>
             `;
 
@@ -3285,7 +3285,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 更新加载历史消息按钮
+     * 更新Load earlier按钮
      */
     updateLoadOlderButton() {
       const loadOlderContainer = document.querySelector('.load-older-container');
@@ -3297,7 +3297,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         // 没有更多历史消息，移除按钮
         loadOlderContainer.innerHTML = `
                 <div style="text-align: center; padding: 10px; color: #999; font-size: 12px; background: linear-gradient(180deg, #f8f9fa 0%, rgba(248, 249, 250, 0.8) 50%, transparent 100%);">
-                    📚 已显示所有历史消息
+                    📚 All history shown
                 </div>
             `;
       } else {
@@ -3306,7 +3306,7 @@ if (typeof window.MessageRenderer === 'undefined') {
                 <button id="load-older-messages-btn"
                         class="load-older-btn"
                         style="padding: 10px 20px; border: 1px solid #ddd; border-radius: 20px; background: #f8f9fa; color: #333; cursor: pointer; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                    📜 加载历史消息 (还有${remainingPages}页)
+                    📜 Load earlier (还有${remainingPages}页)
                 </button>
             `;
 
@@ -3328,7 +3328,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 绑定加载历史消息事件
+     * 绑定Load earlier事件
      */
     bindLoadOlderEvent() {
       const loadOlderBtn = document.getElementById('load-older-messages-btn');
@@ -3394,7 +3394,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         }
       }
 
-      // 添加加载状态
+      // Add加载状态
       img.classList.add('loading');
 
       // 创建新图片对象进行预加载
@@ -3577,10 +3577,10 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 🔥 新增：刷新表情包配置（从世界书重新读取）
+     * 🔥 新增：Refresh表情包配置（从世界书重新读取）
      */
     async refreshStickerConfig() {
-      console.log('[Message Renderer] 开始刷新表情包配置...');
+      console.log('[Message Renderer] 开始Refresh表情包配置...');
 
       // 显示加载状态
       const refreshBtn = document.getElementById('refresh-sticker-btn');
@@ -3605,11 +3605,11 @@ if (typeof window.MessageRenderer === 'undefined') {
         this.updateStickerPanel(stickerImages);
 
         // 显示成功提示
-        this.showToast('表情包配置已刷新', 'success');
+        this.showToast('表情包配置已Refresh', 'success');
 
       } catch (error) {
-        console.error('[Message Renderer] 刷新表情包配置失败:', error);
-        this.showToast('刷新失败，请检查世界书配置', 'error');
+        console.error('[Message Renderer] Refresh表情包配置失败:', error);
+        this.showToast('Refresh失败，请检查世界书配置', 'error');
       } finally {
         // 恢复按钮状态
         if (refreshBtn) {
@@ -3685,7 +3685,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 为新添加的消息初始化懒加载
+     * 为新Add的消息初始化懒加载
      */
     initLazyLoadingForNewMessages() {
       if (this.imageObserver) {
@@ -3697,7 +3697,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 刷新当前消息 - 性能优化版本
+     * Refresh当前消息 - 性能优化版本
      */
     async refreshCurrentMessages() {
       if (!this.currentFriendId) return;
@@ -3719,37 +3719,37 @@ if (typeof window.MessageRenderer === 'undefined') {
           const latestMessages = this.getLatestMessages();
           this.incrementalUpdateMessages(messagesContainer, latestMessages);
 
-          // 更新加载历史消息按钮
+          // 更新Load earlier按钮
           const loadOlderContainer = appContent.querySelector('.load-older-container');
           if (loadOlderContainer) {
             loadOlderContainer.innerHTML = this.renderLoadOlderButton();
             this.bindLoadOlderEvent();
           }
 
-          // 滚动到底部显示最新消息
+          // 滚动到底部Showing latest消息
           setTimeout(() => {
             const messageDetailContent = document.querySelector('.message-detail-content');
             if (messageDetailContent) {
               messageDetailContent.scrollTop = messageDetailContent.scrollHeight;
-              console.log('[Message Renderer] 已滚动到底部显示最新消息');
+              console.log('[Message Renderer] 已滚动到底部Showing latest消息');
             }
           }, 100);
         }
 
-        // 更新统计信息
+        // 更新统计Messages
         const statsElement = appContent.querySelector('.message-stats');
         if (statsElement) {
           const totalCount = messageData.allMessages.length;
           const latestMessages = this.getLatestMessages();
-          statsElement.textContent = `显示最新 ${latestMessages.length}/${totalCount} 条消息 (我方: ${messageData.myMessages.length}, 对方: ${messageData.otherMessages.length}, 群聊: ${messageData.groupMessages.length})`;
+          statsElement.textContent = `Showing latest ${latestMessages.length}/${totalCount}  messages (me: ${messageData.myMessages.length}, them: ${messageData.otherMessages.length}, group: ${messageData.groupMessages.length})`;
         }
       } catch (error) {
-        console.error('[Message Renderer] 刷新消息失败:', error);
+        console.error('[Message Renderer] Refresh消息失败:', error);
       }
     }
 
     /**
-     * 获取当前好友名称
+     * 获取当前Name
      */
     getCurrentFriendName() {
       if (window.friendRenderer && this.currentFriendId) {
@@ -3760,7 +3760,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 获取消息统计信息
+     * 获取消息统计Messages
      */
     getMessageStats(friendId = null) {
       const targetId = friendId || this.currentFriendId;
@@ -3797,7 +3797,7 @@ if (typeof window.MessageRenderer === 'undefined') {
     }
 
     /**
-     * 获取性能统计信息
+     * 获取性能统计Messages
      */
     getPerformanceStats() {
       return {
@@ -3830,21 +3830,21 @@ if (typeof window.MessageRenderer === 'undefined') {
      * 调试方法
      */
     debug() {
-      console.group('[Message Renderer] 调试信息');
-      console.log('当前好友ID:', this.currentFriendId);
-      console.log('我方消息数量:', this.myMessages.length);
-      console.log('对方消息数量:', this.otherMessages.length);
-      console.log('群聊消息数量:', this.groupMessages.length);
-      console.log('总消息数量:', this.allMessages.length);
+      console.group('[Message Renderer] 调试Messages');
+      console.log('当前FriendsID:', this.currentFriendId);
+      console.log('My messages:', this.myMessages.length);
+      console.log('Their messages:', this.otherMessages.length);
+      console.log('Group messages:', this.groupMessages.length);
+      console.log('Total messages:', this.allMessages.length);
       console.log('上下文监控器状态:', !!this.contextMonitor);
-      console.log('好友姓名映射数量:', this.friendNameToIdMap ? this.friendNameToIdMap.size : 0);
+      console.log('Friends姓名映射数量:', this.friendNameToIdMap ? this.friendNameToIdMap.size : 0);
       console.log('群聊姓名映射数量:', this.groupNameToIdMap ? this.groupNameToIdMap.size : 0);
       console.log('性能统计:', this.getPerformanceStats());
       if (this.allMessages.length > 0) {
-        console.log('消息样例:', this.allMessages[0]);
+        console.log('Sample:', this.allMessages[0]);
       }
       if (this.friendNameToIdMap && this.friendNameToIdMap.size > 0) {
-        console.log('好友姓名映射:', Array.from(this.friendNameToIdMap.entries()));
+        console.log('Friends姓名映射:', Array.from(this.friendNameToIdMap.entries()));
       }
       if (this.groupNameToIdMap && this.groupNameToIdMap.size > 0) {
         console.log('群聊姓名映射:', Array.from(this.groupNameToIdMap.entries()));
@@ -3860,8 +3860,8 @@ if (typeof window.MessageRenderer === 'undefined') {
   // 为message-app提供的接口
   window.renderMessageDetailForFriend = async function (friendId, friendName) {
     if (!window.messageRenderer) {
-      console.error('[Message Renderer] 消息渲染器未加载');
-      return '<div>消息渲染器未加载</div>';
+      console.error('[Message Renderer] Message renderer not loaded');
+      return '<div>Message renderer not loaded</div>';
     }
 
     return await window.messageRenderer.renderMessageDetail(friendId, friendName);

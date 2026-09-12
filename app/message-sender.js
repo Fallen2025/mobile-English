@@ -110,39 +110,46 @@ if (typeof window.MessageSender === 'undefined') {
     }
 
     /**
-     * 发送消息到SillyTavern
+     * send message到SillyTavern
      * 参考qq-app.js的sendToChat方法
      */
     async sendToChat(message) {
       try {
-        console.log('[Message Sender] 尝试发送消息到SillyTavern:', message);
+        console.log('[Message Sender] Sending to SillyTavern:', message);
 
         // 方法1: 直接使用DOM元素
         const originalInput = document.getElementById('send_textarea');
         const sendButton = document.getElementById('send_but');
 
         if (!originalInput || !sendButton) {
-          console.error('[Message Sender] 找不到输入框或发送按钮元素');
+          console.error('[Message Sender] Message box or send button not found');
           return await this.sendToChatBackup(message);
         }
 
         // 检查输入框是否可用
         if (originalInput.disabled) {
-          console.warn('[Message Sender] 输入框被禁用');
+          console.warn('[Message Sender] Message box is disabled');
           return false;
         }
 
         // 检查发送按钮是否可用
         if (sendButton.classList.contains('disabled')) {
-          console.warn('[Message Sender] 发送按钮被禁用');
+          console.warn('[Message Sender] Send button is disabled');
           return false;
         }
 
-        // 追加消息到现有内容
+        if (message == null || String(message).trim() === '' || String(message).trim() === 'undefined') {
+          console.error('[Message Sender] Refusing empty/undefined payload');
+          return false;
+        }
+
+        // Write through the native setter so SillyTavern sees the value
         const existingValue = originalInput.value;
         const newValue = existingValue ? existingValue + '\n' + message : message;
-        originalInput.value = newValue;
-        console.log('[Message Sender] 已追加消息到输入框:', {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+        if (setter) setter.call(originalInput, newValue);
+        else originalInput.value = newValue;
+        console.log('[Message Sender] Appended text to the message box:', {
           原有内容: existingValue,
           新增内容: message,
           最终内容: newValue
@@ -154,27 +161,24 @@ if (typeof window.MessageSender === 'undefined') {
 
         // 根据设置决定是否延迟点击发送按钮
         if (this.isDelayClickEnabled()) {
-          // 延迟点击发送按钮
           await new Promise(resolve => setTimeout(resolve, 300));
-          sendButton.click();
-          console.log('[Message Sender] 已延迟点击发送按钮');
-        } else {
-
         }
+        sendButton.click();
+        console.log('[Message Sender] Clicked send');
 
         return true;
       } catch (error) {
-        console.error('[Message Sender] 发送消息时出错:', error);
+        console.error('[Message Sender] Send failed:', error);
         return await this.sendToChatBackup(message);
       }
     }
 
     /**
-     * 备用发送方法
+     * Fallback send
      */
     async sendToChatBackup(message) {
       try {
-        console.log('[Message Sender] 尝试备用发送方法:', message);
+        console.log('[Message Sender] 尝试Fallback send:', message);
 
         // 尝试查找其他可能的输入框
         const textareas = document.querySelectorAll('textarea');
@@ -193,7 +197,7 @@ if (typeof window.MessageSender === 'undefined') {
 
         return false;
       } catch (error) {
-        console.error('[Message Sender] 备用发送方法失败:', error);
+        console.error('[Message Sender] Fallback send失败:', error);
         return false;
       }
     }
@@ -204,17 +208,17 @@ if (typeof window.MessageSender === 'undefined') {
      */
     async buildAndSendMessage(message) {
       if (!this.currentFriendId || !this.currentFriendName) {
-        throw new Error('未设置当前聊天对象');
+        throw new Error('No chat target set');
       }
 
       // 将消息按行分割，过滤空行
       const messageLines = message.split('\n').filter(line => line.trim());
 
       if (messageLines.length === 0) {
-        throw new Error('消息内容不能为空');
+        throw new Error('Message is empty');
       }
 
-      console.log(`[Message Sender] 处理${messageLines.length}条消息:`, messageLines);
+      console.log(`[Message Sender] 处理${messageLines.length} messages:`, messageLines);
 
       // 🌟 新增：检查是否为已格式化的特殊消息（语音、红包、表情包）
       const voiceMessageRegex = /^\[(?:我方消息\|我\|[^|]*|群聊消息\|[^|]*\|我)\|语音\|[^\]]*\]$/;
@@ -258,19 +262,19 @@ if (typeof window.MessageSender === 'undefined') {
         });
 
         const targetPrefix = this.isGroup
-          ? `向${this.currentFriendName}（${this.currentFriendId}）发送群聊`
-          : `向${this.currentFriendName}（${this.currentFriendId}）发送消息`;
+          ? `Send group chat to ${this.currentFriendName} (${this.currentFriendId})`
+          : `Send a message to ${this.currentFriendName} (${this.currentFriendId})`;
 
         // 检查是否启用禁止正文功能
         let finalMessage;
         if (this.isDisableBodyTextEnabled()) {
-          finalMessage = `<Request:强调！当用户只输出线上消息时，只回复线上消息，不回复正文>\n请用规定格式，${targetPrefix}\n${processedMessages.join('\n')}`;
-          console.log('[Message Sender] 禁止正文模式已启用，添加特殊前缀');
+          finalMessage = `<Request: If the user only sent in-app chat tags, reply with in-app chat tags only — no story prose.>\nUse the required format, ${targetPrefix}\n${processedMessages.join('\n')}`;
+          console.log('[Message Sender] Body-text lock on — special prefix added');
         } else {
-          finalMessage = `请用规定格式，${targetPrefix}\n${processedMessages.join('\n')}`;
+          finalMessage = `Use the required format, ${targetPrefix}\n${processedMessages.join('\n')}`;
         }
 
-        console.log('[Message Sender] 发送混合消息（包含特殊格式）:', finalMessage);
+        console.log('[Message Sender] Sending mixed message (special formats):', finalMessage);
 
         const success = await this.sendToChat(finalMessage);
 
@@ -319,19 +323,19 @@ if (typeof window.MessageSender === 'undefined') {
      */
     async sendStickerMessages(messageLines) {
       const targetPrefix = this.isGroup
-        ? `向${this.currentFriendName}（${this.currentFriendId}）发送群聊`
-        : `向${this.currentFriendName}（${this.currentFriendId}）发送消息`;
+        ? `Send group chat to ${this.currentFriendName} (${this.currentFriendId})`
+        : `Send a message to ${this.currentFriendName} (${this.currentFriendId})`;
 
       // 检查是否启用禁止正文功能
       let finalMessage;
       if (this.isDisableBodyTextEnabled()) {
-        finalMessage = `<Request:强调！当用户只输出线上消息时，只回复线上消息，不回复正文>\n请用规定格式，${targetPrefix}\n${messageLines.join('\n')}`;
-        console.log('[Message Sender] 禁止正文模式已启用，添加特殊前缀');
+        finalMessage = `<Request: If the user only sent in-app chat tags, reply with in-app chat tags only — no story prose.>\nUse the required format, ${targetPrefix}\n${messageLines.join('\n')}`;
+        console.log('[Message Sender] Body-text lock on — special prefix added');
       } else {
-        finalMessage = `请用规定格式，${targetPrefix}\n${messageLines.join('\n')}`;
+        finalMessage = `Use the required format, ${targetPrefix}\n${messageLines.join('\n')}`;
       }
 
-      console.log('[Message Sender] 发送纯表情包消息:', finalMessage);
+      console.log('[Message Sender] Sending sticker-only message:', finalMessage);
 
       const success = await this.sendToChat(finalMessage);
 
@@ -376,41 +380,41 @@ if (typeof window.MessageSender === 'undefined') {
         }
 
         formattedMessages.push(singleMessage);
-        console.log(`[Message Sender] 第${index + 1}条消息格式:`, singleMessage);
+        console.log(`[Message Sender] 第${index + 1} message format:`, singleMessage);
       });
 
       // 验证消息格式
       const validatedMessages = this.validateMessages(formattedMessages);
 
-      // 构建最终消息
+      // 构建Final payload
       let targetPrefix;
       if (this.isGroup) {
         // 获取群聊成员列表
         const groupMembers = this.getCurrentGroupMembers();
-        const membersText = groupMembers.length > 0 ? `，群聊内成员有${groupMembers.join('、')}` : '';
+        const membersText = groupMembers.length > 0 ? `, group members: ${groupMembers.join('、')}` : '';
 
-        targetPrefix = `向${this.currentFriendName}（${this.currentFriendId}）发送群聊${membersText}。请按照线上聊天群聊消息中的要求和格式生成群聊内角色回复，回复需要符合所有角色的人设和当前剧情`;
+        targetPrefix = `Send a group chat to ${this.currentFriendName} (${this.currentFriendId})${membersText}. Reply in the required group-chat format. Stay in character for every member and the current plot`;
       } else {
-        targetPrefix = `向${this.currentFriendName}（${this.currentFriendId}）发送消息，请按照线上聊天私聊消息中的要求和格式生成角色回复，回复需要符合角色人设和当前剧情`;
+        targetPrefix = `Send a message to ${this.currentFriendName} (${this.currentFriendId}). Reply in the required private-chat format. Stay in character and the current plot`;
       }
 
       // 检查是否启用禁止正文功能
       let finalMessage;
       if (this.isDisableBodyTextEnabled()) {
-        finalMessage = `<Request:强调！当用户只输出线上消息时，只回复线上消息，不回复正文>\n请用规定格式，${targetPrefix}\n${validatedMessages.join('\n')}`;
-        console.log('[Message Sender] 禁止正文模式已启用，添加特殊前缀');
+        finalMessage = `<Request: If the user only sent in-app chat tags, reply with in-app chat tags only — no story prose.>\nUse the required format, ${targetPrefix}\n${validatedMessages.join('\n')}`;
+        console.log('[Message Sender] Body-text lock on — special prefix added');
       } else {
-        finalMessage = `请用规定格式，${targetPrefix}\n${validatedMessages.join('\n')}`;
+        finalMessage = `Use the required format, ${targetPrefix}\n${validatedMessages.join('\n')}`;
       }
 
-      console.log('[Message Sender] 最终消息:', finalMessage);
+      console.log('[Message Sender] Final payload:', finalMessage);
 
       const success = await this.sendToChat(finalMessage);
 
       if (success) {
         const summaryMessage =
           messageLines.length > 1
-            ? `${messageLines.length}条消息: ${messageLines[0].substring(0, 10)}...`
+            ? `${messageLines.length} messages: ${messageLines[0].substring(0, 10)}...`
             : messageLines[0];
 
         this.showSendSuccessToast(summaryMessage);
@@ -496,7 +500,7 @@ if (typeof window.MessageSender === 'undefined') {
     validateMessages(messages) {
       return messages.map((msg, index) => {
         if (!msg.trim().endsWith(']')) {
-          console.warn(`[Message Sender] 第${index + 1}条消息格式不完整:`, msg);
+          console.warn(`[Message Sender] 第${index + 1} message format不完整:`, msg);
           return msg.trim() + ']';
         }
         return msg.trim();
@@ -560,11 +564,11 @@ if (typeof window.MessageSender === 'undefined') {
     }
 
     /**
-     * 发送消息的主要方法
+     * send message的主要方法
      */
     async sendMessage(message) {
       if (!message.trim()) {
-        this.showSendErrorToast('消息内容不能为空');
+        this.showSendErrorToast('Message is empty');
         return false;
       }
 
@@ -585,7 +589,7 @@ if (typeof window.MessageSender === 'undefined') {
 
         return success;
       } catch (error) {
-        console.error('[Message Sender] 发送消息失败:', error);
+        console.error('[Message Sender] send message失败:', error);
         this.showSendErrorToast(error.message || '发送失败');
         return false;
       } finally {
@@ -604,7 +608,7 @@ if (typeof window.MessageSender === 'undefined') {
         if (isSending) {
           sendButton.classList.add('sending');
           sendButton.disabled = true;
-          sendButton.textContent = '发送中...';
+          sendButton.textContent = 'Sending...';
         } else {
           sendButton.classList.remove('sending');
           sendButton.disabled = false;
@@ -655,7 +659,7 @@ if (typeof window.MessageSender === 'undefined') {
       const currentValue = textareaElement.value;
       const cursorPosition = textareaElement.selectionStart;
 
-      // 如果输入框不为空且光标前的字符不是换行符，添加换行
+      // 如果输入框不为空且光标前的字符不是换行符，Add换行
       let newValue;
       if (currentValue && cursorPosition > 0 && currentValue[cursorPosition - 1] !== '\n') {
         newValue = currentValue.slice(0, cursorPosition) + '\n' + specialText + currentValue.slice(cursorPosition);
@@ -676,7 +680,7 @@ if (typeof window.MessageSender === 'undefined') {
     }
 
     /**
-     * 获取当前聊天对象信息
+     * 获取当前聊天对象Messages
      */
     getCurrentChatInfo() {
       return {
@@ -704,13 +708,13 @@ if (typeof window.MessageSender === 'undefined') {
       }
 
       try {
-        // 方法1: 从聊天记录中查找最新的群聊信息
+        // 方法1: 从聊天记录中查找最新的群聊Messages
         const messageElements = document.querySelectorAll('.mes_text, .mes_block');
         let latestGroupInfo = null;
 
-        // 创建正则表达式匹配该群的信息：[群聊|群名|群号|成员列表] 或 [创建群聊|群号|群名|成员列表]
+        // 创建正则表达式匹配该群的Messages：[群聊|群名|群号|成员列表] 或 [Create group|群号|群名|成员列表]
         const groupRegex1 = new RegExp(`\\[群聊\\|([^\\|]+)\\|${this.currentFriendId}\\|([^\\]]+)\\]`, 'g');
-        const groupRegex2 = new RegExp(`\\[创建群聊\\|${this.currentFriendId}\\|([^\\|]+)\\|([^\\]]+)\\]`, 'g');
+        const groupRegex2 = new RegExp(`\\[Create group\\|${this.currentFriendId}\\|([^\\|]+)\\|([^\\]]+)\\]`, 'g');
 
         // 从最新消息开始查找
         for (let i = messageElements.length - 1; i >= 0; i--) {
@@ -727,18 +731,18 @@ if (typeof window.MessageSender === 'undefined') {
               groupName: match[1],
               members: match[2],
             };
-            console.log('[Message Sender] 找到群聊信息 (格式1):', latestGroupInfo);
+            console.log('[Message Sender] 找到群聊Messages (格式1):', latestGroupInfo);
             break;
           }
 
-          // 尝试匹配第二种格式：[创建群聊|群号|群名|成员列表]
+          // 尝试匹配第二种格式：[Create group|群号|群名|成员列表]
           match = groupRegex2.exec(messageText);
           if (match) {
             latestGroupInfo = {
               groupName: match[1],
               members: match[2],
             };
-            console.log('[Message Sender] 找到群聊信息 (格式2):', latestGroupInfo);
+            console.log('[Message Sender] 找到群聊Messages (格式2):', latestGroupInfo);
             break;
           }
         }
@@ -750,10 +754,10 @@ if (typeof window.MessageSender === 'undefined') {
             .map(name => name.trim())
             .filter(name => name);
 
-          console.log('[Message Sender] 解析到群聊成员:', members);
+          console.log('[Message Sender] 解析到群聊Members:', members);
           return members;
         } else {
-          console.log('[Message Sender] 未找到群聊成员信息，返回空数组');
+          console.log('[Message Sender] 未找到群聊成员Messages，返回空数组');
           return [];
         }
       } catch (error) {
@@ -766,7 +770,7 @@ if (typeof window.MessageSender === 'undefined') {
      * 调试方法
      */
     debug() {
-      console.log('[Message Sender] 调试信息:', {
+      console.log('[Message Sender] 调试Messages:', {
         currentFriendId: this.currentFriendId,
         currentFriendName: this.currentFriendName,
         isGroup: this.isGroup,
