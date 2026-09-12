@@ -1371,24 +1371,31 @@ class MobileCustomAPIConfig {
     }
 }
 
-// Auto-init
-jQuery(document).ready(() => {
-    // Wait briefly so other modules can load
-    setTimeout(() => {
-        if (!window.mobileCustomAPIConfig) {
-            const apiConfig = new MobileCustomAPIConfig();
-            apiConfig.initialize().then(success => {
-                if (success) {
-                    console.log('[Mobile API Config] ✅ Custom API config module ready');
-                } else {
-                    console.error('[Mobile API Config] ❌ Custom API config module failed to init');
-                }
-            });
-            // Expose instance on window
-            window.mobileCustomAPIConfig = apiConfig;
+// Create the instance immediately so index.js's 100ms existence check succeeds.
+// initialize() still waits for DOM (settings UI).
+if (!window.mobileCustomAPIConfig) {
+    window.mobileCustomAPIConfig = new MobileCustomAPIConfig();
+}
+
+function startMobileCustomAPIConfig() {
+    const apiConfig = window.mobileCustomAPIConfig;
+    if (!apiConfig || apiConfig.isInitialized) return;
+    apiConfig.initialize().then(success => {
+        if (success) {
+            console.log('[Mobile API Config] Custom API config module ready');
+        } else {
+            console.warn('[Mobile API Config] Custom API config init returned false');
         }
-    }, 1000);
-});
+    });
+}
+
+if (window.jQuery) {
+    jQuery(document).ready(startMobileCustomAPIConfig);
+} else if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startMobileCustomAPIConfig);
+} else {
+    setTimeout(startMobileCustomAPIConfig, 0);
+}
 
 // Export class and instance to window
 window.MobileCustomAPIConfig = MobileCustomAPIConfig;
