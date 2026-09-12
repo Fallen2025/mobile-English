@@ -67,10 +67,25 @@
         '样式配置管理器': 'Style config',
         '黑': 'Blk',
         '白': 'Wht',
+        '多云转小雨': 'Cloudy, light rain',
+        '多云': 'Cloudy',
+        '晴': 'Clear',
+        '晴朗': 'Sunny',
+        '阴': 'Overcast',
+        '小雨': 'Light rain',
+        '中雨': 'Rain',
+        '大雨': 'Heavy rain',
+        '雨': 'Rain',
+        '雪': 'Snow',
+        '小雪': 'Light snow',
+        '雾': 'Fog',
+        '阴转多云': 'Overcast to cloudy',
+        '多云转晴': 'Cloudy to clear',
+        '晴转多云': 'Clear to cloudy',
+        '多云转阴': 'Cloudy to overcast',
+        '阴转小雨': 'Overcast, light rain',
+        '雨转阴': 'Rain to overcast',
     };
-
-    const ZH = {};
-    Object.keys(EN).forEach(function (k) { ZH[EN[k]] = k; });
 
     const dict = lang === 'zh' ? {} : EN;
 
