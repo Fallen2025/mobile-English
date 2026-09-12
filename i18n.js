@@ -215,6 +215,16 @@
         '八卦小报记者': 'Gossip reporter',
         '天涯老涯友': 'Tianya old-timer',
         '校园论坛': 'Campus forum',
+
+        '外置手机': 'External Phone',
+        '酒馆页面与手机控制兼容': 'Tavern page compatible with phone controls',
+        '隐藏手机按钮': 'Hide phone button',
+        '专一模式（一次只和一人聊天）': 'Exclusive mode (one chat at a time)',
+        '禁止正文': 'Block story text',
+        '查看状态': 'View status',
+        '清除日志': 'Clear logs',
+        '自定义API配置': 'Custom API config',
+        '楼层监听器状态': 'Floor monitor status',
     };
 
     const dict = lang === 'zh' ? {} : EN;
