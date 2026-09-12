@@ -12,7 +12,7 @@ if (typeof window.FriendRenderer === 'undefined') {
         window['contextMonitor'] || (window['ContextMonitor'] ? new window['ContextMonitor']() : null);
       if (!this.contextMonitor) {
         console.warn('[Friend Renderer] 上下文监控器未初始化，使用默认正则表达式');
-        this.friendPattern = /\[Friendsid\|([^|]+)\|(\d+)\]/g;
+        this.friendPattern = /\[好友id\|([^|]+)\|(\d+)\]/g;
       } else {
         this.friendPattern = this.contextMonitor.getRegexForFormat('friend');
       }
@@ -56,7 +56,7 @@ if (typeof window.FriendRenderer === 'undefined') {
         const groupsMap = new Map();
 
         // 定义正则表达式
-        const friendPattern = /\[Friendsid\|([^|]+)\|(\d+)\]/g;
+        const friendPattern = /\[好友id\|([^|]+)\|(\d+)\]/g;
         const groupPattern = /\[群聊\|([^|]+)\|([^|]+)\|([^\]]+)\]/g;
 
         // 新增：支持群聊消息格式来提取群聊Messages
@@ -294,7 +294,7 @@ if (typeof window.FriendRenderer === 'undefined') {
         const message = chatMessages[i];
         if (message.mes && typeof message.mes === 'string') {
           // 如果不是FriendsAdd或群聊格式的消息，则作为最后聊天记录
-          const friendPattern = /\[Friendsid\|[^|]+\|\d+\]/;
+          const friendPattern = /\[好友id\|[^|]+\|\d+\]/;
           const groupPattern = /\[群聊\|[^|]+\|[^|]+\|[^\]]+\]/;
 
           if (!friendPattern.test(message.mes) && !groupPattern.test(message.mes)) {
