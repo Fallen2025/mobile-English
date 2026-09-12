@@ -1,7 +1,92 @@
+
+window.normalizePhoneProtocol = window.normalizePhoneProtocol || function normalizePhoneProtocol(text) {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    .replace(/\[(?:Live)\|(?:viewers?|viewerCount|view count)\|/gi, '[直播|本场人数|')
+    .replace(/\[(?:Live)\|(?:content|title|stream)\|/gi, '[直播|直播内容|')
+    .replace(/\[(?:Live)\|([^\]|]+)\|(?:chat|danmaku|comment)\|/gi, '[直播|$1|弹幕|')
+    .replace(/\[(?:Live)\|([^\]|]+)\|(?:tip|gift|donate)\|/gi, '[直播|$1|打赏|')
+    .replace(/\[(?:Live)\|(?:suggest(?:ed)?|prompt|cta)\|/gi, '[直播|推荐互动|')
+    .replace(/\[(?:TheirMessage|OtherMessage|Reply|Incoming)\|/gi, '[对方消息|')
+    .replace(/\[(?:MyMessage|Outgoing)\|/gi, '[我方消息|')
+    .replace(/\[(?:GroupMessage|GroupChat)\|/gi, '[群聊消息|')
+    .replace(/\[(?:MyGroupMessage)\|/gi, '[我方群聊消息|')
+    .replace(/\[(?:FriendId|Friend)\|/gi, '[好友id|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:text|txt)\|/gi, '[$1|$2|$3|文字|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:sticker|emoji)\|/gi, '[$1|$2|$3|表情包|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:voice|audio)\|/gi, '[$1|$2|$3|语音|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:redpack|redpacket|hongbao)\|/gi, '[$1|$2|$3|红包|');
+};
+
+window.contentForPhoneParse = window.contentForPhoneParse || function contentForPhoneParse(text) {
+  const norm = window.normalizePhoneProtocol(text);
+  const stripped = norm.replace(/<think>[\s\S]*?<\/think>|<thinking>[\s\S]*?<\/thinking>/gi, '');
+  if (/\[[^\]]+\|/.test(stripped)) return stripped;
+  return norm;
+};
+
 /**
  * Message Sender - 消息发送处理器
  * 专门处理消息发送格式和逻辑，参考qq-app.js的发送功能
  */
+
+
+window.mobileSendToSillyTavern = window.mobileSendToSillyTavern || async function mobileSendToSillyTavern(message) {
+  const raw = message == null ? '' : String(message);
+  if (!raw.trim() || raw.trim() === 'undefined') {
+    console.error('[Mobile Send] empty payload');
+    return false;
+  }
+
+  const textarea = document.getElementById('send_textarea');
+  if (textarea) {
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+    if (setter) setter.call(textarea, raw);
+    else textarea.value = raw;
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    textarea.dispatchEvent(new Event('change', { bubbles: true }));
+    try {
+      if (window.jQuery) {
+        window.jQuery(textarea).val(raw).trigger('input').trigger('change');
+      }
+    } catch (_) {}
+  }
+
+  const ctx = window.SillyTavern && typeof window.SillyTavern.getContext === 'function'
+    ? window.SillyTavern.getContext()
+    : null;
+
+  if (ctx && typeof ctx.executeSlashCommandsWithOptions === 'function') {
+    try {
+      await ctx.executeSlashCommandsWithOptions('/trigger');
+      console.log('[Mobile Send] /trigger ok');
+      return true;
+    } catch (err) {
+      console.warn('[Mobile Send] /trigger failed:', err);
+    }
+  }
+
+  if (ctx && typeof ctx.generate === 'function') {
+    try {
+      await ctx.generate('normal');
+      console.log('[Mobile Send] context.generate ok');
+      return true;
+    } catch (err) {
+      console.warn('[Mobile Send] context.generate failed:', err);
+    }
+  }
+
+  const sendButton = document.getElementById('send_but');
+  if (sendButton) {
+    sendButton.classList.remove('disabled');
+    sendButton.click();
+    console.log('[Mobile Send] clicked #send_but');
+    return true;
+  }
+
+  console.error('[Mobile Send] no send method worked');
+  return false;
+};
 
 // 避免重复定义
 if (typeof window.MessageSender === 'undefined') {
@@ -116,57 +201,11 @@ if (typeof window.MessageSender === 'undefined') {
     async sendToChat(message) {
       try {
         console.log('[Message Sender] Sending to SillyTavern:', message);
-
-        // 方法1: 直接使用DOM元素
-        const originalInput = document.getElementById('send_textarea');
-        const sendButton = document.getElementById('send_but');
-
-        if (!originalInput || !sendButton) {
-          console.error('[Message Sender] Message box or send button not found');
-          return await this.sendToChatBackup(message);
-        }
-
-        // 检查输入框是否可用
-        if (originalInput.disabled) {
-          console.warn('[Message Sender] Message box is disabled');
-          return false;
-        }
-
-        // 检查发送按钮是否可用
-        if (sendButton.classList.contains('disabled')) {
-          console.warn('[Message Sender] Send button is disabled');
-          return false;
-        }
-
         if (message == null || String(message).trim() === '' || String(message).trim() === 'undefined') {
           console.error('[Message Sender] Refusing empty/undefined payload');
           return false;
         }
-
-        // Write through the native setter so SillyTavern sees the value
-        const existingValue = originalInput.value;
-        const newValue = existingValue ? existingValue + '\n' + message : message;
-        const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-        if (setter) setter.call(originalInput, newValue);
-        else originalInput.value = newValue;
-        console.log('[Message Sender] Appended text to the message box:', {
-          原有内容: existingValue,
-          新增内容: message,
-          最终内容: newValue
-        });
-
-        // 触发输入事件
-        originalInput.dispatchEvent(new Event('input', { bubbles: true }));
-        originalInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-        // 根据设置决定是否延迟点击发送按钮
-        if (this.isDelayClickEnabled()) {
-          await new Promise(resolve => setTimeout(resolve, 300));
-        }
-        sendButton.click();
-        console.log('[Message Sender] Clicked send');
-
-        return true;
+        return await window.mobileSendToSillyTavern(String(message));
       } catch (error) {
         console.error('[Message Sender] Send failed:', error);
         return await this.sendToChatBackup(message);
@@ -262,16 +301,16 @@ if (typeof window.MessageSender === 'undefined') {
         });
 
         const targetPrefix = this.isGroup
-          ? `Send group chat to ${this.currentFriendName} (${this.currentFriendId})`
-          : `Send a message to ${this.currentFriendName} (${this.currentFriendId})`;
+          ? `向${this.currentFriendName}（${this.currentFriendId}）发送群聊`
+          : `向${this.currentFriendName}（${this.currentFriendId}）发送消息`;
 
         // 检查是否启用禁止正文功能
         let finalMessage;
         if (this.isDisableBodyTextEnabled()) {
-          finalMessage = `<Request: If the user only sent in-app chat tags, reply with in-app chat tags only — no story prose.>\nUse the required format, ${targetPrefix}\n${processedMessages.join('\n')}`;
+          finalMessage = `<Request:强调！当用户只输出线上消息时，只回复线上消息，不回复正文>\n请用规定格式，${targetPrefix}\n${processedMessages.join('\n')}`;
           console.log('[Message Sender] Body-text lock on — special prefix added');
         } else {
-          finalMessage = `Use the required format, ${targetPrefix}\n${processedMessages.join('\n')}`;
+          finalMessage = `请用规定格式，${targetPrefix}\n${processedMessages.join('\n')}`;
         }
 
         console.log('[Message Sender] Sending mixed message (special formats):', finalMessage);
@@ -323,16 +362,16 @@ if (typeof window.MessageSender === 'undefined') {
      */
     async sendStickerMessages(messageLines) {
       const targetPrefix = this.isGroup
-        ? `Send group chat to ${this.currentFriendName} (${this.currentFriendId})`
-        : `Send a message to ${this.currentFriendName} (${this.currentFriendId})`;
+        ? `向${this.currentFriendName}（${this.currentFriendId}）发送群聊`
+        : `向${this.currentFriendName}（${this.currentFriendId}）发送消息`;
 
       // 检查是否启用禁止正文功能
       let finalMessage;
       if (this.isDisableBodyTextEnabled()) {
-        finalMessage = `<Request: If the user only sent in-app chat tags, reply with in-app chat tags only — no story prose.>\nUse the required format, ${targetPrefix}\n${messageLines.join('\n')}`;
+        finalMessage = `<Request:强调！当用户只输出线上消息时，只回复线上消息，不回复正文>\n请用规定格式，${targetPrefix}\n${messageLines.join('\n')}`;
         console.log('[Message Sender] Body-text lock on — special prefix added');
       } else {
-        finalMessage = `Use the required format, ${targetPrefix}\n${messageLines.join('\n')}`;
+        finalMessage = `请用规定格式，${targetPrefix}\n${messageLines.join('\n')}`;
       }
 
       console.log('[Message Sender] Sending sticker-only message:', finalMessage);
@@ -391,20 +430,20 @@ if (typeof window.MessageSender === 'undefined') {
       if (this.isGroup) {
         // 获取群聊成员列表
         const groupMembers = this.getCurrentGroupMembers();
-        const membersText = groupMembers.length > 0 ? `, group members: ${groupMembers.join('、')}` : '';
+        const membersText = groupMembers.length > 0 ? `，群聊内成员有${groupMembers.join('、')}` : '';
 
-        targetPrefix = `Send a group chat to ${this.currentFriendName} (${this.currentFriendId})${membersText}. Reply in the required group-chat format. Stay in character for every member and the current plot`;
+        targetPrefix = `向${this.currentFriendName}（${this.currentFriendId}）发送群聊${membersText}。请按照线上聊天群聊消息中的要求和格式生成群聊内角色回复，回复需要符合所有角色的人设和当前剧情`;
       } else {
-        targetPrefix = `Send a message to ${this.currentFriendName} (${this.currentFriendId}). Reply in the required private-chat format. Stay in character and the current plot`;
+        targetPrefix = `向${this.currentFriendName}（${this.currentFriendId}）发送消息，请按照线上聊天私聊消息中的要求和格式生成角色回复，回复需要符合角色人设和当前剧情`;
       }
 
       // 检查是否启用禁止正文功能
       let finalMessage;
       if (this.isDisableBodyTextEnabled()) {
-        finalMessage = `<Request: If the user only sent in-app chat tags, reply with in-app chat tags only — no story prose.>\nUse the required format, ${targetPrefix}\n${validatedMessages.join('\n')}`;
+        finalMessage = `<Request:强调！当用户只输出线上消息时，只回复线上消息，不回复正文>\n请用规定格式，${targetPrefix}\n${validatedMessages.join('\n')}`;
         console.log('[Message Sender] Body-text lock on — special prefix added');
       } else {
-        finalMessage = `Use the required format, ${targetPrefix}\n${validatedMessages.join('\n')}`;
+        finalMessage = `请用规定格式，${targetPrefix}\n${validatedMessages.join('\n')}`;
       }
 
       console.log('[Message Sender] Final payload:', finalMessage);
