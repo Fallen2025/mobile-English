@@ -5,6 +5,16 @@
 // @author       Assistant
 // @license      MIT
 
+// Mirror phone logs into the main SillyTavern console (load first)
+(function loadStConsoleBridge() {
+  if (window.__mobileStConsoleBridgeInstalled) return;
+  const s = document.createElement('script');
+  s.src = './scripts/extensions/third-party/mobile/st-console-bridge.js';
+  s.onload = () => console.log('[Mobile Context] ST console bridge loaded');
+  s.onerror = () => console.warn('[Mobile Context] st-console-bridge.js missing — phone logs stay local');
+  document.head.appendChild(s);
+})();
+
 // Optimization: load performance config and optimized loader first
 const performanceScript = document.createElement('script');
 performanceScript.src = './scripts/extensions/third-party/mobile/performance-config.js';
