@@ -9,8 +9,7 @@
  * - Dump with window.dumpMobileLogs() or the "Phone logs" dock
  * - Errors also hit toastr when ST has it
  *
- * Toggle dock: localStorage.MOBILE_SHOW_LOG_DOCK = "1"
- * Mute dock:   localStorage.MOBILE_SHOW_LOG_DOCK = "0"
+ * Hide lasts this page load only. Refresh shows the dock again.
  */
 (function installMobileStConsoleBridge() {
   if (window.__mobileStConsoleBridgeInstalled) {
@@ -158,8 +157,9 @@
 
   function ensureDock() {
     if (document.getElementById('mobile-st-log-dock')) return;
-    const show = localStorage.getItem('MOBILE_SHOW_LOG_DOCK');
-    if (show === '0') return;
+    if (window.__mobileStLogDockHidden) return;
+    const host = document.body || document.documentElement;
+    if (!host) return;
 
     const dock = document.createElement('div');
     dock.id = 'mobile-st-log-dock';
@@ -182,8 +182,8 @@
       '#mobile-st-log-pre .mobile-st-log-warn{color:#fbbf24}' +
       '#mobile-st-log-pre .mobile-st-log-info{color:#93c5fd}' +
       '#mobile-st-log-pre .mobile-st-log-debug{color:#9ca3af}';
-    document.documentElement.appendChild(style);
-    document.documentElement.appendChild(dock);
+    host.appendChild(style);
+    host.appendChild(dock);
     document.getElementById('mobile-st-log-dump').onclick = function () {
       window.dumpMobileLogs();
     };
@@ -191,16 +191,24 @@
       window.clearMobileLogs();
     };
     document.getElementById('mobile-st-log-hide').onclick = function () {
-      localStorage.setItem('MOBILE_SHOW_LOG_DOCK', '0');
+      window.__mobileStLogDockHidden = true;
       dock.remove();
     };
   }
 
-  if (document.body) {
+  function bootDock() {
     ensureDock();
-  } else {
-    document.addEventListener('DOMContentLoaded', ensureDock);
+    if (!document.getElementById('mobile-st-log-dock') && !window.__mobileStLogDockHidden) {
+      setTimeout(bootDock, 1000);
+    }
   }
+  if (document.body) bootDock();
+  else document.addEventListener('DOMContentLoaded', bootDock);
+  setInterval(() => {
+    if (!window.__mobileStLogDockHidden && !document.getElementById('mobile-st-log-dock')) {
+      ensureDock();
+    }
+  }, 3000);
 
   try {
     target.log('%c[Mobile] console bridge on — phone logs mirror to this ST console', 'color:#38bdf8;font-weight:bold');
