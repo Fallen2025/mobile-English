@@ -900,7 +900,7 @@ class ContextMonitor {
       // Own-message format: [我方消息|name|id|type|content]
       myMessage: {
         name: 'Own message',
-        regex: /\[我方消息\|([^|]*)\|(\d+)\|([^|]*)\|([^\]]*)\]/g,
+        regex: /\[(?:我方消息|MyMessage|Outgoing)\|([^|]*)\|(\d+)\|([^|]*)\|([^\]]*)\]/gi,
         fields: ['character', 'number', 'messageType', 'content'],
         description: 'Own-message format: [我方消息|name|id|type|content]',
       },
@@ -908,7 +908,7 @@ class ContextMonitor {
       // Other-message format: [对方消息|name|id|type|content]
       otherMessage: {
         name: 'Other message',
-        regex: /\[对方消息\|([^|]*)\|(\d+)\|([^|]*)\|([^\]]*)\]/g,
+        regex: /\[(?:对方消息|TheirMessage|OtherMessage|Reply|Incoming)\|([^|]*)\|(\d+)\|([^|]*)\|([^\]]*)\]/gi,
         fields: ['character', 'number', 'messageType', 'content'],
         description: 'Other-message format: [对方消息|name|id|type|content]',
       },
@@ -916,7 +916,7 @@ class ContextMonitor {
       // Friend format: [好友id|name|id]
       friend: {
         name: 'Friend',
-        regex: /\[好友id\|([^|]*)\|(\d+)\]/g,
+        regex: /\[(?:好友id|FriendId|Friend)\|([^|]*)\|(\d+)\]/gi,
         fields: ['character', 'number'],
         description: 'Friend format: [好友id|name|id]',
       },
@@ -924,7 +924,7 @@ class ContextMonitor {
       // Generic message format: [kind|name|id|type|content] (flexible)
       universalMessage: {
         name: 'Generic message',
-        regex: /\[(我方消息|对方消息|群聊消息|我方群聊消息)\|([^|]*)\|([^|]*)\|([^|]*)\|([^\]]*)\]/g,
+        regex: /\[(我方消息|对方消息|群聊消息|我方群聊消息|MyMessage|TheirMessage|OtherMessage|Reply|Incoming|Outgoing|GroupMessage|GroupChat|MyGroupMessage)\|([^|]*)\|([^|]*)\|([^|]*)\|([^\]]*)\]/gi,
         fields: ['type', 'character', 'number', 'messageType', 'content'],
         description: 'Generic message format: [kind|name|id|type|content]',
       },
@@ -932,7 +932,7 @@ class ContextMonitor {
       // Group-message format: [群聊消息|groupId|sender|type|content]
       groupMessage: {
         name: 'Group message',
-        regex: /\[群聊消息\|([^|]*)\|([^|]*)\|([^|]*)\|([^\]]*)\]/g,
+        regex: /\[(?:群聊消息|GroupMessage|GroupChat)\|([^|]*)\|([^|]*)\|([^|]*)\|([^\]]*)\]/gi,
         fields: ['number', 'sender', 'messageType', 'content'], // number matches group id
         description: 'Group-message format: [群聊消息|groupId|sender|type|content]',
       },
@@ -940,7 +940,7 @@ class ContextMonitor {
       // Own group-message format: [我方群聊消息|我|groupId|type|content]
       myGroupMessage: {
         name: 'Own group message',
-        regex: /\[我方群聊消息\|我\|([^|]*)\|([^|]*)\|([^\]]*)\]/g,
+        regex: /\[(?:我方群聊消息|MyGroupMessage)\|(?:我|me|Me)\|([^|]*)\|([^|]*)\|([^\]]*)\]/gi,
         fields: ['number', 'messageType', 'content'], // number matches group id
         description: 'Own group-message format: [我方群聊消息|我|groupId|type|content]',
       },
@@ -956,7 +956,7 @@ class ContextMonitor {
       // Group format: [群聊|name|id|desc]
       groupChat: {
         name: 'Group',
-        regex: /\[群聊\|([^|]*)\|(\d+)\|([^|]*)\]/g,
+        regex: /\[(?:群聊|Group)\|([^|]*)\|(\d+)\|([^|]*)\]/gi,
         fields: ['groupName', 'groupId', 'description'],
         description: 'Group format: [群聊|name|id|members]',
       },
@@ -964,7 +964,7 @@ class ContextMonitor {
       // Create-group format: [创建群聊|id|name|desc]
       createGroupChat: {
         name: 'Create group',
-        regex: /\[创建群聊\|(\d+)\|([^|]*)\|([^|]*)\]/g,
+        regex: /\[(?:创建群聊|CreateGroup)\|(\d+)\|([^|]*)\|([^|]*)\]/gi,
         fields: ['groupId', 'groupName', 'description'],
         description: 'Create-group format: [创建群聊|id|name|desc]',
       },
@@ -1147,7 +1147,7 @@ class ContextMonitor {
       originalMessages.forEach((message, messageIndex) => {
         if (message.mes) {
           // Strip thinking tags so inner content is not extracted
-          const messageForExtraction = this.removeThinkingTags(message.mes);
+          const messageForExtraction = (window.contentForPhoneParse || this.removeThinkingTags.bind(this))(message.mes);
           const extractions = this.extractDataFromText(messageForExtraction, formatName);
 
           // Attach message context + global index to each extraction
@@ -1314,7 +1314,7 @@ class ContextMonitor {
 
       if (message.mes) {
         // Strip thinking tags before extract
-        const messageForExtraction = this.removeThinkingTags(message.mes);
+        const messageForExtraction = (window.contentForPhoneParse || this.removeThinkingTags.bind(this))(message.mes);
         const extractions = this.extractDataFromText(messageForExtraction, formatName);
 
         // Attach message context to each extraction
@@ -1995,16 +1995,16 @@ class ContextMonitor {
 
     return {
       // Friend record
-      friend: new RegExp(`\\[好友id\\|([^|]*)\\|${escapedFriendId}\\]`, 'g'),
+      friend: new RegExp(`\\[(?:好友id|FriendId|Friend)\\|([^|]*)\\|${escapedFriendId}\\]`, 'gi'),
 
       // Own-message match
-      myMessage: new RegExp(`\\[我方消息\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'g'),
+      myMessage: new RegExp(`\\[(?:我方消息|MyMessage|Outgoing)\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'gi'),
 
       // Other-message match
-      otherMessage: new RegExp(`\\[对方消息\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'g'),
+      otherMessage: new RegExp(`\\[(?:对方消息|TheirMessage|OtherMessage|Reply|Incoming)\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'gi'),
 
       // Either-side match
-      universalMessage: new RegExp(`\\[(我方消息|对方消息)\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'g'),
+      universalMessage: new RegExp(`\\[(我方消息|对方消息|MyMessage|TheirMessage|OtherMessage|Reply|Incoming|Outgoing)\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'gi'),
     };
   }
 
@@ -2017,7 +2017,7 @@ class ContextMonitor {
     const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const escapedFriendName = escapeRegex(friendName);
 
-    return new RegExp(`\\[好友id\\|${escapedFriendName}\\|(\\d+)\\]`, 'g');
+    return new RegExp(`\\[(?:好友id|FriendId|Friend)\\|${escapedFriendName}\\|(\\d+)\\]`, 'gi');
   }
 
   /**
