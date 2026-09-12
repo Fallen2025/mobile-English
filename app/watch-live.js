@@ -1,3 +1,30 @@
+
+window.normalizePhoneProtocol = window.normalizePhoneProtocol || function normalizePhoneProtocol(text) {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    .replace(/\[(?:Live)\|(?:viewers?|viewerCount|view count)\|/gi, '[直播|本场人数|')
+    .replace(/\[(?:Live)\|(?:content|title|stream)\|/gi, '[直播|直播内容|')
+    .replace(/\[(?:Live)\|([^\]|]+)\|(?:chat|danmaku|comment)\|/gi, '[直播|$1|弹幕|')
+    .replace(/\[(?:Live)\|([^\]|]+)\|(?:tip|gift|donate)\|/gi, '[直播|$1|打赏|')
+    .replace(/\[(?:Live)\|(?:suggest(?:ed)?|prompt|cta)\|/gi, '[直播|推荐互动|')
+    .replace(/\[(?:TheirMessage|OtherMessage|Reply|Incoming)\|/gi, '[对方消息|')
+    .replace(/\[(?:MyMessage|Outgoing)\|/gi, '[我方消息|')
+    .replace(/\[(?:GroupMessage|GroupChat)\|/gi, '[群聊消息|')
+    .replace(/\[(?:MyGroupMessage)\|/gi, '[我方群聊消息|')
+    .replace(/\[(?:FriendId|Friend)\|/gi, '[好友id|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:text|txt)\|/gi, '[$1|$2|$3|文字|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:sticker|emoji)\|/gi, '[$1|$2|$3|表情包|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:voice|audio)\|/gi, '[$1|$2|$3|语音|')
+    .replace(/\[(对方消息|我方消息|群聊消息|我方群聊消息)\|([^|\]]+)\|([^|\]]+)\|(?:redpack|redpacket|hongbao)\|/gi, '[$1|$2|$3|红包|');
+};
+
+window.contentForPhoneParse = window.contentForPhoneParse || function contentForPhoneParse(text) {
+  const norm = window.normalizePhoneProtocol(text);
+  const stripped = norm.replace(/<think>[\s\S]*?<\/think>|<thinking>[\s\S]*?<\/thinking>/gi, '');
+  if (/\[[^\]]+\|/.test(stripped)) return stripped;
+  return norm;
+};
+
 /**
  * Watch Live App - Watch Live应用
  * Watch-live UI for mobile-phone.js, same pattern as live-app.js
@@ -267,11 +294,11 @@ if (typeof window.WatchLiveApp === 'undefined') {
     constructor() {
       // Regex patterns
       this.patterns = {
-        viewerCount: /\[直播\|本场人数\|([^\]]+)\]/g,
-        liveContent: /\[直播\|直播内容\|([^\]]+)\]/g,
-        normalDanmaku: /\[直播\|([^\|]+)\|弹幕\|([^\]]+)\]/g,
-        giftDanmaku: /\[直播\|([^\|]+)\|打赏\|([^\]]+)\]/g,
-        recommendedInteraction: /\[直播\|推荐互动\|([^\]]+)\]/g,
+        viewerCount: /\[(?:直播|Live)\|(?:本场人数|viewers?|viewerCount)\|([^\]]+)\]/gi,
+        liveContent: /\[(?:直播|Live)\|(?:直播内容|content|title)\|([^\]]+)\]/gi,
+        normalDanmaku: /\[(?:直播|Live)\|([^\|]+)\|(?:弹幕|chat|danmaku)\|([^\]]+)\]/gi,
+        giftDanmaku: /\[(?:直播|Live)\|([^\|]+)\|(?:打赏|礼物|tip|gift)\|([^\]]+)\]/gi,
+        recommendedInteraction: /\[(?:直播|Live)\|(?:推荐互动|suggest(?:ed)?|prompt)\|([^\]]+)\]/gi,
       };
     }
 
@@ -292,6 +319,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
       if (!content || typeof content !== 'string') {
         return liveData;
       }
+      content = window.contentForPhoneParse(content);
 
       // 1. Parse viewer count
       liveData.viewerCount = this.parseViewerCount(content);
@@ -813,11 +841,11 @@ if (typeof window.WatchLiveApp === 'undefined') {
 
       // Any active (non-history) live tags?
       const activeLivePatterns = [
-        /\[直播\|本场人数\|[^\]]+\]/,
-        /\[直播\|直播内容\|[^\]]+\]/,
-        /\[直播\|[^|]+\|弹幕\|[^\]]+\]/,
-        /\[直播\|[^|]+\|(?:打赏|礼物)\|[^\]]+\]/,
-        /\[直播\|推荐互动\|[^\]]+\]/,
+        /\[(?:直播|Live)\|(?:本场人数|viewers?|viewerCount)\|[^\]]+\]/i,
+        /\[(?:直播|Live)\|(?:直播内容|content|title)\|[^\]]+\]/i,
+        /\[(?:直播|Live)\|[^|]+\|(?:弹幕|chat|danmaku)\|[^\]]+\]/i,
+        /\[(?:直播|Live)\|[^|]+\|(?:打赏|礼物|tip|gift)\|[^\]]+\]/i,
+        /\[(?:直播|Live)\|(?:推荐互动|suggest(?:ed)?|prompt)\|[^\]]+\]/i,
       ];
 
       for (const pattern of activeLivePatterns) {
@@ -897,7 +925,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         }
 
         // Send continue-live message to ST
-        const message = `The user is still watching. Their action: (${interaction}). Generate live data in the required format: 本场人数, 直播内容, danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines. Do not use any other format.`;
+        const message = `用户继续直播，互动为（${interaction}），请按照正确的直播格式要求生成本场人数，直播内容，弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动。禁止使用错误格式。`;
 
         await this.sendToSillyTavern(message);
 
@@ -1844,7 +1872,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
 
         // 然后发送请求获取新的Live rooms
         const message =
-          'The user wants to watch live streams. Generate 5–10 rooms that could be live now. Each room MUST use exactly this format: [直播|room name|streamer username|category|viewer count]. Streamers may be characters, NPCs, or bystanders. Put one room per line';
+          '用户希望观看直播，请按照正确格式生成5-10个当前可能正在开播的直播间，每个直播间的格式为[直播|直播间名称|主播用户名|直播类别|观看人数]。主播可能是角色，NPC或者是无关路人。每个直播间格式之间需要正确换行';
 
         // 设置等待状态，准备接收新回复
         this.isWaitingForLiveList = true;
@@ -1916,7 +1944,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         // 设置渲染权为watch
         await this.setRenderingRight('watch');
 
-        const message = `The user is watching ${streamerName}. Generate live data in the required format: 本场人数, 直播内容, danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines. Do not use any other format. 推荐互动 items must be chat messages the viewer might send.`;
+        const message = `用户选择观看${streamerName}的直播，请按照正确的直播格式要求生成本场人数，直播内容，弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动。禁止使用错误格式。当前用户正在观看直播，推荐互动需要是用户可能会发送的弹幕。`;
 
         // 隐藏弹窗
         this.hideModal('specific-live-modal');
@@ -1953,7 +1981,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
 
         // 匹配直播间格式：[直播|直播间名称|主播用户名|直播类别|观看人数]
         // 使用更严格的正则表达式，确保正确匹配
-        const liveRoomRegex = /\[直播\|([^|\]]+)\|([^|\]]+)\|([^|\]]+)\|([^|\]]+)\]/g;
+        const liveRoomRegex = /\[(?:直播|Live)\|([^|\]]+)\|([^|\]]+)\|([^|\]]+)\|([^|\]]+)\]/gi;
         const rooms = [];
         let match;
         let matchCount = 0;
@@ -2003,7 +2031,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         // 设置渲染权为watch
         await this.setRenderingRight('watch');
 
-        const message = `The user opened a room: name ${roomData.name}, streamer ${roomData.streamer}, category ${roomData.category}, viewers ${roomData.viewers}. Generate live data in the required format: 本场人数, 直播内容, danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. The stream may have just started or already been live. End with four 推荐互动 lines. Do not use any other format. 推荐互动 items must be chat messages the viewer might send.`;
+        const message = `用户选择观看直播：直播间名称：${roomData.name}，主播用户名：${roomData.streamer}，直播类别：${roomData.category}，本次观看人数：${roomData.viewers}。请按照正确的直播格式要求生成本场人数，直播内容，弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁，当前直播可以是刚开播或者已经直播一段时间了。最后需要生成四条推荐互动。禁止使用错误格式。当前用户正在观看直播，推荐互动需要是用户可能会发送的弹幕。`;
 
         // 切换到直播间视图
         this.currentView = 'live';
@@ -2059,7 +2087,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         console.log('[Watch Live App] Sending suggested chat:', danmaku);
         this.appendLocalUserChat(danmaku);
 
-        const message = `The user is watching live and sent chat "${danmaku}". Do not repeat or send chat on the user's behalf. Generate live data in the required format: 本场人数, 直播内容, other danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines (chat the viewer might send). Do not use any other format.
+        const message = `用户正在观看直播，并发送弹幕"${danmaku}"，请勿重复或替用户发送弹幕。请按照正确的直播格式要求生成本场人数，直播内容，其余弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动，内容为用户可能会发送的弹幕。禁止使用错误格式。
 [直播|{{user}}|弹幕|${danmaku}]`;
 
         await this.sendToSillyTavern(message);
@@ -2078,7 +2106,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         console.log('[Watch Live App] Sending custom chat:', danmaku);
         this.appendLocalUserChat(danmaku);
 
-        const message = `The user is watching live and sent chat "${danmaku}". Do not repeat or send chat on the user's behalf. Generate live data in the required format: 本场人数, 直播内容, other danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines (chat the viewer might send). Do not use any other format.
+        const message = `用户正在观看直播，并发送弹幕"${danmaku}"，请勿重复或替用户发送弹幕。请按照正确的直播格式要求生成本场人数，直播内容，其余弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动，内容为用户可能会发送的弹幕。禁止使用错误格式。
 [直播|{{user}}|弹幕|${danmaku}]`;
 
         await this.sendToSillyTavern(message);
@@ -2209,11 +2237,12 @@ if (typeof window.WatchLiveApp === 'undefined') {
           .join('，');
 
         // 构建消息
-        let message = `The user is watching and tipped "${giftDescriptions}" for "${totalAmount}"`;
+        let message = `用户正在观看直播，并打赏礼物"${giftDescriptions}"，花费"${totalAmount}元"`;
         if (giftMessage) {
-          message += `, tip message: "${giftMessage}"`;
+          message += `，用户打赏留言为"${giftMessage}"`;
         }
-        message += `. Do not repeat or send chat on the user's behalf. Generate live data in the required format: 本场人数, 直播内容, other danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines (chat the viewer might send). Do not use any other format.`;
+        message += `，请勿重复或替用户发送弹幕。请按照正确的直播格式要求生成本场人数，直播内容，其余弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动，内容为用户可能会发送的弹幕。禁止使用错误格式。
+`;
 
         // 添加打赏格式 - 每种礼物一条记录
         selectedGifts.forEach(gift => {
@@ -2503,6 +2532,12 @@ if (typeof window.WatchLiveApp === 'undefined') {
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
         textarea.dispatchEvent(new Event('change', { bubbles: true }));
         textarea.focus();
+
+        if (typeof window.mobileSendToSillyTavern === 'function') {
+          const ok = await window.mobileSendToSillyTavern(packed);
+          if (!ok) throw new Error('ST send helper failed');
+          return true;
+        }
 
         const sendButton = document.querySelector('#send_but');
         if (sendButton) {
