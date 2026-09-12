@@ -85,6 +85,79 @@
         '多云转阴': 'Cloudy to overcast',
         '阴转小雨': 'Overcast, light rain',
         '雨转阴': 'Rain to overcast',
+
+        '我的日记': 'My Diary',
+        '📔 我的日记': 'My Diary',
+        '暂无日记': 'No diary entries',
+        '开始你的冒险，记录精彩瞬间': 'Start your adventure and record the moments',
+        '日记应用加载失败': 'Failed to load diary',
+        '获取内容失败': 'Failed to load content',
+        '暂无内容': 'No content',
+        '未知日期': 'Unknown date',
+        '未知': 'Unknown',
+
+        '我的状态': 'My Status',
+        'NPC状态': 'NPC Status',
+        '暂无状态数据': 'No status data',
+        '状态应用加载失败': 'Failed to load status',
+        '基本信息': 'Basic info',
+        '性别': 'Gender',
+        '年龄': 'Age',
+        '身高': 'Height',
+        '体重': 'Weight',
+        '性格': 'Personality',
+        '外貌': 'Appearance',
+        '外貌描述': 'Appearance',
+        '当前着装': 'Current outfit',
+        '人物记忆': 'Memories',
+        '好感度': 'Affection',
+        '性经验': 'Experience',
+        '内心想法': 'Inner thoughts',
+        '头部': 'Head',
+        '耳朵': 'Ears',
+        '上衣': 'Top',
+        '下装': 'Bottoms',
+        '内衣': 'Underwear',
+        '内裤': 'Underwear',
+        '袜子': 'Socks',
+        '鞋子': 'Shoes',
+        '脱下': 'Remove',
+        '脱下装备': 'Remove gear',
+        '脱下装备失败': 'Failed to remove gear',
+
+        '商品列表': 'Products',
+        '购物车': 'Cart',
+        '暂无商品': 'No products',
+        '购物车为空': 'Cart is empty',
+        '快去挑选你喜欢的商品吧': 'Go pick something you like',
+        '加入购物车': 'Add to cart',
+        '结算': 'Checkout',
+        '订单确认': 'Confirm order',
+        '订单详情': 'Order details',
+        '返回购物车': 'Back to cart',
+        '确认订单': 'Place order',
+        '总计：': 'Total:',
+        '品质': 'Quality',
+        '库存': 'Stock',
+        '货币': 'Currency',
+        '普通': 'Common',
+        '购物应用加载失败': 'Failed to load shop',
+        '数码': 'Electronics',
+        '服装': 'Clothes',
+        '家居': 'Home',
+        '美妆': 'Beauty',
+        '运动': 'Sports',
+        '图书': 'Books',
+        '玩具': 'Toys',
+        '音乐': 'Music',
+        '食品': 'Food',
+        '食物': 'Food',
+        '饮料': 'Drinks',
+        '装备': 'Gear',
+        '材料': 'Materials',
+        '道具': 'Items',
+        '消耗品': 'Consumables',
+        '其他': 'Other',
     };
 
     const dict = lang === 'zh' ? {} : EN;
@@ -93,6 +166,17 @@
         if (text == null) return text;
         const raw = String(text).trim();
         if (dict[raw]) return dict[raw];
+
+        var counted = raw.match(/^(.*?)(\s*\(\d+\))$/);
+        if (counted && dict[counted[1].trim()]) {
+            return dict[counted[1].trim()] + counted[2];
+        }
+
+        var labeled = raw.match(/^([一-鿿]+)\s*[\uff1a:]\s*(.*)$/);
+        if (labeled && dict[labeled[1]]) {
+            return dict[labeled[1]] + ': ' + labeled[2];
+        }
+
         return text;
     }
 
