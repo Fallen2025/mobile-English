@@ -1,6 +1,6 @@
 /**
- * 手机前端框架
- * 可爱的iOS风格手机界面
+ * Mobile phone shell
+ * iOS-style phone UI
  */
 
 class MobilePhone {
@@ -58,7 +58,7 @@ class MobilePhone {
             const indicators = document.getElementById('page-indicators');
 
             if (!wrapper || !indicators) {
-                console.log('[Mobile Phone] 页面元素未找到，延迟初始化拖拽功能');
+                console.log('[Mobile Phone] page elements missing — delay swipe init');
                 setTimeout(() => this.initPageSwipe(), 100);
                 return;
             }
@@ -82,7 +82,7 @@ class MobilePhone {
                 });
             });
 
-            console.log('[Mobile Phone] 页面拖拽功能初始化完成');
+            console.log('[Mobile Phone] page swipe ready');
         }, 100);
     }
 
@@ -175,10 +175,10 @@ class MobilePhone {
             const script = document.createElement('script');
             script.src = '/scripts/extensions/third-party/mobile/drag-helper.js';
             script.onload = () => {
-                console.log('[Mobile Phone] 拖拽插件加载成功');
+                console.log('[Mobile Phone] drag helper loaded');
             };
             script.onerror = () => {
-                console.error('[Mobile Phone] 拖拽插件加载失败');
+                console.error('[Mobile Phone] drag helper failed');
             };
             document.head.appendChild(script);
         }
@@ -190,7 +190,7 @@ class MobilePhone {
             // 检查是否已经存在按钮
             const existingButton = document.getElementById('mobile-phone-trigger');
             if (existingButton) {
-                console.log('[Mobile Phone] 按钮已存在，移除旧按钮');
+                console.log('[Mobile Phone] button exists — removing old');
                 existingButton.remove();
             }
 
@@ -198,12 +198,12 @@ class MobilePhone {
             button.id = 'mobile-phone-trigger';
             button.className = 'mobile-phone-trigger';
             button.innerHTML = '📱';
-            button.title = '打开手机界面';
+            button.title = 'Open phone';
             button.addEventListener('click', () => this.togglePhone());
 
             // 确保body存在
             if (!document.body) {
-                console.error('[Mobile Phone] document.body 不存在，延迟创建按钮');
+                console.error('[Mobile Phone] document.body missing — delay create button');
                 setTimeout(() => this.createPhoneButton(), 100);
                 return;
             }
@@ -213,9 +213,9 @@ class MobilePhone {
             // 初始化拖拽功能
             this.initDragForButton(button);
 
-            console.log('[Mobile Phone] 手机按钮创建成功');
+            console.log('[Mobile Phone] phone button created');
         } catch (error) {
-            console.error('[Mobile Phone] 创建按钮时发生错误:', error);
+            console.error('[Mobile Phone] create button error:', error);
         }
     }
 
@@ -238,7 +238,7 @@ class MobilePhone {
                     storageKey: 'mobile-phone-trigger-position',
                 });
 
-                console.log('[Mobile Phone] 拖拽功能初始化成功');
+                console.log('[Mobile Phone] button drag ready');
             } else {
                 // 如果DragHelper还未加载，继续等待
                 setTimeout(tryInitDrag, 100);
@@ -255,9 +255,9 @@ class MobilePhone {
             localStorage.removeItem('mobile-phone-trigger-position');
             // 清理框架位置缓存
             localStorage.removeItem('mobile-phone-frame-position');
-            console.log('[Mobile Phone] 位置缓存已清理');
+            console.log('[Mobile Phone] position cache cleared');
         } catch (error) {
-            console.warn('[Mobile Phone] 清理位置缓存时发生错误:', error);
+            console.warn('[Mobile Phone] clear position cache error:', error);
         }
     }
 
@@ -284,7 +284,7 @@ class MobilePhone {
                         dragHandle: '.mobile-status-bar', // 指定拖拽手柄为状态栏
                     });
 
-                    console.log('[Mobile Phone] 框架拖拽功能初始化成功');
+                    console.log('[Mobile Phone] frame drag ready');
                 }
             } else {
                 // 如果DragHelper还未加载，继续等待
@@ -301,7 +301,7 @@ class MobilePhone {
             // 检查是否已经存在容器
             const existingContainer = document.getElementById('mobile-phone-container');
             if (existingContainer) {
-                console.log('[Mobile Phone] 容器已存在，移除旧容器');
+                console.log('[Mobile Phone] container exists — removing old');
                 existingContainer.remove();
             }
 
@@ -314,7 +314,7 @@ class MobilePhone {
                 <div class="mobile-phone-overlay"></div>
                 <div class="mobile-phone-frame">
                     <div class="mobile-phone-screen">
-                        <!-- 状态栏 -->
+                        <!-- Status bar -->
                         <div class="mobile-status-bar">
                             <div class="status-left">
                                 <span class="time" id="mobile-time">08:08</span>
@@ -330,63 +330,63 @@ class MobilePhone {
                             </div>
                         </div>
 
-                        <!-- 主内容区域 -->
+                        <!-- Main -->
                         <div class="mobile-content" id="mobile-content">
-                            <!-- 主界面 -->
+                            <!-- Home -->
                             <div class="home-screen" id="home-screen">
-                                <!-- 时间天气卡片 -->
+                                <!-- Clock / weather -->
                                 <div class="weather-card">
                                     <div class="weather-time">
                                         <span class="current-time" id="home-time">08:08</span>
                                         <span class="current-date" id="home-date">08/21</span>
                                     </div>
                                     <div class="weather-info">
-                                        <span class="weather-desc">多云转小雨</span>
+                                        <span class="weather-desc">Cloudy, light rain</span>
                                     </div>
                                 </div>
 
 
-                                <!-- 应用页面容器 -->
+                                <!-- App pages -->
                                 <div class="app-pages-container">
                                     <div class="app-pages-wrapper" id="app-pages-wrapper">
-                                        <!-- 第一页 -->
+                                        <!-- Page 1 -->
                                         <div class="app-page">
                                             <div class="app-grid">
-                                                <!-- 第一行：信息，购物，任务 -->
+                                                <!-- Row 1: messages, shop, tasks -->
                                                 <div class="app-row">
                                                     <div class="app-icon" data-app="messages">
                                                         <div class="app-icon-bg pink">💬</div>
-                                                        <span class="app-label">信息</span>
+                                                        <span class="app-label">Messages</span>
                                                     </div>
                                                     <div class="app-icon" data-app="shop">
-                                                        <div class="app-icon-bg purple">购</div>
-                                                        <span class="app-label">购物</span>
+                                                        <div class="app-icon-bg purple">S</div>
+                                                        <span class="app-label">Shop</span>
                                                     </div>
                                                     <div class="app-icon" data-app="task">
                                                         <div class="app-icon-bg purple">📰</div>
-                                                        <span class="app-label">任务</span>
+                                                        <span class="app-label">Tasks</span>
                                                     </div>
                                                 </div>
-                                                <!-- 第二行：论坛，微博，直播 -->
+                                                <!-- Row 2: forum, weibo, live -->
                                                 <div class="app-row">
                                                     <div class="app-icon" data-app="forum">
                                                         <div class="app-icon-bg red">📰</div>
-                                                        <span class="app-label">论坛</span>
+                                                        <span class="app-label">Forum</span>
                                                     </div>
                                                     <div class="app-icon" data-app="weibo">
-                                                        <div class="app-icon-bg orange" style="font-size: 22px;color:rgba(0,0,0,0.4)">微</div>
-                                                        <span class="app-label">微博</span>
+                                                        <div class="app-icon-bg orange" style="font-size: 22px;color:rgba(0,0,0,0.4)">W</div>
+                                                        <span class="app-label">Weibo</span>
                                                     </div>
                                                     <div class="app-icon" data-app="live">
                                                         <div class="app-icon-bg red">🎬</div>
-                                                        <span class="app-label">直播</span>
+                                                        <span class="app-label">Live</span>
                                                     </div>
                                                 </div>
-                                                <!-- 第三行：背包，API，设置 -->
+                                                <!-- Row 3: bag, API, profile -->
                                                 <div class="app-row">
                                                     <div class="app-icon" data-app="backpack">
                                                         <div class="app-icon-bg orange">🎒</div>
-                                                        <span class="app-label">背包</span>
+                                                        <span class="app-label">Bag</span>
                                                     </div>
                                                     <div class="app-icon" data-app="api">
                                                         <div class="app-icon-bg orange" style="font-size: 22px;color:rgba(0,0,0,0.4)">AI</div>
@@ -394,29 +394,29 @@ class MobilePhone {
                                                     </div>
                                                     <div class="app-icon" data-app="profile">
                                                         <div class="app-icon-bg green">📋</div>
-                                                        <span class="app-label">档案</span>
+                                                        <span class="app-label">Profile</span>
                                                     </div>
                                                 </div>
 
                                             </div>
                                         </div>
 
-                                        <!-- 第二页 -->
+                                        <!-- Page 2 -->
                                         <div class="app-page">
                                             <div class="app-grid">
-                                                <!-- 第一行：相册，邮件，音乐 -->
+                                                <!-- Row 1: settings, status, diary -->
                                                 <div class="app-row">
                                                     <div class="app-icon" data-app="settings">
                                                         <div class="app-icon-bg purple">⚙️</div>
-                                                        <span class="app-label">设置</span>
+                                                        <span class="app-label">Settings</span>
                                                     </div>
                                                     <div class="app-icon" data-app="status">
                                                         <div class="app-icon-bg blue">👤</div>
-                                                        <span class="app-label">状态</span>
+                                                        <span class="app-label">Status</span>
                                                     </div>
                                                     <div class="app-icon" data-app="diary">
                                                         <div class="app-icon-bg orange">📔</div>
-                                                        <span class="app-label">日记</span>
+                                                        <span class="app-label">Diary</span>
                                                     </div>
                                                 </div>
 
@@ -424,7 +424,7 @@ class MobilePhone {
                                         </div>
                                     </div>
 
-                                    <!-- 页面指示器 -->
+                                    <!-- Page dots -->
                                     <div class="page-indicators" id="page-indicators">
                                         <div class="indicator active"></div>
                                         <div class="indicator"></div>
@@ -433,19 +433,19 @@ class MobilePhone {
 
                             </div>
 
-                            <!-- 应用界面容器 -->
+                            <!-- App screen -->
                             <div class="app-screen" id="app-screen" style="display: none;">
                                 <div class="app-header" id="app-header">
                                     <button class="back-button" id="back-button">
                                         <span class="back-icon">←</span>
                                     </button>
-                                    <h1 class="app-title" id="app-title">应用</h1>
+                                    <h1 class="app-title" id="app-title">App</h1>
                                     <div class="app-header-right" id="app-header-right">
-                                        <!-- 动态功能按钮将在这里添加 -->
+                                        <!-- Header actions -->
                                     </div>
                                 </div>
                                 <div class="app-content" id="app-content">
-                                    <!-- 应用内容将在这里动态加载 -->
+                                    <!-- App content -->
                                 </div>
                             </div>
                         </div>
@@ -455,7 +455,7 @@ class MobilePhone {
 
             // 确保body存在
             if (!document.body) {
-                console.error('[Mobile Phone] document.body 不存在，延迟创建容器');
+                console.error('[Mobile Phone] document.body missing — delay create container');
                 setTimeout(() => this.createPhoneContainer(), 100);
                 return;
             }
@@ -466,9 +466,9 @@ class MobilePhone {
             // 为手机框架添加拖拽功能
             this.initFrameDrag();
 
-            console.log('[Mobile Phone] 手机容器创建成功');
+            console.log('[Mobile Phone] phone container created');
         } catch (error) {
-            console.error('[Mobile Phone] 创建容器时发生错误:', error);
+            console.error('[Mobile Phone] create container error:', error);
         }
     }
 
@@ -492,7 +492,7 @@ class MobilePhone {
         document.getElementById('back-button').addEventListener('click', () => {
             // 防抖：避免快速连续点击返回按钮
             if (this._lastBackButtonClick && Date.now() - this._lastBackButtonClick < 300) {
-                console.log('[Mobile Phone] 防抖：返回按钮点击过快，跳过');
+                console.log('[Mobile Phone] debounce: back click too fast');
                 return;
             }
             this._lastBackButtonClick = Date.now();
@@ -507,7 +507,7 @@ class MobilePhone {
 
                 // 防抖：避免快速连续点击
                 if (this._lastAppIconClick && Date.now() - this._lastAppIconClick < 300) {
-                    console.log('[Mobile Phone] 防抖：应用图标点击过快，跳过:', appName);
+                    console.log('[Mobile Phone] debounce: app icon click too fast:', appName);
                     return;
                 }
                 this._lastAppIconClick = Date.now();
@@ -519,35 +519,35 @@ class MobilePhone {
 
     // 处理返回按钮
     handleBackButton() {
-        console.log('=== [Mobile Phone] 返回按钮处理开始 ===');
+        console.log('=== back-button start ===');
 
         // 清除用户导航意图（用户主动返回）
         this._userNavigationIntent = null;
-        console.log('[Mobile Phone] 已清除用户导航意图');
+        console.log('[Mobile Phone] cleared navigation intent');
 
-        console.log('[Mobile Phone] 当前应用栈长度:', this.appStack.length);
-        console.log('[Mobile Phone] 当前应用栈:', JSON.stringify(this.appStack, null, 2));
-        console.log('[Mobile Phone] 当前应用状态:', JSON.stringify(this.currentAppState, null, 2));
-        console.log('[Mobile Phone] 当前应用:', this.currentApp);
+        console.log('[Mobile Phone] app stack length:', this.appStack.length);
+        console.log('[Mobile Phone] app stack:', JSON.stringify(this.appStack, null, 2));
+        console.log('[Mobile Phone] current app state:', JSON.stringify(this.currentAppState, null, 2));
+        console.log('[Mobile Phone] current app:', this.currentApp);
 
-        // 没有当前应用状态，直接返回主界面
+        // 没有当前应用状态，直接go home
         if (!this.currentAppState) {
-            console.log('[Mobile Phone] 当前无应用状态，返回主界面');
+            console.log('[Mobile Phone] no app state — going home');
             this.goHome();
             return;
         }
 
         const currentApp = this.currentAppState.app;
-        console.log('[Mobile Phone] 从状态获取的应用:', currentApp);
+        console.log('[Mobile Phone] app from state:', currentApp);
 
         // 优先根据各应用自身的运行态判断是否在根页面
         const atRoot = this.isCurrentlyAtAppRoot(currentApp, this.currentAppState);
-        console.log('[Mobile Phone] 当前应用:', currentApp, '是否在根页面(模块检测):', atRoot);
+        console.log('[Mobile Phone] current app:', currentApp, 'at root (module check):', atRoot);
 
         // 安全检查：确保当前应用状态与应用一致
         if (this.currentApp && this.currentApp !== currentApp) {
             console.warn(
-                '[Mobile Phone] ⚠️ 应用状态不一致! currentApp:',
+                '[Mobile Phone] ⚠️ app state mismatch! currentApp:',
                 this.currentApp,
                 'vs currentAppState.app:',
                 currentApp,
@@ -558,25 +558,25 @@ class MobilePhone {
 
         if (!atRoot) {
             // 二级（或更深）页面：统一返回当前应用主界面
-            console.log('[Mobile Phone] 非根页面，返回当前应用主界面:', currentApp);
-            console.log('[Mobile Phone] 调用 returnToAppMain 前状态检查:');
+            console.log('[Mobile Phone] not root — return to app home:', currentApp);
+            console.log('[Mobile Phone] state before returnToAppMain:');
             console.log('  - currentApp:', this.currentApp);
             console.log('  - currentAppState.app:', this.currentAppState.app);
-            console.log('  - appStack 最后一项:', this.appStack[this.appStack.length - 1]);
+            console.log('  - last appStack item:', this.appStack[this.appStack.length - 1]);
 
             this.returnToAppMain(currentApp);
 
-            console.log('[Mobile Phone] returnToAppMain 调用后状态:');
+            console.log('[Mobile Phone] state after returnToAppMain:');
             console.log('  - currentApp:', this.currentApp);
             console.log('  - currentAppState.app:', this.currentAppState.app);
-            console.log('  - appStack 最后一项:', this.appStack[this.appStack.length - 1]);
+            console.log('  - last appStack item:', this.appStack[this.appStack.length - 1]);
             return;
         }
 
         // 根页面：返回手机主界面
-        console.log('[Mobile Phone] 已在应用根页面，返回主界面');
+        console.log('[Mobile Phone] already at app root — going home');
         this.goHome();
-        console.log('=== [Mobile Phone] 返回按钮处理结束 ===');
+        console.log('=== back-button end ===');
     }
 
     // 返回到论坛主列表
@@ -665,7 +665,7 @@ class MobilePhone {
             window.messageApp.showMessageList();
             console.log('[Mobile Phone] ✅ 消息列表显示完成，状态已重置');
         } else {
-            console.error('[Mobile Phone] messageApp实例不存在或showMessageList方法不可用');
+            console.error('[Mobile Phone] messageApp missing or showMessageList unavailable');
         }
     }
 
@@ -720,19 +720,19 @@ class MobilePhone {
                     window.messageApp.updateAppContent();
                 }
             } else if (state.view === 'friendsCircle') {
-                // 恢复朋友圈状态
-                console.log('[Mobile Phone] 恢复朋友圈状态...');
+                // 恢复Moments状态
+                console.log('[Mobile Phone] 恢复Moments状态...');
                 if (window.messageApp) {
                     // 设置messageApp状态
                     window.messageApp.currentMainTab = 'circle';
                     window.messageApp.currentView = 'list';
 
-                    // 确保朋友圈已初始化并激活
+                    // 确保Moments已初始化并激活
                     if (window.messageApp.friendsCircle) {
-                        console.log('[Mobile Phone] 激活现有朋友圈实例');
+                        console.log('[Mobile Phone] 激活现有Moments实例');
                         window.messageApp.friendsCircle.activate();
                     } else {
-                        console.log('[Mobile Phone] 朋友圈未初始化，立即初始化并激活');
+                        console.log('[Mobile Phone] Moments未初始化，立即初始化并激活');
                         window.messageApp.initFriendsCircle();
                         // 等待初始化完成后激活
                         setTimeout(() => {
@@ -747,11 +747,11 @@ class MobilePhone {
 
                     // 延迟确保header正确更新
                     setTimeout(() => {
-                        console.log('[Mobile Phone] 延迟更新朋友圈header...');
+                        console.log('[Mobile Phone] 延迟更新Momentsheader...');
                         const circleState = {
                             app: 'messages',
                             view: 'friendsCircle',
-                            title: '朋友圈',
+                            title: 'Moments',
                             showBackButton: false,
                             showAddButton: true,
                             addButtonIcon: 'fas fa-camera',
@@ -851,23 +851,23 @@ class MobilePhone {
                 textColorBtn.className = 'app-header-btn text-color-toggle';
                 // 显示将要切换到的颜色（与当前颜色相反）
                 textColorBtn.innerHTML = this.getCurrentTextColor() === 'white' ? '黑' : '白';
-                textColorBtn.title = '切换文字颜色';
+                textColorBtn.title = 'Toggle text color';
                 textColorBtn.addEventListener('click', () => this.toggleTextColor());
                 headerRight.appendChild(textColorBtn);
 
-                // 消息列表页面：添加图片设置按钮
+                // 消息列表页面：添加Image settings按钮
                 const imageConfigBtn = document.createElement('button');
                 imageConfigBtn.className = 'app-header-btn';
                 imageConfigBtn.innerHTML = '<i class="fas fa-image"></i>';
-                imageConfigBtn.title = '图片设置';
+                imageConfigBtn.title = 'Image settings';
                 imageConfigBtn.addEventListener('click', () => this.showImageConfigModal());
                 headerRight.appendChild(imageConfigBtn);
 
-                // 消息列表页面：添加好友按钮
+                // 消息列表页面：Add friend按钮
                 const addFriendBtn = document.createElement('button');
                 addFriendBtn.className = 'app-header-btn';
                 addFriendBtn.innerHTML = '➕';
-                addFriendBtn.title = '添加好友';
+                addFriendBtn.title = 'Add friend';
                 addFriendBtn.addEventListener('click', () => this.showAddFriend());
                 headerRight.appendChild(addFriendBtn);
             } else if (state.view === 'messageDetail') {
@@ -876,20 +876,20 @@ class MobilePhone {
                     const photoBtn = document.createElement('button');
                     photoBtn.className = 'app-header-btn';
                     photoBtn.innerHTML = '<i class="fas fa-image"></i>';
-                    photoBtn.title = '相片设置';
+                    photoBtn.title = 'Photo settings';
                     photoBtn.addEventListener('click', () => this.showFriendImageConfigModal(state.friendId, state.friendName));
                     headerRight.appendChild(photoBtn);
                 }
 
-                // 消息详情页面：添加刷新按钮
+                // 消息详情页面：添加Refresh按钮
                 const refreshBtn = document.createElement('button');
                 refreshBtn.className = 'app-header-btn';
                 refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-                refreshBtn.title = '刷新消息';
+                refreshBtn.title = 'Refresh messages';
                 refreshBtn.addEventListener('click', () => this.refreshMessageDetail());
                 headerRight.appendChild(refreshBtn);
             } else if (state.view === 'addFriend') {
-                // 添加好友页面：可以添加保存按钮或其他功能
+                // Add friend页面：可以添加保存按钮或其他功能
                 const saveBtn = document.createElement('button');
                 saveBtn.className = 'app-header-btn';
                 saveBtn.innerHTML = '✅';
@@ -897,21 +897,21 @@ class MobilePhone {
                 saveBtn.addEventListener('click', () => this.saveAddFriend());
                 headerRight.appendChild(saveBtn);
             } else if (state.view === 'friendsCircle') {
-                // 朋友圈页面：添加生成朋友圈按钮
+                // Moments页面：添加Generate Moments按钮
                 const generateBtn = document.createElement('button');
                 generateBtn.className = 'app-header-btn';
                 generateBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-                generateBtn.title = '生成朋友圈';
+                generateBtn.title = 'Generate Moments';
                 generateBtn.addEventListener('click', () => {
                     this.generateFriendsCircleContent();
                 });
                 headerRight.appendChild(generateBtn);
 
-                // 朋友圈页面：添加相机发布按钮
+                // Moments页面：添加相机发布按钮
                 const cameraBtn = document.createElement('button');
                 cameraBtn.className = 'app-header-btn';
                 cameraBtn.innerHTML = '<i class="fas fa-camera"></i>';
-                cameraBtn.title = '发布朋友圈';
+                cameraBtn.title = 'Post to Moments';
                 cameraBtn.addEventListener('click', () => {
                     if (window.friendsCircle) {
                         window.friendsCircle.showPublishModal();
@@ -930,11 +930,11 @@ class MobilePhone {
         } else if (state.app === 'forum') {
             // 论坛应用：根据不同视图添加不同按钮
             if (state.view === 'threadDetail') {
-                // 帖子详情页面：添加刷新按钮
+                // 帖子详情页面：添加Refresh按钮
                 const refreshBtn = document.createElement('button');
                 refreshBtn.className = 'app-header-btn';
-                refreshBtn.innerHTML = '刷新';
-                refreshBtn.title = '刷新';
+                refreshBtn.innerHTML = 'Refresh';
+                refreshBtn.title = 'Refresh';
                 refreshBtn.style.background = '#e5c9c7';
                 refreshBtn.style.color = 'white';
                 refreshBtn.addEventListener('click', () => {
@@ -944,11 +944,11 @@ class MobilePhone {
                 });
                 headerRight.appendChild(refreshBtn);
             } else {
-                // 论坛主页：添加生成、发帖和刷新按钮
+                // 论坛主页：添加生成、Post和Refresh按钮
                 const generateBtn = document.createElement('button');
                 generateBtn.className = 'app-header-btn';
                 generateBtn.innerHTML = '生成';
-                generateBtn.title = '立即生成论坛';
+                generateBtn.title = 'Generate forum now';
                 generateBtn.style.background = '#e5c9c7';
                 generateBtn.style.color = 'white';
                 generateBtn.addEventListener('click', () => {
@@ -957,7 +957,7 @@ class MobilePhone {
 
                         // 显示生成状态提示
                         if (window.showMobileToast) {
-                            window.showMobileToast('🚀 正在生成论坛内容...', 'info');
+                            window.showMobileToast('🚀 Generating forum...', 'info');
                         }
 
                         // 调用生成方法
@@ -965,13 +965,13 @@ class MobilePhone {
                             .generateForumContent(true) // 强制生成，不检查消息增量
                             .then(() => {
                                 if (window.showMobileToast) {
-                                    window.showMobileToast('✅ 论坛内容生成完成', 'success');
+                                    window.showMobileToast('✅ Forum generated', 'success');
                                 }
                             })
                             .catch(error => {
                                 console.error('[Mobile Phone] 生成论坛内容失败:', error);
                                 if (window.showMobileToast) {
-                                    window.showMobileToast('❌ 生成失败: ' + error.message, 'error');
+                                    window.showMobileToast('❌ Generate failed: ' + error.message, 'error');
                                 }
                             });
                     }
@@ -980,8 +980,8 @@ class MobilePhone {
 
                 const postBtn = document.createElement('button');
                 postBtn.className = 'app-header-btn';
-                postBtn.innerHTML = '发帖';
-                postBtn.title = '发帖';
+                postBtn.innerHTML = 'Post';
+                postBtn.title = 'Post';
                 postBtn.style.background = '#e5c9c7';
                 postBtn.style.color = 'white';
                 postBtn.addEventListener('click', () => {
@@ -994,11 +994,11 @@ class MobilePhone {
                 const styleBtn = document.createElement('button');
                 styleBtn.className = 'app-header-btn';
                 styleBtn.innerHTML = '风格';
-                styleBtn.title = '论坛风格设置';
+                styleBtn.title = 'Forum styles';
                 styleBtn.style.background = '#e5c9c7';
                 styleBtn.style.color = 'white';
                 styleBtn.addEventListener('click', () => {
-                    console.log('[Mobile Phone] 🎨 风格按钮被点击，跳转到论坛风格设置');
+                    console.log('[Mobile Phone] 🎨 风格按钮被点击，跳转到Forum styles');
                     // 切换到API设置应用的论坛风格标签页
                     window.mobilePhone.openApp('api');
                     // 延迟一下确保页面切换完成，然后激活论坛风格标签
@@ -1006,9 +1006,9 @@ class MobilePhone {
                         const forumStylesTab = document.querySelector('[data-tab="forum-styles"]');
                         if (forumStylesTab) {
                             forumStylesTab.click();
-                            console.log('[Mobile Phone] 已切换到论坛风格设置页面');
+                            console.log('[Mobile Phone] 已切换到Forum styles页面');
                         } else {
-                            console.warn('[Mobile Phone] 未找到论坛风格设置标签页');
+                            console.warn('[Mobile Phone] 未找到Forum styles标签页');
                         }
                     }, 300);
                 });
@@ -1016,8 +1016,8 @@ class MobilePhone {
 
                 const refreshBtn = document.createElement('button');
                 refreshBtn.className = 'app-header-btn';
-                refreshBtn.innerHTML = '刷新';
-                refreshBtn.title = '刷新';
+                refreshBtn.innerHTML = 'Refresh';
+                refreshBtn.title = 'Refresh';
                 refreshBtn.style.background = '#e5c9c7';
                 refreshBtn.style.color = 'white';
                 refreshBtn.addEventListener('click', () => {
@@ -1028,30 +1028,30 @@ class MobilePhone {
                 headerRight.appendChild(refreshBtn);
             }
         } else if (state.app === 'weibo') {
-            // 微博应用：添加生成、刷新、发博、切小号按钮
+            // 微博应用：添加生成、Refresh、Post、Alt account按钮
             const generateBtn = document.createElement('button');
             generateBtn.className = 'app-header-btn';
             generateBtn.innerHTML = '生成';
-            generateBtn.title = '立即生成微博';
+            generateBtn.title = 'Generate Weibo now';
             generateBtn.style.background = '#ff8500';
             generateBtn.style.color = 'white';
             generateBtn.addEventListener('click', async () => {
                 if (window.weiboManager) {
-                    console.log('[Mobile Phone] 触发立即生成微博');
+                    console.log('[Mobile Phone] 触发Generate Weibo now');
 
                     // 显示处理中提示
-                    MobilePhone.showToast('🔄 开始生成微博内容...', 'processing');
+                    MobilePhone.showToast('🔄 Generating Weibo...', 'processing');
 
                     try {
                         const result = await window.weiboManager.generateWeiboContent(true);
                         if (result) {
-                            MobilePhone.showToast('✅ 微博内容生成成功！已插入到第1楼层', 'success');
+                            MobilePhone.showToast('✅ Weibo generated — inserted at floor 1', 'success');
                         } else {
-                            MobilePhone.showToast('⚠️ 微博内容生成失败或被跳过', 'warning');
+                            MobilePhone.showToast('⚠️ Weibo generate failed or skipped', 'warning');
                         }
                     } catch (error) {
                         console.error('[Mobile Phone] 生成微博内容出错:', error);
-                        MobilePhone.showToast(`❌ 生成失败: ${error.message}`, 'error');
+                        MobilePhone.showToast(`❌ Generate failed: ${error.message}`, 'error');
                     }
                 } else {
                     console.error('[Mobile Phone] 微博管理器未找到');
@@ -1061,8 +1061,8 @@ class MobilePhone {
 
             const refreshBtn = document.createElement('button');
             refreshBtn.className = 'app-header-btn';
-            refreshBtn.innerHTML = '刷新';
-            refreshBtn.title = '刷新';
+            refreshBtn.innerHTML = 'Refresh';
+            refreshBtn.title = 'Refresh';
             refreshBtn.style.background = '#ff8500';
             refreshBtn.style.color = 'white';
             refreshBtn.addEventListener('click', () => {
@@ -1074,11 +1074,11 @@ class MobilePhone {
             });
             headerRight.appendChild(refreshBtn);
 
-            // 发博按钮
+            // Post按钮
             const postBtn = document.createElement('button');
             postBtn.className = 'app-header-btn';
-            postBtn.innerHTML = '发博';
-            postBtn.title = '发博';
+            postBtn.innerHTML = 'Post';
+            postBtn.title = 'Post';
             postBtn.style.background = '#ff8500';
             postBtn.style.color = 'white';
             postBtn.addEventListener('click', () => {
@@ -1090,12 +1090,12 @@ class MobilePhone {
             });
             headerRight.appendChild(postBtn);
 
-            // 切小号按钮
+            // Alt account按钮
             const switchAccountBtn = document.createElement('button');
             switchAccountBtn.className = 'app-header-btn';
             const isMainAccount = window.weiboManager ? window.weiboManager.currentAccount.isMainAccount : true;
-            switchAccountBtn.innerHTML = isMainAccount ? '切小号' : '切大号';
-            switchAccountBtn.title = isMainAccount ? '切换到小号' : '切换到大号';
+            switchAccountBtn.innerHTML = isMainAccount ? 'Alt account' : 'Main account';
+            switchAccountBtn.title = isMainAccount ? 'Switch to alt account' : 'Switch to main account';
             switchAccountBtn.style.background = '#ff8500';
             switchAccountBtn.style.color = 'white';
             switchAccountBtn.addEventListener('click', () => {
@@ -1103,20 +1103,20 @@ class MobilePhone {
                     const newIsMainAccount = window.weiboManager.switchAccount();
 
                     // 更新按钮文本
-                    switchAccountBtn.innerHTML = newIsMainAccount ? '切小号' : '切大号';
-                    switchAccountBtn.title = newIsMainAccount ? '切换到小号' : '切换到大号';
+                    switchAccountBtn.innerHTML = newIsMainAccount ? 'Alt account' : 'Main account';
+                    switchAccountBtn.title = newIsMainAccount ? 'Switch to alt account' : 'Switch to main account';
 
                     // 立即更新用户名显示
                     if (window.weiboUI && window.weiboUI.updateUsernameDisplay) {
                         window.weiboUI.updateUsernameDisplay();
                     }
 
-                    // 刷新当前页面
+                    // Refresh当前页面
                     if (window.weiboUI) {
                         window.weiboUI.refreshWeiboList();
                     }
 
-                    MobilePhone.showToast(`✅ 已切换到${newIsMainAccount ? '大号' : '小号'}`, 'success');
+                    MobilePhone.showToast(`✅ Switched to ${newIsMainAccount ? 'main' : 'alt'} account`, 'success');
                     console.log('[Mobile Phone] 账户已切换:', newIsMainAccount ? '大号' : '小号');
                 } else {
                     console.error('[Mobile Phone] 微博管理器未就绪');
@@ -1136,7 +1136,7 @@ class MobilePhone {
             const viewBtn = document.createElement('button');
             viewBtn.className = 'app-header-btn shop-accent-btn';
             viewBtn.innerHTML = '查看';
-            viewBtn.title = '查看商品';
+            viewBtn.title = 'View products';
             viewBtn.addEventListener('click', () => {
                 if (window.shopAppSendViewMessage) {
                     window.shopAppSendViewMessage();
@@ -1148,7 +1148,7 @@ class MobilePhone {
             const categoryBtn = document.createElement('button');
             categoryBtn.className = 'app-header-btn shop-accent-btn';
             categoryBtn.innerHTML = '分类';
-            categoryBtn.title = '展开分类';
+            categoryBtn.title = 'Expand categories';
             categoryBtn.addEventListener('click', () => {
                 if (window.shopAppToggleCategories) {
                     window.shopAppToggleCategories();
@@ -1159,11 +1159,11 @@ class MobilePhone {
             });
             headerRight.appendChild(categoryBtn);
         } else if (state.app === 'task') {
-            // 任务应用：添加查看任务按钮
+            // 任务应用：添加View tasks按钮
             const viewBtn = document.createElement('button');
             viewBtn.className = 'app-header-btn';
             viewBtn.innerHTML = '查看';
-            viewBtn.title = '查看任务';
+            viewBtn.title = 'View tasks';
             viewBtn.addEventListener('click', () => {
                 if (window.taskAppSendViewMessage) {
                     window.taskAppSendViewMessage();
@@ -1171,13 +1171,13 @@ class MobilePhone {
             });
             headerRight.appendChild(viewBtn);
         } else if (state.app === 'backpack') {
-            // 背包应用：添加分类、搜索和刷新按钮
+            // 背包应用：添加分类、搜索和Refresh按钮
 
             // 分类按钮
             const categoryBtn = document.createElement('button');
             categoryBtn.className = 'app-header-btn';
             categoryBtn.innerHTML = '分类';
-            categoryBtn.title = '展开分类';
+            categoryBtn.title = 'Expand categories';
             categoryBtn.addEventListener('click', () => {
                 if (window.backpackAppToggleCategories) {
                     window.backpackAppToggleCategories();
@@ -1189,7 +1189,7 @@ class MobilePhone {
             const searchBtn = document.createElement('button');
             searchBtn.className = 'app-header-btn';
             searchBtn.innerHTML = '🔍';
-            searchBtn.title = '搜索物品';
+            searchBtn.title = 'Search items';
             searchBtn.addEventListener('click', () => {
                 if (window.backpackAppToggleSearch) {
                     window.backpackAppToggleSearch();
@@ -1197,11 +1197,11 @@ class MobilePhone {
             });
             headerRight.appendChild(searchBtn);
 
-            // 刷新按钮
+            // Refresh按钮
             const refreshBtn = document.createElement('button');
             refreshBtn.className = 'app-header-btn';
             refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-            refreshBtn.title = '刷新背包';
+            refreshBtn.title = 'Refresh bag';
             refreshBtn.addEventListener('click', () => {
                 if (window.backpackAppRefresh) {
                     window.backpackAppRefresh();
@@ -1209,7 +1209,7 @@ class MobilePhone {
             });
             headerRight.appendChild(refreshBtn);
         } else if (state.app === 'live') {
-            // 直播应用：右侧显示 观看人数、礼物列表、结束直播
+            // 直播应用：右侧显示 观看人数、礼物列表、End live
             // 观看人数徽标
             const viewerBadge = document.createElement('div');
             viewerBadge.className = 'viewer-count';
@@ -1221,7 +1221,7 @@ class MobilePhone {
             // 礼物列表按钮
             const giftBtn = document.createElement('button');
             giftBtn.className = 'app-header-btn gift-log-btn';
-            giftBtn.title = '礼物流水';
+            giftBtn.title = 'Gift log';
             giftBtn.innerHTML = '🎁';
             giftBtn.addEventListener('click', () => {
                 if (window.liveAppShowModal) {
@@ -1230,10 +1230,10 @@ class MobilePhone {
             });
             headerRight.appendChild(giftBtn);
 
-            // 结束直播按钮
+            // End live按钮
             const endBtn = document.createElement('button');
             endBtn.className = 'app-header-btn end-stream-btn';
-            endBtn.title = '结束直播';
+            endBtn.title = 'End live';
             endBtn.innerHTML = '⏻';
             endBtn.addEventListener('click', () => {
                 if (window.liveAppEndLive) {
@@ -1242,7 +1242,7 @@ class MobilePhone {
             });
             headerRight.appendChild(endBtn);
         } else if (state.app === 'watch-live') {
-            // 观看直播应用：右侧显示 观看人数、退出直播间
+            // 观看直播应用：右侧显示 观看人数、Leave room
             // 观看人数徽标
             const viewerBadge = document.createElement('div');
             viewerBadge.className = 'viewer-count';
@@ -1251,10 +1251,10 @@ class MobilePhone {
                 }</span>`;
             headerRight.appendChild(viewerBadge);
 
-            // 退出直播间按钮
+            // Leave room按钮
             const exitBtn = document.createElement('button');
             exitBtn.className = 'app-header-btn end-stream-btn';
-            exitBtn.title = '退出直播间';
+            exitBtn.title = 'Leave room';
             exitBtn.innerHTML = '⏻';
             exitBtn.addEventListener('click', () => {
                 if (window.watchLiveAppEndLive) {
@@ -1305,14 +1305,14 @@ class MobilePhone {
             state1.title === state2.title;
     }
 
-    // 刷新消息列表
+    // Refresh messages列表
     refreshMessages() {
         if (window.messageApp && window.messageApp.refreshMessageList) {
             window.messageApp.refreshMessageList();
         }
     }
 
-    // 刷新消息详情
+    // Refresh messages详情
     refreshMessageDetail() {
         if (window.messageApp && window.messageApp.refreshMessageDetail) {
             window.messageApp.refreshMessageDetail();
@@ -1325,7 +1325,7 @@ class MobilePhone {
         if (window.messageApp && window.messageApp.showMessageList) {
             window.messageApp.showMessageList();
         } else {
-            console.error('[Mobile Phone] messageApp实例不存在或showMessageList方法不可用');
+            console.error('[Mobile Phone] messageApp missing or showMessageList unavailable');
         }
     }
 
@@ -1335,7 +1335,7 @@ class MobilePhone {
         if (window.messageApp && window.messageApp.showMessageDetail) {
             window.messageApp.showMessageDetail(friendId, friendName);
         } else {
-            console.error('[Mobile Phone] messageApp实例不存在或showMessageDetail方法不可用');
+            console.error('[Mobile Phone] messageApp missing or showMessageDetail unavailable');
         }
     }
 
@@ -1351,58 +1351,58 @@ class MobilePhone {
         // 这里可以添加设置搜索的实现
     }
 
-    // 显示添加好友界面
+    // 显示Add friend界面
     showAddFriend() {
-        console.log('[Mobile Phone] 显示添加好友界面');
+        console.log('[Mobile Phone] 显示Add friend界面');
         if (window.messageApp && window.messageApp.showAddFriend) {
             window.messageApp.showAddFriend();
         } else {
-            console.error('[Mobile Phone] messageApp实例不存在或showAddFriend方法不可用');
+            console.error('[Mobile Phone] messageApp missing or showAddFriend unavailable');
         }
     }
 
-    // 生成朋友圈内容
+    // Generate Moments内容
     async generateFriendsCircleContent() {
         try {
-            console.log('[Mobile Phone] 🎭 生成朋友圈按钮被点击');
+            console.log('[Mobile Phone] 🎭 Generate Moments按钮被点击');
 
             // 显示生成状态提示
             if (window.showMobileToast) {
-                window.showMobileToast('🎭 正在生成朋友圈内容...', 'info');
+                window.showMobileToast('🎭 Generating Moments...', 'info');
             }
 
             // 构建发送给AI的消息
             const message =
-                '用户正在查看朋友圈，请根据朋友圈规则系统，生成3-5个正确的朋友圈格式，根据角色间的关系为每条朋友圈生成0-5条回复。回复请使用与原楼层相同id。请使用正确的三位数楼层id,楼层id不能与历史楼层id重复。请正确使用前缀w。严禁代替用户回复。禁止发表情包或颜文字，可以使用emoji。';
+                'The user opened Moments. Using the Moments rules, generate 3–5 posts in the correct Moments format. For each post add 0–5 replies based on character relationships. Replies must reuse that post’s floor id. Floor ids are 3 digits, must not collide with existing ids, and must use the w prefix. Do not speak as the user. No stickers or kaomoji; emoji is fine.';
 
             // 发送消息给AI
             if (window.friendsCircle && window.friendsCircle.sendToAI) {
                 await window.friendsCircle.sendToAI(message);
 
                 if (window.showMobileToast) {
-                    window.showMobileToast('✅ 朋友圈内容生成完成', 'success');
+                    window.showMobileToast('✅ Moments generated', 'success');
                 }
             } else {
-                console.error('[Mobile Phone] 朋友圈功能未就绪');
+                console.error('[Mobile Phone] Moments功能未就绪');
                 if (window.showMobileToast) {
-                    window.showMobileToast('❌ 朋友圈功能未就绪', 'error');
+                    window.showMobileToast('❌ Moments not ready', 'error');
                 }
             }
         } catch (error) {
-            console.error('[Mobile Phone] 生成朋友圈内容失败:', error);
+            console.error('[Mobile Phone] Generate Moments内容失败:', error);
             if (window.showMobileToast) {
-                window.showMobileToast('❌ 生成失败: ' + error.message, 'error');
+                window.showMobileToast('❌ Generate failed: ' + error.message, 'error');
             }
         }
     }
 
-    // 保存添加好友
+    // 保存Add friend
     saveAddFriend() {
-        console.log('[Mobile Phone] 保存添加好友');
+        console.log('[Mobile Phone] 保存Add friend');
         if (window.messageApp && window.messageApp.addFriend) {
             window.messageApp.addFriend();
         } else {
-            console.error('[Mobile Phone] messageApp实例不存在或addFriend方法不可用');
+            console.error('[Mobile Phone] messageApp missing or addFriend unavailable');
         }
     }
 
@@ -1410,13 +1410,13 @@ class MobilePhone {
     registerApps() {
         this.apps = {
             messages: {
-                name: '信息',
+                name: 'Messages',
                 content: null, // 将由message-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleMessagesApp.bind(this),
             },
             gallery: {
-                name: '相册',
+                name: 'Gallery',
                 content: `
                     <div class="gallery-app">
                         <div class="photo-grid">
@@ -1431,120 +1431,120 @@ class MobilePhone {
                 `,
             },
             settings: {
-                name: '设置',
+                name: 'Settings',
                 content: null, // 将由样式配置管理器动态生成
                 isCustomApp: true,
                 customHandler: this.handleSettingsApp.bind(this),
             },
             forum: {
-                name: '论坛',
+                name: 'Forum',
                 content: null, // 将由论坛UI动态生成
                 isCustomApp: true,
                 customHandler: this.handleForumApp.bind(this),
             },
             weibo: {
-                name: '微博',
+                name: 'Weibo',
                 content: null, // 将由微博UI动态生成
                 isCustomApp: true,
                 customHandler: this.handleWeiboApp.bind(this),
             },
             api: {
-                name: 'API设置',
+                name: 'API',
                 content: null, // 将由统一API设置面板动态生成
                 isCustomApp: true,
                 customHandler: this.handleApiApp.bind(this),
             },
             diary: {
-                name: '日记',
+                name: 'Diary',
                 content: `
                     <div class="diary-app">
                         <div class="diary-header">
-                            <h3>我的日记 📝</h3>
+                            <h3>My diary 📝</h3>
                         </div>
                         <div class="diary-content">
                             <div class="diary-entry">
-                                <div class="entry-date">今天</div>
-                                <div class="entry-text">今天天气很好，心情也很棒！在SillyTavern里遇到了很多有趣的角色～</div>
+                                <div class="entry-date">Today</div>
+                                <div class="entry-text">Nice weather and a good mood. Met some interesting characters in SillyTavern.</div>
                             </div>
                             <div class="diary-entry">
-                                <div class="entry-date">昨天</div>
-                                <div class="entry-text">学习了新的前端技术，感觉很有成就感。</div>
+                                <div class="entry-date">Yesterday</div>
+                                <div class="entry-text">Picked up some new frontend tricks. Felt good.</div>
                             </div>
                         </div>
                     </div>
                 `,
             },
             mail: {
-                name: '邮件',
+                name: 'Mail',
                 content: `
                     <div class="mail-app">
                         <div class="mail-list">
                             <div class="mail-item unread">
                                 <div class="mail-sender">SillyTavern</div>
-                                <div class="mail-subject">欢迎使用手机界面</div>
-                                <div class="mail-preview">这是一个可爱的手机界面框架...</div>
-                                <div class="mail-time">1小时前</div>
+                                <div class="mail-subject">Welcome to the phone UI</div>
+                                <div class="mail-preview">This is the mobile phone shell...</div>
+                                <div class="mail-time">1h ago</div>
                             </div>
                             <div class="mail-item">
-                                <div class="mail-sender">系统通知</div>
-                                <div class="mail-subject">插件更新提醒</div>
-                                <div class="mail-preview">Mobile Context插件已更新...</div>
-                                <div class="mail-time">2小时前</div>
+                                <div class="mail-sender">System</div>
+                                <div class="mail-subject">Extension update</div>
+                                <div class="mail-preview">Mobile Context was updated...</div>
+                                <div class="mail-time">2h ago</div>
                             </div>
                         </div>
                     </div>
                 `,
             },
             status: {
-                name: '状态',
+                name: 'Status',
                 content: null, // 将由status-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleStatusApp.bind(this),
             },
             diary: {
-                name: '日记',
+                name: 'Diary',
                 content: null, // 将由diary-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleDiaryApp.bind(this),
             },
             shop: {
-                name: '购物',
+                name: 'Shop',
                 content: null, // 将由shop-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleShopApp.bind(this),
             },
             backpack: {
-                name: '背包',
+                name: 'Bag',
                 content: null, // 将由backpack-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleBackpackApp.bind(this),
             },
             task: {
-                name: '任务',
+                name: 'Tasks',
                 content: null, // 将由task-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleTaskApp.bind(this),
             },
             live: {
-                name: '直播',
+                name: 'Live',
                 content: null, // 将由live-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleLiveApp.bind(this),
             },
             'watch-live': {
-                name: '观看直播',
+                name: 'Watch Live',
                 content: null, // 将由watch-live动态生成
                 isCustomApp: true,
                 customHandler: this.handleWatchLiveApp.bind(this),
             },
             'parallel-events': {
-                name: '平行事件',
+                name: 'Parallel Events',
                 content: null, // 将由parallel-events-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleParallelEventsApp.bind(this),
             },
             'profile': {
-                name: '档案',
+                name: 'Profile',
                 content: null, // 将由profile-app动态生成
                 isCustomApp: true,
                 customHandler: this.handleProfileApp.bind(this),
@@ -1628,7 +1628,7 @@ class MobilePhone {
             }
         } else if (!window.StyleConfigManager) {
             // 如果 StyleConfigManager 类还未加载，尝试加载
-            console.log('[Mobile Phone] StyleConfigManager 类尚未加载，尝试动态加载');
+            console.log('[Mobile Phone] StyleConfigManager not loaded — fetching');
             this.loadStyleConfigManager();
         } else {
             console.log('[Mobile Phone] 样式配置管理器实例已存在');
@@ -1867,7 +1867,7 @@ class MobilePhone {
         // 记录加载时间
         if (this._loadingStartTime[appName]) {
             const loadTime = Date.now() - this._loadingStartTime[appName];
-            console.log(`[Mobile Phone] ${appName} 加载耗时: ${loadTime}ms`);
+            console.log(`[Mobile Phone] ${appName} loaded in ${loadTime}ms`);
             delete this._loadingStartTime[appName];
         }
 
@@ -1906,7 +1906,7 @@ class MobilePhone {
             const loadWithTimeout = (promise, timeout = 15000) => {
                 return Promise.race([
                     promise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('论坛模块加载超时')), timeout)),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Forum module load timed out')), timeout)),
                 ]);
             };
 
@@ -1948,21 +1948,21 @@ class MobilePhone {
             if (view === 'forumControl') {
                 // 显示论坛控制界面
                 if (!window.getForumControlAppContent) {
-                    throw new Error('getForumControlAppContent 函数未找到');
+                    throw new Error('getForumControlAppContent missing');
                 }
                 console.log('[Mobile Phone] 获取论坛控制内容...');
                 content = window.getForumControlAppContent();
             } else {
                 // 显示主论坛界面
                 if (!window.getForumAppContent) {
-                    throw new Error('getForumAppContent 函数未找到');
+                    throw new Error('getForumAppContent missing');
                 }
                 console.log('[Mobile Phone] 获取论坛主界面内容...');
                 content = window.getForumAppContent();
             }
 
             if (!content || content.trim() === '') {
-                throw new Error(`论坛${view === 'forumControl' ? '控制' : '主界面'}内容为空`);
+                throw new Error(`Forum ${view === 'forumControl' ? 'control' : 'home'} content is empty`);
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2029,7 +2029,7 @@ class MobilePhone {
             const loadWithTimeout = (promise, timeout = 15000) => {
                 return Promise.race([
                     promise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('微博模块加载超时')), timeout)),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Weibo module load timed out')), timeout)),
                 ]);
             };
 
@@ -2059,21 +2059,21 @@ class MobilePhone {
             if (view === 'weiboControl') {
                 // 显示微博控制界面
                 if (!window.getWeiboControlAppContent) {
-                    throw new Error('getWeiboControlAppContent 函数未找到');
+                    throw new Error('getWeiboControlAppContent missing');
                 }
                 console.log('[Mobile Phone] 获取微博控制内容...');
                 content = window.getWeiboControlAppContent();
             } else {
                 // 显示主微博界面
                 if (!window.getWeiboAppContent) {
-                    throw new Error('getWeiboAppContent 函数未找到');
+                    throw new Error('getWeiboAppContent missing');
                 }
                 console.log('[Mobile Phone] 获取微博主界面内容...');
                 content = window.getWeiboAppContent();
             }
 
             if (!content || content.trim() === '') {
-                throw new Error(`微博${view === 'weiboControl' ? '控制' : '主界面'}内容为空`);
+                throw new Error(`Weibo ${view === 'weiboControl' ? 'control' : 'home'} content is empty`);
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2131,7 +2131,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getStyleConfigAppContent) {
-                throw new Error('getStyleConfigAppContent 函数未找到');
+                throw new Error('getStyleConfigAppContent missing');
             }
 
             // 获取样式配置应用内容
@@ -2139,7 +2139,7 @@ class MobilePhone {
             const content = window.getStyleConfigAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('样式配置应用内容为空');
+                throw new Error('Style config content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2244,7 +2244,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getMessageAppContent) {
-                throw new Error('getMessageAppContent 函数未找到');
+                throw new Error('getMessageAppContent missing');
             }
 
             // 获取消息应用内容
@@ -2252,7 +2252,7 @@ class MobilePhone {
             const content = window.getMessageAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('消息应用内容为空');
+                throw new Error('Messages content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2312,7 +2312,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getStatusAppContent) {
-                throw new Error('getStatusAppContent 函数未找到');
+                throw new Error('getStatusAppContent missing');
             }
 
             // 获取状态应用内容
@@ -2320,7 +2320,7 @@ class MobilePhone {
             const content = window.getStatusAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('状态应用内容为空');
+                throw new Error('Status content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2364,7 +2364,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getDiaryAppContent) {
-                throw new Error('getDiaryAppContent 函数未找到');
+                throw new Error('getDiaryAppContent missing');
             }
 
             // 获取日记应用内容
@@ -2372,7 +2372,7 @@ class MobilePhone {
             const content = window.getDiaryAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('日记应用内容为空');
+                throw new Error('Diary content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2416,7 +2416,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getShopAppContent) {
-                throw new Error('getShopAppContent 函数未找到');
+                throw new Error('getShopAppContent missing');
             }
 
             // 获取购物应用内容
@@ -2424,7 +2424,7 @@ class MobilePhone {
             const content = window.getShopAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('购物应用内容为空');
+                throw new Error('Shop content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2468,7 +2468,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getBackpackAppContent) {
-                throw new Error('getBackpackAppContent 函数未找到');
+                throw new Error('getBackpackAppContent missing');
             }
 
             // 获取背包应用内容
@@ -2476,7 +2476,7 @@ class MobilePhone {
             const content = window.getBackpackAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('背包应用内容为空');
+                throw new Error('Bag content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2520,7 +2520,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getTaskAppContent) {
-                throw new Error('getTaskAppContent 函数未找到');
+                throw new Error('getTaskAppContent missing');
             }
 
             // 获取任务应用内容
@@ -2528,7 +2528,7 @@ class MobilePhone {
             const content = window.getTaskAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('任务应用内容为空');
+                throw new Error('Tasks content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2572,7 +2572,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getLiveAppContent) {
-                throw new Error('getLiveAppContent 函数未找到');
+                throw new Error('getLiveAppContent missing');
             }
 
             // 获取直播应用内容
@@ -2580,7 +2580,7 @@ class MobilePhone {
             const content = window.getLiveAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('直播应用内容为空');
+                throw new Error('Live content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2624,7 +2624,7 @@ class MobilePhone {
 
             // 直接使用全局函数获取内容
             if (!window.getWatchLiveAppContent) {
-                throw new Error('getWatchLiveAppContent 函数未找到');
+                throw new Error('getWatchLiveAppContent missing');
             }
 
             // 获取观看直播应用内容
@@ -2632,7 +2632,7 @@ class MobilePhone {
             const content = window.getWatchLiveAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('观看直播应用内容为空');
+                throw new Error('Watch Live content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2691,11 +2691,11 @@ class MobilePhone {
             console.log('  - parallelEventsManager:', typeof window.parallelEventsManager);
 
             if (!window.getParallelEventsAppContent) {
-                throw new Error('getParallelEventsAppContent 函数未找到');
+                throw new Error('getParallelEventsAppContent missing');
             }
 
             if (!window.bindParallelEventsAppEvents) {
-                throw new Error('bindParallelEventsAppEvents 函数未找到');
+                throw new Error('bindParallelEventsAppEvents missing');
             }
 
             // 获取平行事件应用内容
@@ -2703,7 +2703,7 @@ class MobilePhone {
             const content = window.getParallelEventsAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('平行事件应用内容为空');
+                throw new Error('Parallel Events content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2753,7 +2753,7 @@ class MobilePhone {
 
             // 检查档案应用是否就绪
             if (!window.profileApp) {
-                throw new Error('档案应用未就绪');
+                throw new Error('Profile app not ready');
             }
 
             // 获取档案应用内容
@@ -2761,7 +2761,7 @@ class MobilePhone {
             const content = window.profileApp.getAppContent();
 
             if (!content || content.trim() === '') {
-                throw new Error('档案应用内容为空');
+                throw new Error('Profile content empty');
             }
 
             document.getElementById('app-content').innerHTML = content;
@@ -2794,12 +2794,12 @@ class MobilePhone {
             `;
 
             // 确保必要的模块已加载，添加超时控制
-            console.log('[Mobile Phone] 确保论坛、微博和平行事件模块已加载...');
+            console.log('[Mobile Phone] 确保论坛、微博和Parallel Events module已加载...');
 
             const loadWithTimeout = (promise, timeout = 10000, name = '') => {
                 return Promise.race([
                     promise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error(`${name}加载超时`)), timeout)),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error(`${name} load timed out`)), timeout)),
                 ]);
             };
 
@@ -2810,8 +2810,8 @@ class MobilePhone {
                 loadWithTimeout(this.loadWeiboApp(), 10000, '微博模块').catch(e =>
                     console.warn('[Mobile Phone] 微博模块加载失败:', e),
                 ),
-                loadWithTimeout(this.simpleLoadParallelEventsApp(), 10000, '平行事件模块').catch(e =>
-                    console.warn('[Mobile Phone] 平行事件模块加载失败:', e),
+                loadWithTimeout(this.simpleLoadParallelEventsApp(), 10000, 'Parallel Events module').catch(e =>
+                    console.warn('[Mobile Phone] Parallel Events module加载失败:', e),
                 ),
             ]);
 
@@ -2937,7 +2937,7 @@ class MobilePhone {
 
                         <div class="setting-group">
                             <label>自定义前缀:</label>
-                            <textarea id="forum-custom-prefix" placeholder="论坛生成的自定义提示词...">${window.forumStyles ? window.forumStyles.getCustomPrefix() : ''
+                            <textarea id="forum-custom-prefix" placeholder="Custom forum prompt...">${window.forumStyles ? window.forumStyles.getCustomPrefix() : ''
             }</textarea>
                         </div>
 
@@ -2956,7 +2956,7 @@ class MobilePhone {
                         </div>
 
                         <div class="action-buttons">
-                            <button id="generate-forum-now" class="btn-primary">🚀 立即生成论坛</button>
+                            <button id="generate-forum-now" class="btn-primary">🚀 Generate forum now</button>
                             <button id="clear-forum-content" class="btn-danger">🗑️ 清除论坛内容</button>
                         </div>
                     </div>
@@ -2970,7 +2970,7 @@ class MobilePhone {
 
                             <div class="styles-actions">
                                 <button id="create-custom-style-btn" class="btn-primary">
-                                    <i class="fas fa-plus"></i> 创建自定义风格
+                                    <i class="fas fa-plus"></i> 创建Custom styles
                                 </button>
                                 <div class="import-export-actions">
                                     <button id="export-styles-btn" class="btn-secondary">
@@ -2984,11 +2984,11 @@ class MobilePhone {
                             </div>
 
                             <div class="custom-styles-list">
-                                <h4>自定义风格列表111</h4>
+                                <h4>Custom styles列表111</h4>
                                 <div id="custom-styles-container">
                                     <div class="no-styles-placeholder">
                                         <div class="placeholder-icon">🎭</div>
-                                        <div class="placeholder-text">还没有自定义风格</div>
+                                        <div class="placeholder-text">还没有Custom styles</div>
                                         <div class="placeholder-hint">点击上方按钮创建你的第一个风格</div>
                                     </div>
                                 </div>
@@ -2997,7 +2997,7 @@ class MobilePhone {
                             <div class="styles-info">
                                 <h4>使用说明</h4>
                                 <ul>
-                                    <li>自定义风格会出现在论坛风格选择器中</li>
+                                    <li>Custom styles会出现在论坛风格选择器中</li>
                                     <li>可以导出风格文件在其他设备上使用</li>
                                     <li>编辑风格时请保持格式的完整性</li>
                                     <li>风格内容支持所有论坛功能和格式</li>
@@ -3017,18 +3017,18 @@ class MobilePhone {
                                 <label>事件风格:</label>
                                 <select id="parallel-events-style-select">
                                     <option value="被ntr" ${parallelEventsSettings.selectedStyle === '被ntr' ? 'selected' : ''}>被ntr</option>
-                                    <option value="主人的任务" ${parallelEventsSettings.selectedStyle === '主人的任务' ? 'selected' : ''}>主人的任务</option>
-                                    <option value="主动消息" ${parallelEventsSettings.selectedStyle === '主动消息' ? 'selected' : ''}>主动消息</option>
+                                    <option value="Master tasks" ${parallelEventsSettings.selectedStyle === 'Master tasks' ? 'selected' : ''}>Master tasks</option>
+                                    <option value="Push message" ${parallelEventsSettings.selectedStyle === 'Push message' ? 'selected' : ''}>Push message</option>
                                     <option value="平行事件" ${parallelEventsSettings.selectedStyle === '平行事件' ? 'selected' : ''}>平行事件</option>
                                     <option value="魅魔之体" ${parallelEventsSettings.selectedStyle === '魅魔之体' ? 'selected' : ''}>魅魔之体</option>
-                                    <option value="随机新闻" ${parallelEventsSettings.selectedStyle === '随机新闻' ? 'selected' : ''}>随机新闻</option>
+                                    <option value="Random news" ${parallelEventsSettings.selectedStyle === 'Random news' ? 'selected' : ''}>Random news</option>
                                     <option value="自定义" ${parallelEventsSettings.selectedStyle === '自定义' ? 'selected' : ''}>自定义</option>
                                 </select>
                             </div>
 
                             <div class="setting-group">
                                 <label>自定义前缀:</label>
-                                <textarea id="parallel-events-custom-prefix" placeholder="当选择'自定义'风格时，请在此输入具体的风格要求和生成指导...">${parallelEventsSettings.customPrefix || ''}</textarea>
+                                <textarea id="parallel-events-custom-prefix" placeholder="When Custom is selected, type the style rules here...">${parallelEventsSettings.customPrefix || ''}</textarea>
                                 <small>提示：选择"自定义"风格时，此前缀将作为主要的风格指导</small>
                             </div>
 
@@ -3068,7 +3068,7 @@ class MobilePhone {
 
                         <div class="setting-group">
                             <label>自定义前缀:</label>
-                            <textarea id="weibo-custom-prefix" placeholder="微博生成的自定义提示词...">${window.weiboStyles ? window.weiboStyles.getCustomPrefix() : ''
+                            <textarea id="weibo-custom-prefix" placeholder="Custom Weibo prompt...">${window.weiboStyles ? window.weiboStyles.getCustomPrefix() : ''
             }</textarea>
                         </div>
 
@@ -3087,7 +3087,7 @@ class MobilePhone {
                         </div>
 
                         <div class="action-buttons">
-                            <button id="generate-weibo-now" class="btn-primary">🚀 立即生成微博</button>
+                            <button id="generate-weibo-now" class="btn-primary">🚀 Generate Weibo now</button>
                             <button id="clear-weibo-content" class="btn-danger">🗑️ 清除微博内容</button>
                         </div>
                     </div>
@@ -3122,7 +3122,7 @@ class MobilePhone {
                         </div>
 
                         <div class="action-buttons">
-                            <button id="refresh-status" class="btn-secondary">🔄 刷新状态</button>
+                            <button id="refresh-status" class="btn-secondary">🔄 Refresh状态</button>
                             <button id="reset-all-settings" class="btn-warning">⚠️ 重置所有设置</button>
                         </div>
                     </div>
@@ -3357,7 +3357,7 @@ class MobilePhone {
         // 论坛设置事件
         this.bindForumSettingsEvents();
 
-        // 论坛风格设置事件
+        // Forum styles事件
         this.bindForumStylesEvents();
 
         // 平行事件设置事件
@@ -3372,7 +3372,7 @@ class MobilePhone {
         // 初始化状态显示
         this.updateApiStatus();
 
-        // 启动自动状态刷新（每2秒检查一次，最多检查30次）
+        // 启动自动状态Refresh（每2秒检查一次，最多检查30次）
         this.startApiStatusAutoRefresh();
 
         console.log('[Mobile Phone] 统一API设置事件绑定完成');
@@ -3447,31 +3447,31 @@ class MobilePhone {
             });
         }
 
-        // 立即生成论坛
+        // Generate forum now
         const generateForumBtn = document.getElementById('generate-forum-now');
         if (generateForumBtn) {
             generateForumBtn.addEventListener('click', async () => {
                 if (window.forumManager) {
-                    console.log('[Mobile Phone] 触发立即生成论坛');
+                    console.log('[Mobile Phone] 触发Generate forum now');
 
                     // 显示处理中提示
-                    MobilePhone.showToast('🔄 开始生成论坛内容...', 'processing');
+                    MobilePhone.showToast('🔄 Generating forum...', 'processing');
 
                     try {
                         const result = await window.forumManager.generateForumContent(true);
                         if (result) {
-                            MobilePhone.showToast('✅ 论坛内容生成成功！已插入到第1楼层', 'success');
-                            // 刷新状态显示
+                            MobilePhone.showToast('✅ Forum generated — inserted at floor 1', 'success');
+                            // Refresh状态显示
                             setTimeout(() => this.updateApiStatus(), 500);
                         } else {
-                            MobilePhone.showToast('❌ 论坛内容生成失败，请查看控制台了解详情', 'error');
+                            MobilePhone.showToast('❌ Forum generate failed — see console', 'error');
                         }
                     } catch (error) {
                         console.error('[Mobile Phone] 论坛生成出错:', error);
-                        MobilePhone.showToast(`❌ 论坛生成出错: ${error.message}`, 'error');
+                        MobilePhone.showToast(`❌ Forum generate error: ${error.message}`, 'error');
                     }
                 } else {
-                    MobilePhone.showToast('❌ 论坛管理器未初始化', 'error');
+                    MobilePhone.showToast('❌ Forum manager not ready', 'error');
                 }
             });
         }
@@ -3481,32 +3481,32 @@ class MobilePhone {
         if (clearForumBtn) {
             clearForumBtn.addEventListener('click', async () => {
                 if (window.forumManager) {
-                    if (confirm('确认清除所有论坛内容？')) {
+                    if (confirm('Clear all forum content?')) {
                         console.log('[Mobile Phone] 触发清除论坛内容');
 
                         // 显示处理中提示
-                        MobilePhone.showToast('🔄 正在清除论坛内容...', 'processing');
+                        MobilePhone.showToast('🔄 Clearing forum content...', 'processing');
 
                         try {
                             await window.forumManager.clearForumContent();
-                            MobilePhone.showToast('✅ 论坛内容已清除', 'success');
-                            // 刷新状态显示
+                            MobilePhone.showToast('✅ Forum content cleared', 'success');
+                            // Refresh状态显示
                             setTimeout(() => this.updateApiStatus(), 500);
                         } catch (error) {
                             console.error('[Mobile Phone] 清除论坛内容出错:', error);
-                            MobilePhone.showToast(`❌ 清除论坛内容出错: ${error.message}`, 'error');
+                            MobilePhone.showToast(`❌ Clear forum failed: ${error.message}`, 'error');
                         }
                     }
                 } else {
-                    MobilePhone.showToast('❌ 论坛管理器未初始化', 'error');
+                    MobilePhone.showToast('❌ Forum manager not ready', 'error');
                 }
             });
         }
     }
 
-    // 绑定论坛风格设置事件
+    // 绑定Forum styles事件
     bindForumStylesEvents() {
-        // 创建自定义风格按钮
+        // 创建Custom styles按钮
         const createStyleBtn = document.getElementById('create-custom-style-btn');
         if (createStyleBtn) {
             createStyleBtn.addEventListener('click', () => {
@@ -3540,7 +3540,7 @@ class MobilePhone {
             });
         }
 
-        // 加载并显示现有的自定义风格
+        // 加载并显示现有的Custom styles
         this.loadAndDisplayCustomStyles();
 
         // 更新风格选择器
@@ -3584,31 +3584,31 @@ class MobilePhone {
             });
         }
 
-        // 立即生成微博
+        // Generate Weibo now
         const generateWeiboBtn = document.getElementById('generate-weibo-now');
         if (generateWeiboBtn) {
             generateWeiboBtn.addEventListener('click', async () => {
                 if (window.weiboManager) {
-                    console.log('[Mobile Phone] 触发立即生成微博');
+                    console.log('[Mobile Phone] 触发Generate Weibo now');
 
                     // 显示处理中提示
-                    MobilePhone.showToast('🔄 开始生成微博内容...', 'processing');
+                    MobilePhone.showToast('🔄 Generating Weibo...', 'processing');
 
                     try {
                         const result = await window.weiboManager.generateWeiboContent(true);
                         if (result) {
-                            MobilePhone.showToast('✅ 微博内容生成成功！已插入到第1楼层', 'success');
-                            // 刷新状态显示
+                            MobilePhone.showToast('✅ Weibo generated — inserted at floor 1', 'success');
+                            // Refresh状态显示
                             setTimeout(() => this.updateApiStatus(), 500);
                         } else {
-                            MobilePhone.showToast('❌ 微博内容生成失败，请查看控制台了解详情', 'error');
+                            MobilePhone.showToast('❌ Weibo generate failed — see console', 'error');
                         }
                     } catch (error) {
                         console.error('[Mobile Phone] 微博生成出错:', error);
-                        MobilePhone.showToast(`❌ 微博生成出错: ${error.message}`, 'error');
+                        MobilePhone.showToast(`❌ Weibo generate error: ${error.message}`, 'error');
                     }
                 } else {
-                    MobilePhone.showToast('❌ 微博管理器未初始化', 'error');
+                    MobilePhone.showToast('❌ Weibo manager not ready', 'error');
                 }
             });
         }
@@ -3618,24 +3618,24 @@ class MobilePhone {
         if (clearWeiboBtn) {
             clearWeiboBtn.addEventListener('click', async () => {
                 if (window.weiboManager) {
-                    if (confirm('确认清除所有微博内容？')) {
+                    if (confirm('Clear all Weibo content?')) {
                         console.log('[Mobile Phone] 触发清除微博内容');
 
                         // 显示处理中提示
-                        MobilePhone.showToast('🔄 正在清除微博内容...', 'processing');
+                        MobilePhone.showToast('🔄 Clearing Weibo...', 'processing');
 
                         try {
                             await window.weiboManager.clearWeiboContent();
-                            MobilePhone.showToast('✅ 微博内容已清除', 'success');
-                            // 刷新状态显示
+                            MobilePhone.showToast('✅ Weibo content cleared', 'success');
+                            // Refresh状态显示
                             setTimeout(() => this.updateApiStatus(), 500);
                         } catch (error) {
                             console.error('[Mobile Phone] 清除微博内容出错:', error);
-                            MobilePhone.showToast(`❌ 清除微博内容出错: ${error.message}`, 'error');
+                            MobilePhone.showToast(`❌ Clear Weibo failed: ${error.message}`, 'error');
                         }
                     }
                 } else {
-                    MobilePhone.showToast('❌ 微博管理器未初始化', 'error');
+                    MobilePhone.showToast('❌ Weibo manager not ready', 'error');
                 }
             });
         }
@@ -3746,19 +3746,19 @@ class MobilePhone {
             testParallelEventsBtn.addEventListener('click', async () => {
                 if (window.parallelEventsManager) {
                     console.log('[Mobile Phone] 触发测试生成平行事件');
-                    MobilePhone.showToast('🔄 开始生成平行事件内容...', 'processing');
+                    MobilePhone.showToast('🔄 Generating Parallel Events...', 'processing');
 
                     try {
                         await window.parallelEventsManager.generateParallelEvent();
-                        MobilePhone.showToast('✅ 平行事件生成完成', 'success');
-                        // 刷新状态显示
+                        MobilePhone.showToast('✅ Parallel Events generated', 'success');
+                        // Refresh状态显示
                         setTimeout(() => this.updateApiStatus(), 500);
                     } catch (error) {
                         console.error('[Mobile Phone] 生成平行事件出错:', error);
-                        MobilePhone.showToast(`❌ 生成平行事件出错: ${error.message}`, 'error');
+                        MobilePhone.showToast(`❌ Parallel Events failed: ${error.message}`, 'error');
                     }
                 } else {
-                    MobilePhone.showToast('❌ 平行事件管理器未初始化', 'error');
+                    MobilePhone.showToast('❌ Parallel Events manager not ready', 'error');
                 }
             });
         }
@@ -3770,9 +3770,9 @@ class MobilePhone {
                 if (window.parallelEventsManager) {
                     console.log('[Mobile Phone] 清空平行事件队列');
                     window.parallelEventsManager.clearQueue();
-                    MobilePhone.showToast('✅ 平行事件队列已清空', 'success');
+                    MobilePhone.showToast('✅ Parallel Events queue cleared', 'success');
                 } else {
-                    MobilePhone.showToast('❌ 平行事件管理器未初始化', 'error');
+                    MobilePhone.showToast('❌ Parallel Events manager not ready', 'error');
                 }
             });
         }
@@ -3790,12 +3790,12 @@ class MobilePhone {
                 if (window.mobileCustomAPIConfig) {
                     window.mobileCustomAPIConfig.showConfigPanel();
                 } else {
-                    alert('API配置模块未初始化');
+                    alert('API config not initialized');
                 }
             });
         }
 
-        // 刷新状态
+        // Refresh状态
         const refreshStatusBtn = document.getElementById('refresh-status');
         if (refreshStatusBtn) {
             refreshStatusBtn.addEventListener('click', () => {
@@ -3807,7 +3807,7 @@ class MobilePhone {
         const resetAllBtn = document.getElementById('reset-all-settings');
         if (resetAllBtn) {
             resetAllBtn.addEventListener('click', () => {
-                if (confirm('确认重置所有论坛和微博设置？这将恢复到默认配置。')) {
+                if (confirm('Reset all forum and Weibo settings to defaults?')) {
                     this.resetAllApiSettings();
                 }
             });
@@ -3884,17 +3884,17 @@ class MobilePhone {
             if (window.forumManager && window.forumManager.isInitialized) {
                 // 检查是否正在处理
                 if (window.forumManager.isProcessing) {
-                    forumStatusEl.textContent = '🔄 正在生成论坛...';
+                    forumStatusEl.textContent = '🔄 Generating forum...';
                     forumStatusEl.style.color = '#007bff';
                 } else {
-                    forumStatusEl.textContent = '✅ 已就绪';
+                    forumStatusEl.textContent = '✅ Ready';
                     forumStatusEl.style.color = '#28a745';
                 }
             } else if (window.forumManager) {
-                forumStatusEl.textContent = '⚠️ 初始化中...';
+                forumStatusEl.textContent = '⚠️ Initializing...';
                 forumStatusEl.style.color = '#ffc107';
             } else {
-                forumStatusEl.textContent = '❌ 未加载';
+                forumStatusEl.textContent = '❌ Not loaded';
                 forumStatusEl.style.color = '#dc3545';
             }
         }
@@ -3903,17 +3903,17 @@ class MobilePhone {
             if (window.weiboManager && window.weiboManager.isInitialized) {
                 // 检查是否正在处理
                 if (window.weiboManager.isProcessing) {
-                    weiboStatusEl.textContent = '🔄 正在生成微博...';
+                    weiboStatusEl.textContent = '🔄 Generating Weibo...';
                     weiboStatusEl.style.color = '#007bff';
                 } else {
-                    weiboStatusEl.textContent = '✅ 已就绪';
+                    weiboStatusEl.textContent = '✅ Ready';
                     weiboStatusEl.style.color = '#28a745';
                 }
             } else if (window.weiboManager) {
-                weiboStatusEl.textContent = '⚠️ 初始化中...';
+                weiboStatusEl.textContent = '⚠️ Initializing...';
                 weiboStatusEl.style.color = '#ffc107';
             } else {
-                weiboStatusEl.textContent = '❌ 未加载';
+                weiboStatusEl.textContent = '❌ Not loaded';
                 weiboStatusEl.style.color = '#dc3545';
             }
         }
@@ -3922,20 +3922,20 @@ class MobilePhone {
             if (window.parallelEventsManager && window.parallelEventsManager.isInitialized) {
                 // 检查是否正在处理
                 if (window.parallelEventsManager.isProcessing) {
-                    parallelEventsStatusEl.textContent = '🔄 正在生成平行事件...';
+                    parallelEventsStatusEl.textContent = '🔄 Generating Parallel Events...';
                     parallelEventsStatusEl.style.color = '#007bff';
                 } else if (window.parallelEventsManager.isListening) {
-                    parallelEventsStatusEl.textContent = '👂 监听中';
+                    parallelEventsStatusEl.textContent = '👂 Listening';
                     parallelEventsStatusEl.style.color = '#17a2b8';
                 } else {
-                    parallelEventsStatusEl.textContent = '✅ 已就绪';
+                    parallelEventsStatusEl.textContent = '✅ Ready';
                     parallelEventsStatusEl.style.color = '#28a745';
                 }
             } else if (window.parallelEventsManager) {
-                parallelEventsStatusEl.textContent = '⚠️ 初始化中...';
+                parallelEventsStatusEl.textContent = '⚠️ Initializing...';
                 parallelEventsStatusEl.style.color = '#ffc107';
             } else {
-                parallelEventsStatusEl.textContent = '❌ 未加载';
+                parallelEventsStatusEl.textContent = '❌ Not loaded';
                 parallelEventsStatusEl.style.color = '#dc3545';
             }
         }
@@ -3946,13 +3946,13 @@ class MobilePhone {
                 window.mobileCustomAPIConfig.isAPIAvailable &&
                 window.mobileCustomAPIConfig.isAPIAvailable()
             ) {
-                apiConfigStatusEl.textContent = '✅ 已配置';
+                apiConfigStatusEl.textContent = '✅ Configured';
                 apiConfigStatusEl.style.color = '#28a745';
             } else if (window.mobileCustomAPIConfig) {
-                apiConfigStatusEl.textContent = '⚠️ 未配置';
+                apiConfigStatusEl.textContent = '⚠️ Not set';
                 apiConfigStatusEl.style.color = '#ffc107';
             } else {
-                apiConfigStatusEl.textContent = '❌ 未加载';
+                apiConfigStatusEl.textContent = '❌ Not loaded';
                 apiConfigStatusEl.style.color = '#dc3545';
             }
         }
@@ -3960,10 +3960,10 @@ class MobilePhone {
         console.log('[Mobile Phone] API状态检查完成');
     }
 
-    // 启动API状态自动刷新
+    // 启动API状态自动Refresh
     startApiStatusAutoRefresh() {
         let refreshCount = 0;
-        const maxRefresh = 30; // 最多刷新30次（1分钟）
+        const maxRefresh = 30; // 最多Refresh30次（1分钟）
 
         const refreshInterval = setInterval(() => {
             refreshCount++;
@@ -3976,7 +3976,7 @@ class MobilePhone {
                 window.mobileCustomAPIConfig.isAPIAvailable &&
                 window.mobileCustomAPIConfig.isAPIAvailable();
 
-            console.log(`[Mobile Phone] 自动状态刷新 #${refreshCount}:`, {
+            console.log(`[Mobile Phone] 自动状态Refresh #${refreshCount}:`, {
                 forumReady,
                 weiboReady,
                 apiReady,
@@ -3985,17 +3985,17 @@ class MobilePhone {
             // 更新状态显示
             this.updateApiStatus();
 
-            // 如果所有服务都已就绪，或者达到最大刷新次数，停止自动刷新
+            // 如果所有服务都已就绪，或者Hit max refresh count，停止自动Refresh
             if ((forumReady && weiboReady) || refreshCount >= maxRefresh) {
                 clearInterval(refreshInterval);
-                console.log('[Mobile Phone] 自动状态刷新已停止:', {
-                    reason: forumReady && weiboReady ? '所有服务已就绪' : '达到最大刷新次数',
+                console.log('[Mobile Phone] 自动状态Refresh已停止:', {
+                    reason: forumReady && weiboReady ? 'All services ready' : 'Hit max refresh count',
                     totalRefreshes: refreshCount,
                 });
             }
-        }, 2000); // 每2秒刷新一次
+        }, 2000); // 每2秒Refresh一次
 
-        console.log('[Mobile Phone] 已启动API状态自动刷新');
+        console.log('[Mobile Phone] 已启动API状态自动Refresh');
     }
 
     // 显示渐隐弹窗提示
@@ -4137,7 +4137,7 @@ class MobilePhone {
             }, duration);
         }
 
-        console.log(`[Mobile Phone] Toast显示: ${type} - ${message}`);
+        console.log(`[Mobile Phone] Toast ${type} - ${message}`);
         return toast;
     }
 
@@ -4150,7 +4150,7 @@ class MobilePhone {
       <div class="modal" id="create-style-modal" style="display: none;">
         <div class="modal-content">
           <div class="modal-header">
-            <h3>🎨 创建自定义风格</h3>
+            <h3>🎨 创建Custom styles</h3>
             <button class="modal-close-btn">&times;</button>
           </div>
           <div class="modal-body">
@@ -4160,7 +4160,7 @@ class MobilePhone {
                 <input
                   type="text"
                   id="style-name-input"
-                  placeholder="例如：温柔小姐姐、霸道总裁、二次元宅男..."
+                  placeholder="e.g. gentle girl, CEO, otaku..."
                   maxlength="20"
                   required
                 >
@@ -4171,7 +4171,7 @@ class MobilePhone {
                 <label for="style-description-input">风格描述</label>
                 <textarea
                   id="style-description-input"
-                  placeholder="描述你想要的论坛风格，ai将会根据你的描述帮你完善并生成对应的论坛风格。例如：小红书的论坛风格，R18论坛风格等。你也可以描述该论坛的语言习惯，用户名特征，语气等。"
+                  placeholder="Describe the forum style you want. The model will fill it in (e.g. Xiaohongshu-like, R18). You can also describe slang, username style, and tone."
                   rows="6"
                   maxlength="500"
                   required
@@ -4184,7 +4184,7 @@ class MobilePhone {
               <div class="form-actions">
                 <button type="button" class="btn-secondary" id="cancel-create-style">取消</button>
                 <button type="submit" class="btn-primary" id="generate-style-btn">
-                  <i class="fas fa-magic"></i> 生成风格
+                  <i class="fas fa-magic"></i> Generate style
                 </button>
               </div>
             </form>
@@ -4215,16 +4215,16 @@ class MobilePhone {
         this.showModal('create-style-modal');
     }
 
-    // 导出自定义风格
+    // 导出Custom styles
     exportCustomStyles() {
         try {
             if (!window.forumStyles) {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
 
             const customStyles = window.forumStyles.getAllCustomStyles();
             if (customStyles.length === 0) {
-                MobilePhone.showToast('没有自定义风格可导出', 'warning');
+                MobilePhone.showToast('No custom styles to export', 'warning');
                 return;
             }
 
@@ -4241,19 +4241,19 @@ class MobilePhone {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            MobilePhone.showToast(`✅ 已导出 ${customStyles.length} 个自定义风格`, 'success');
-            console.log('[Mobile Phone] 导出自定义风格成功');
+            MobilePhone.showToast(`✅ Exported ${customStyles.length} custom styles`, 'success');
+            console.log('[Mobile Phone] 导出Custom styles成功');
         } catch (error) {
-            console.error('[Mobile Phone] 导出自定义风格失败:', error);
-            MobilePhone.showToast('导出失败: ' + error.message, 'error');
+            console.error('[Mobile Phone] 导出Custom styles失败:', error);
+            MobilePhone.showToast('Export failed: ' + error.message, 'error');
         }
     }
 
-    // 导入自定义风格
+    // 导入Custom styles
     importCustomStyles(file) {
         try {
             if (!window.forumStyles) {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
 
             const reader = new FileReader();
@@ -4262,21 +4262,21 @@ class MobilePhone {
                     const jsonData = e.target.result;
                     const results = window.forumStyles.importCustomStyles(jsonData, { overwrite: false });
 
-                    let message = `导入完成: 成功${results.success}个`;
+                    let message = `Import done: ${results.success} ok`;
                     if (results.skipped > 0) {
-                        message += `, 跳过${results.skipped}个`;
+                        message += `, skipped ${results.skipped}`;
                     }
                     if (results.failed > 0) {
-                        message += `, 失败${results.failed}个`;
+                        message += `, failed ${results.failed}`;
                     }
 
                     if (results.success > 0) {
-                        // 刷新显示
+                        // Refresh显示
                         this.loadAndDisplayCustomStyles();
                         this.updateStyleSelectors();
                         MobilePhone.showToast('✅ ' + message, 'success');
                     } else if (results.skipped > 0) {
-                        MobilePhone.showToast('⚠️ ' + message + ' (已存在同名风格)', 'warning');
+                        MobilePhone.showToast('⚠️ ' + message + ' (name already exists)', 'warning');
                     } else {
                         MobilePhone.showToast('❌ ' + message, 'error');
                     }
@@ -4287,30 +4287,30 @@ class MobilePhone {
                     }
                 } catch (error) {
                     console.error('[Mobile Phone] 解析导入文件失败:', error);
-                    MobilePhone.showToast('导入失败: 文件格式错误', 'error');
+                    MobilePhone.showToast('Import failed: bad file format', 'error');
                 }
             };
 
             reader.onerror = () => {
-                console.error('[Mobile Phone] 读取文件失败');
-                MobilePhone.showToast('读取文件失败', 'error');
+                console.error('[Mobile Phone] Read file failed');
+                MobilePhone.showToast('Read file failed', 'error');
             };
 
             reader.readAsText(file);
         } catch (error) {
-            console.error('[Mobile Phone] 导入自定义风格失败:', error);
-            MobilePhone.showToast('导入失败: ' + error.message, 'error');
+            console.error('[Mobile Phone] 导入Custom styles失败:', error);
+            MobilePhone.showToast('Import failed: ' + error.message, 'error');
         }
     }
 
-    // 加载并显示自定义风格
+    // 加载并显示Custom styles
     loadAndDisplayCustomStyles() {
         const container = document.getElementById('custom-styles-container');
         if (!container) return;
 
         try {
             if (!window.forumStyles) {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
 
             const customStyles = window.forumStyles.getAllCustomStyles();
@@ -4320,14 +4320,14 @@ class MobilePhone {
                 container.innerHTML = `
           <div class="no-styles-placeholder">
             <div class="placeholder-icon">🎭</div>
-            <div class="placeholder-text">还没有自定义风格</div>
+            <div class="placeholder-text">还没有Custom styles</div>
             <div class="placeholder-hint">点击上方按钮创建你的第一个风格</div>
           </div>
         `;
                 return;
             }
 
-            // 显示自定义风格列表
+            // 显示Custom styles列表
             const stylesHTML = customStyles
                 .map(style => {
                     const createdDate = new Date(style.createdAt).toLocaleDateString();
@@ -4337,7 +4337,7 @@ class MobilePhone {
           <div class="custom-style-item" data-style-id="${style.id}">
             <div class="style-info">
               <div class="style-name">${this.escapeHtml(style.name)}</div>
-              <div class="style-description">${this.escapeHtml(style.description || '无描述')}</div>
+              <div class="style-description">${this.escapeHtml(style.description || 'No description')}</div>
               <div class="style-meta">
                 创建: ${createdDate} | 更新: ${updatedDate} | ${style.prompt.length} 字符
               </div>
@@ -4360,9 +4360,9 @@ class MobilePhone {
 
             container.innerHTML = stylesHTML;
 
-            console.log(`[Mobile Phone] 显示了 ${customStyles.length} 个自定义风格`);
+            console.log(`[Mobile Phone] Showing ${customStyles.length} custom styles`);
         } catch (error) {
-            console.error('[Mobile Phone] 加载自定义风格失败:', error);
+            console.error('[Mobile Phone] 加载Custom styles失败:', error);
             container.innerHTML = `
         <div class="no-styles-placeholder">
           <div class="placeholder-icon">❌</div>
@@ -4439,14 +4439,14 @@ class MobilePhone {
         const description = descriptionInput?.value.trim();
 
         if (!name || !description) {
-            MobilePhone.showToast('请填写完整的风格信息', 'warning');
+            MobilePhone.showToast('Fill in the full style info', 'warning');
             return;
         }
 
         // 显示加载状态
         if (generateBtn) {
             generateBtn.disabled = true;
-            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
         }
 
         // 调用AI生成风格
@@ -4457,13 +4457,13 @@ class MobilePhone {
             })
             .catch(error => {
                 console.error('[Mobile Phone] 生成风格失败:', error);
-                MobilePhone.showToast('生成风格失败: ' + error.message, 'error');
+                MobilePhone.showToast('Generate style failed: ' + error.message, 'error');
             })
             .finally(() => {
                 // 恢复按钮状态
                 if (generateBtn) {
                     generateBtn.disabled = false;
-                    generateBtn.innerHTML = '<i class="fas fa-magic"></i> 生成风格';
+                    generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate style';
                 }
             });
     }
@@ -4495,14 +4495,14 @@ class MobilePhone {
         }
     }
 
-    // 生成自定义风格（调用AI）
+    // 生成Custom styles（调用AI）
     async generateCustomStyle(name, description) {
-        console.log('[Mobile Phone] 生成自定义风格:', { name, description });
+        console.log('[Mobile Phone] 生成Custom styles:', { name, description });
 
         try {
             // 检查API配置
             if (!window.mobileCustomAPIConfig) {
-                throw new Error('API配置未初始化');
+                throw new Error('API config not initialized');
             }
 
             // 构建风格生成提示词
@@ -4518,7 +4518,7 @@ class MobilePhone {
                 },
                 {
                     role: 'user',
-                    content: `请为"${name}"风格创建完整的论坛风格定义。用户描述：${description}`,
+                    content: `Write a full forum-style definition for "${name}". User description: ${description}`,
                 },
             ];
 
@@ -4528,7 +4528,7 @@ class MobilePhone {
             const response = await window.mobileCustomAPIConfig.callAPI(messages);
 
             if (!response || !response.content) {
-                throw new Error('API返回内容为空');
+                throw new Error('API returned empty content');
             }
 
             const generatedStyle = response.content.trim();
@@ -4537,91 +4537,64 @@ class MobilePhone {
 
             return generatedStyle;
         } catch (error) {
-            console.error('[Mobile Phone] 生成自定义风格失败:', error);
-            throw new Error(`生成失败: ${error.message}`);
+            console.error('[Mobile Phone] 生成Custom styles失败:', error);
+            throw new Error(`Generate failed: ${error.message}`);
         }
     }
 
     // 构建风格生成提示词
     buildStyleGenerationPrompt(userDescription) {
-        return `论坛风格生成规范:
-#总要求
-你是一个精通在线社区文化和用户画像（Persona）构建的AI。
-你的任务是根据用户提出的**[论坛主题或社群名称]，创建一个详细、具体、可执行的"论坛风格画像提示词（Forum Style Persona Prompt）"**。
-这个由你生成的"风格画像提示词"将会被用于指导AI模型，以模拟该特定社群的口吻、风格和内容，生成高度逼真的帖子、回复和用户互动。
+        return `Forum style generation spec:
 
-#生成"论坛风格画像提示词"的结构要求
-你生成的每一个"风格画像提示词"都必须包含以下几个核心部分，请严格遵循此结构。你可以参考用户提供的"贴吧老哥"、"知乎精英"、"小红书种草"的范例格式。
+# Overall
+You are an AI that builds online-community personas.
+Given the user's **[forum topic or community name]**, write a detailed, usable "Forum Style Persona Prompt".
+That prompt will later drive another model to imitate that community's tone, posts, replies, and usernames.
 
-1. 核心用户画像 (Persona Definition)
-格式: 以 你是一位... 开头。
+# Required structure
+Every persona prompt MUST contain these sections, in this order. You may follow the example formats of "贴吧老哥", "知乎精英", and "小红书种草".
 
-内容: 这是对该论坛典型用户的核心描述。你需要定义：
+1. Persona Definition
+Format: start with "You are a ...".
+Cover identity/background, personality/attitude, and typical behavior.
 
-身份与背景: 他们是谁？（例如：资深玩家、新手妈妈、技术宅、意见领袖）
+2. Task Instruction
+Format: "Using the provided [source], generate [N] [content type]..."
+Source is usually the chat log or a given topic. Count is e.g. 3-5. Content type is e.g. threads, Q&A, notes.
+Specify structure (title, body, 2-3 replies).
 
-性格与态度: 他们的说话风格和心态是怎样的？（例如：热情友好、冷静客观、愤世嫉俗、充满优越感、爱分享、爱抬杠）
+3. Style Requirements
+Use a dash list. Must include:
+- Titles
+- Content
+- Replies
+- Usernames (3-5 examples)
+- Special Elements (community slang, prefixes, hashtags, emoji habits)
 
-专长与行为: 他们擅长做什么？（例如：擅长深入分析、发布评测、情感吐槽、制造争议、玩梗）
+4. Final Command
+End with: Generate the forum posts only. No commentary.
 
-2. 具体生成任务 (Task Instruction)
-格式: 以 请根据提供的[信息源]，生成[数量]个[内容形式]... 的格式来写。
+# Example (贴吧老哥)
+You are a long-time Baidu Tieba regular who talks with sarcasm and unearned authority. You argue, pile on slang, and steer the thread.
 
-内容: 明确指示最终使用此画像的AI需要完成什么任务。
+Using the provided chat log, generate 3-5 Tieba-style threads, each with a title, body, and 2-3 replies.
 
-信息源: 通常是 提供的聊天记录 或 指定的主题。
+Style:
+- Titles are combative, e.g. "不是，就这也能吵起来？", "我真是服了某些人了"
+- Body is sharp and full of Tieba slang
+- Replies pile on, e.g. "乐", "急了急了", "典中典", "孝", "就这？"
+- Usernames feel veteran, e.g. "专业抬杠二十年", "键盘侠本侠"
 
-数量: 例如 3-5个。
+Generate the forum posts only. No commentary.
 
-内容形式: 例如 帖子讨论、问答、笔记 等。
+# Output rules
+Reply with the persona prompt text only. No numbered headings wrapping the whole thing. No extra commentary.
 
-结构: 明确每个生成内容包含的元素，例如 每个帖子包含标题、正文和2-3条回复。
+# Workflow
+User: "Make a Bilibili games-board forum style."
+You: a complete Bilibili games-board persona prompt (UP主, 三连, 弹幕文化, 游戏黑话, etc.).
 
-3. 风格要求 (Style Requirements)
-格式: 使用无序列表（-）详细列出风格细则。
-
-内容: 这是最关键的部分，需要将风格拆解得足够细致，以便AI模仿。必须包含以下几点:
-
-标题 (Titles): 描述标题的典型风格。（例如：挑衅性、专业性、悬念式、情绪化、包含Emoji等）
-
-内容 (Content): 描述帖子正文的语言、结构和口吻。（例如：结构清晰、逻辑严谨、情绪饱满、多用黑话/梗、分段清晰等）
-
-回复 (Replies): 描述评论区的互动风格。（例如：互相抬杠、理性探讨、共情支持、抖机灵）
-
-用户名 (Usernames): 提供3-5个符合该社区风格的用户名范例。
-
-特殊元素 (Special Elements): 描述该社区特有的语言习惯或格式。（例如：开头说"谢邀"、结尾带#话题标签、大量使用特定Emoji、黑话词汇解释等）
-
-4. 最终指令 (Final Command)
-格式: 请直接生成论坛内容，不要解释。
-
-内容: 这是一个收尾指令，确保最终的输出是纯粹的内容，而非对内容的解释。
-
-#生成风格示例：
-贴吧老哥: \`你是一位常年混迹于百度贴吧，等级很高，说话自带阴阳怪气和优越感的老哥/老姐。你是吧里的"意见领袖"（自封的），擅长一针见血地评论、抬杠、以及用各种网络黑话和烂梗带节奏。
-
-请根据提供的聊天记录，生成3-5个贴吧风格的帖子讨论，每个帖子包含标题、正文和2-3条回复。
-
-风格要求：
-- 标题要有挑衅性、争议性，如"不是，就这也能吵起来？"、"我真是服了某些人了"
-- 内容犀利毒舌，充满优越感，大量使用贴吧黑话、烂梗
-- 回复要互相抬杠、阴阳怪气，如"乐"、"急了急了"、"典中典"、"孝"、"就这？"
-- 用户名要体现老油条气质，如"专业抬杠二十年"、"键盘侠本侠"
-
-请直接生成论坛内容，不要解释。\`,
-
-#风格生成格式要求
-你的回复需要是一段完整的论坛风格文本，请勿生成任何风格文本以外的信息。
-你生成的风格文本禁止携带编号和标题，请直接按照核心部分的说明生成适当的内容。
-
-#工作流程示例
-用户输入: "帮我创建一个B站游戏区的论坛风格。"
-
-你的输出: 你需要根据以上结构，生成一个完整的"B站游戏区风格画像提示词"，可能包含"UP主"、"三连"、"弹幕文化"、"游戏黑话"等要素。
-
-最终应用: 其他AI或用户将使用你生成的这个提示词，来创造出B站游戏区风格的虚拟内容。
-
-现在，你已经理解了你的任务。请准备好，等待用户输入**[论坛主题或社群名称]**。`;
+Wait for the user's **[forum topic or community name]**.`;
     }
 
     // 显示风格预览弹窗
@@ -4633,18 +4606,18 @@ class MobilePhone {
       <div class="modal" id="style-preview-modal" style="display: none;">
         <div class="modal-content style-preview-content">
           <div class="modal-header">
-            <h3>📝 编辑风格: ${this.escapeHtml(name)}</h3>
+            <h3>📝 Edit style: ${this.escapeHtml(name)}</h3>
             <button class="modal-close-btn">&times;</button>
           </div>
           <div class="modal-body">
             <div class="style-info">
               <div class="style-meta-info">
                 <div class="meta-item">
-                  <span class="meta-label">风格名称:</span>
+                  <span class="meta-label">Style name:</span>
                   <span class="meta-value">${this.escapeHtml(name)}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-label">原始描述:</span>
+                  <span class="meta-label">Original description:</span>
                   <span class="meta-value">${this.escapeHtml(description)}</span>
                 </div>
               </div>
@@ -4652,12 +4625,12 @@ class MobilePhone {
 
             <form id="style-preview-form">
               <div class="form-group">
-                <label for="style-content-editor">AI生成的风格内容</label>
+                <label for="style-content-editor">Generated style text</label>
                 <div class="editor-toolbar">
-                  <button type="button" class="toolbar-btn" id="format-style-btn" title="格式化内容">
+                  <button type="button" class="toolbar-btn" id="format-style-btn" title="Format content">
                     <i class="fas fa-magic"></i> 格式化
                   </button>
-                  <button type="button" class="toolbar-btn" id="validate-style-btn" title="验证格式">
+                  <button type="button" class="toolbar-btn" id="validate-style-btn" title="Validate format">
                     <i class="fas fa-check-circle"></i> 验证
                   </button>
                 </div>
@@ -4665,7 +4638,7 @@ class MobilePhone {
                   id="style-content-editor"
                   class="style-editor"
                   rows="12"
-                  placeholder="AI生成的风格内容将显示在这里..."
+                  placeholder="Generated style text will show here..."
                 >${this.escapeHtml(generatedStyle)}</textarea>
                 <div class="editor-hint">
                   <div class="hint-text">
@@ -4681,7 +4654,7 @@ class MobilePhone {
               <div class="preview-actions">
                 <div class="action-group">
                   <button type="button" class="btn-secondary" id="regenerate-style-btn">
-                    <i class="fas fa-redo"></i> 重新生成
+                    <i class="fas fa-redo"></i> Regenerate
                   </button>
                   <button type="button" class="btn-secondary" id="cancel-preview-btn">
                     取消
@@ -4689,7 +4662,7 @@ class MobilePhone {
                 </div>
                 <div class="action-group">
                   <button type="submit" class="btn-primary" id="save-style-btn">
-                    <i class="fas fa-save"></i> 保存风格
+                    <i class="fas fa-save"></i> Save style
                   </button>
                 </div>
               </div>
@@ -4821,7 +4794,7 @@ class MobilePhone {
             charCount.textContent = content.length;
         }
 
-        MobilePhone.showToast('内容已格式化', 'success');
+        MobilePhone.showToast('Content formatted', 'success');
     }
 
     // 验证风格内容
@@ -4834,21 +4807,21 @@ class MobilePhone {
 
         // 基本验证
         if (content.length < 50) {
-            issues.push('内容过短，建议至少50个字符');
+            issues.push('Too short — at least 50 characters');
         }
 
         if (!content.includes('你是一位')) {
-            issues.push('建议以"你是一位..."开头设定角色');
+            issues.push('Start with "You are a ..." to set the persona');
         }
 
-        if (!content.includes('请直接生成论坛内容，不要解释')) {
-            issues.push('建议以"请直接生成论坛内容，不要解释。"结尾');
+        if (!content.includes('Generate the forum posts only. No commentary.')) {
+            issues.push('End with "Generate the forum posts only. No commentary."');
         }
 
         if (issues.length === 0) {
-            MobilePhone.showToast('✅ 风格格式验证通过', 'success');
+            MobilePhone.showToast('✅ Style format ok', 'success');
         } else {
-            const message = '格式建议：\n' + issues.join('\n');
+            const message = 'Format hint:\n' + issues.join('\n');
             MobilePhone.showToast(message, 'warning');
         }
     }
@@ -4860,7 +4833,7 @@ class MobilePhone {
 
         // 显示加载状态
         regenerateBtn.disabled = true;
-        regenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 重新生成中...';
+        regenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Regenerating...';
 
         // 调用AI重新生成
         this.generateCustomStyle(styleName, styleDescription)
@@ -4875,20 +4848,20 @@ class MobilePhone {
                         charCount.textContent = newStyle.length;
                     }
                 }
-                MobilePhone.showToast('风格已重新生成', 'success');
+                MobilePhone.showToast('Style regenerated', 'success');
             })
             .catch(error => {
                 console.error('[Mobile Phone] 重新生成风格失败:', error);
-                MobilePhone.showToast('重新生成失败: ' + error.message, 'error');
+                MobilePhone.showToast('Regenerate failed: ' + error.message, 'error');
             })
             .finally(() => {
                 // 恢复按钮状态
                 regenerateBtn.disabled = false;
-                regenerateBtn.innerHTML = '<i class="fas fa-redo"></i> 重新生成';
+                regenerateBtn.innerHTML = '<i class="fas fa-redo"></i> Regenerate';
             });
     }
 
-    // 处理保存自定义风格
+    // 处理保存Custom styles
     handleSaveCustomStyle(styleName, styleDescription) {
         const editor = document.getElementById('style-content-editor');
         const saveBtn = document.getElementById('save-style-btn');
@@ -4897,14 +4870,14 @@ class MobilePhone {
 
         const content = editor.value.trim();
         if (!content) {
-            MobilePhone.showToast('风格内容不能为空', 'warning');
+            MobilePhone.showToast('Style body cannot be empty', 'warning');
             return;
         }
 
         // 显示保存状态
         if (saveBtn) {
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         }
 
         try {
@@ -4925,32 +4898,32 @@ class MobilePhone {
             // 隐藏弹窗
             this.hideModal('style-preview-modal');
 
-            // 刷新风格列表
+            // Refresh风格列表
             this.loadAndDisplayCustomStyles();
 
             // 更新风格选择器（这个方法将在后续任务中实现）
             this.updateStyleSelectors();
 
-            MobilePhone.showToast('✅ 风格保存成功', 'success');
+            MobilePhone.showToast('✅ Style saved', 'success');
         } catch (error) {
             console.error('[Mobile Phone] 保存风格失败:', error);
-            MobilePhone.showToast('保存失败: ' + error.message, 'error');
+            MobilePhone.showToast('Save failed: ' + error.message, 'error');
         } finally {
             // 恢复按钮状态
             if (saveBtn) {
                 saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fas fa-save"></i> 保存风格';
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save style';
             }
         }
     }
 
-    // 保存自定义风格到存储
+    // 保存Custom styles到存储
     saveCustomStyleToStorage(styleData) {
         try {
             if (window.forumStyles) {
                 return window.forumStyles.saveCustomStyle(styleData);
             } else {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
         } catch (error) {
             console.error('[Mobile Phone] 保存风格到存储失败:', error);
@@ -5013,9 +4986,9 @@ class MobilePhone {
                 console.log('[Mobile Phone] 从ForumManager获取当前风格:', currentStyle);
             }
 
-            // 获取自定义风格数量
+            // 获取Custom styles数量
             const customStyles = window.forumStyles.getAllCustomStyles();
-            console.log('[Mobile Phone] 发现自定义风格数量:', customStyles.length);
+            console.log('[Mobile Phone] 发现Custom styles数量:', customStyles.length);
 
             // 更新选择器内容
             this.updateSingleStyleSelector(selectElement);
@@ -5025,8 +4998,8 @@ class MobilePhone {
                 selectElement.value = currentStyle;
                 console.log('[Mobile Phone] 成功设置当前风格:', currentStyle);
             } else {
-                // 如果当前风格不存在，回退到默认风格
-                console.warn('[Mobile Phone] 当前风格不存在，回退到默认风格:', currentStyle);
+                // 如果当前Style not found，回退到默认风格
+                console.warn('[Mobile Phone] 当前Style not found，回退到默认风格:', currentStyle);
                 selectElement.value = '贴吧老哥';
                 if (window.forumManager) {
                     window.forumManager.currentSettings.selectedStyle = '贴吧老哥';
@@ -5091,9 +5064,9 @@ class MobilePhone {
                 const availableStyles = window.parallelEventsStyles.getAvailableStyles();
                 console.log('[Mobile Phone] 平行事件可用风格:', availableStyles);
 
-                // 添加预设风格
+                // 添加Preset styles
                 const presetGroup = document.createElement('optgroup');
-                presetGroup.label = '预设风格';
+                presetGroup.label = 'Preset styles';
 
                 availableStyles.forEach(styleName => {
                     const option = document.createElement('option');
@@ -5112,8 +5085,8 @@ class MobilePhone {
                 selectElement.value = currentStyle;
                 console.log('[Mobile Phone] 成功设置平行事件当前风格:', currentStyle);
             } else {
-                // 如果当前风格不存在，回退到默认风格
-                console.warn('[Mobile Phone] 平行事件当前风格不存在，回退到默认风格:', currentStyle);
+                // 如果当前Style not found，回退到默认风格
+                console.warn('[Mobile Phone] 平行事件当前Style not found，回退到默认风格:', currentStyle);
                 selectElement.value = '平行事件';
                 if (window.parallelEventsManager) {
                     window.parallelEventsManager.currentSettings.selectedStyle = '平行事件';
@@ -5152,7 +5125,7 @@ class MobilePhone {
             const managerValue = window.parallelEventsManager.currentSettings.threshold;
 
             if (htmlValue !== managerValue) {
-                console.log(`[Mobile Phone] 阈值不同步 - HTML: ${htmlValue}, 管理器: ${managerValue}, 使用HTML值`);
+                console.log(`[Mobile Phone] threshold mismatch — HTML ${htmlValue}, manager ${managerValue}, using HTML`);
                 window.parallelEventsManager.currentSettings.threshold = htmlValue;
                 needsSave = true;
             }
@@ -5179,7 +5152,7 @@ class MobilePhone {
             const managerValue = window.parallelEventsManager.currentSettings.enabled;
 
             if (htmlValue !== managerValue) {
-                console.log(`[Mobile Phone] 启用状态不同步 - HTML: ${htmlValue}, 管理器: ${managerValue}, 使用HTML值`);
+                console.log(`[Mobile Phone] enabled mismatch — HTML ${htmlValue}, manager ${managerValue}, using HTML`);
                 window.parallelEventsManager.currentSettings.enabled = htmlValue;
                 needsSave = true;
             }
@@ -5274,16 +5247,16 @@ class MobilePhone {
 
 
 
-        // 添加自定义风格
+        // 添加Custom styles
         const customStyles = window.forumStyles.getAllCustomStyles();
         if (customStyles.length > 0) {
             const customGroup = document.createElement('optgroup');
-            customGroup.label = '自定义风格';
+            customGroup.label = 'Custom styles';
 
             customStyles.forEach(style => {
                 const option = document.createElement('option');
                 option.value = style.name;
-                option.textContent = `${style.name} (自定义)`;
+                option.textContent = `${style.name} (custom)`;
                 customGroup.appendChild(option);
             });
 
@@ -5295,46 +5268,46 @@ class MobilePhone {
             selectElement.value = currentValue;
             console.log('[Mobile Phone] 风格选择器已设置为:', currentValue);
         } else {
-            // 如果当前风格不存在，回退到默认风格
+            // 如果当前Style not found，回退到默认风格
             selectElement.value = '贴吧老哥';
             console.log('[Mobile Phone] 风格选择器回退到默认风格: 贴吧老哥');
         }
     }
 
-    // 编辑自定义风格
+    // 编辑Custom styles
     editCustomStyle(styleName) {
         try {
             if (!window.forumStyles) {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
 
             const style = window.forumStyles.getCustomStyle(styleName);
             if (!style) {
-                throw new Error('风格不存在');
+                throw new Error('Style not found');
             }
 
             // 显示编辑弹窗
             this.showStylePreviewModal(style.name, style.description, style.prompt);
         } catch (error) {
-            console.error('[Mobile Phone] 编辑自定义风格失败:', error);
-            MobilePhone.showToast('编辑失败: ' + error.message, 'error');
+            console.error('[Mobile Phone] 编辑Custom styles失败:', error);
+            MobilePhone.showToast('Edit failed: ' + error.message, 'error');
         }
     }
 
-    // 复制自定义风格
+    // 复制Custom styles
     copyCustomStyle(styleName) {
         try {
             if (!window.forumStyles) {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
 
             const style = window.forumStyles.getCustomStyle(styleName);
             if (!style) {
-                throw new Error('风格不存在');
+                throw new Error('Style not found');
             }
 
             // 创建副本
-            const copyName = `${style.name} - 副本`;
+            const copyName = `${style.name} - copy`;
             const copyData = {
                 name: copyName,
                 description: style.description,
@@ -5353,31 +5326,31 @@ class MobilePhone {
             // 保存副本
             window.forumStyles.saveCustomStyle(copyData);
 
-            // 刷新显示
+            // Refresh显示
             this.loadAndDisplayCustomStyles();
             this.updateStyleSelectors();
 
-            MobilePhone.showToast(`✅ 已复制为 "${finalName}"`, 'success');
+            MobilePhone.showToast(`✅ Copied as "${finalName}"`, 'success');
         } catch (error) {
-            console.error('[Mobile Phone] 复制自定义风格失败:', error);
-            MobilePhone.showToast('复制失败: ' + error.message, 'error');
+            console.error('[Mobile Phone] 复制Custom styles失败:', error);
+            MobilePhone.showToast('Copy failed: ' + error.message, 'error');
         }
     }
 
-    // 删除自定义风格
+    // 删除Custom styles
     deleteCustomStyle(styleName) {
         try {
             if (!window.forumStyles) {
-                throw new Error('ForumStyles未初始化');
+                throw new Error('ForumStyles not initialized');
             }
 
             const style = window.forumStyles.getCustomStyle(styleName);
             if (!style) {
-                throw new Error('风格不存在');
+                throw new Error('Style not found');
             }
 
             // 确认删除
-            const confirmed = confirm(`确定要删除风格 "${styleName}" 吗？\n\n此操作不可撤销。`);
+            const confirmed = confirm(`Delete style "${styleName}"?\n\nThis cannot be undone.`);
             if (!confirmed) {
                 return;
             }
@@ -5385,14 +5358,14 @@ class MobilePhone {
             // 删除风格
             window.forumStyles.deleteCustomStyle(styleName);
 
-            // 刷新显示
+            // Refresh显示
             this.loadAndDisplayCustomStyles();
             this.updateStyleSelectors();
 
-            MobilePhone.showToast(`✅ 已删除风格 "${styleName}"`, 'success');
+            MobilePhone.showToast(`✅ Deleted style "${styleName}"`, 'success');
         } catch (error) {
-            console.error('[Mobile Phone] 删除自定义风格失败:', error);
-            MobilePhone.showToast('删除失败: ' + error.message, 'error');
+            console.error('[Mobile Phone] 删除Custom styles失败:', error);
+            MobilePhone.showToast('Delete failed: ' + error.message, 'error');
         }
     }
 
@@ -5440,14 +5413,14 @@ class MobilePhone {
                 window.weiboStyles.setCustomPrefix('');
             }
 
-            // 刷新界面
+            // Refresh界面
             this.handleApiApp();
 
-            alert('所有设置已重置为默认值');
+            alert('All settings reset to defaults');
             console.log('[Mobile Phone] 所有API设置已重置');
         } catch (error) {
             console.error('[Mobile Phone] 重置设置时出错:', error);
-            alert('重置设置时出错，请查看控制台');
+            alert('Reset failed — see console');
         }
     }
 
@@ -5457,13 +5430,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.getStyleConfigAppContent && window.bindStyleConfigEvents) {
-            console.log('[Mobile Phone] Style Config 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Style Config already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._styleConfigLoading) {
-            console.log('[Mobile Phone] Style Config 正在加载中，等待完成');
+            console.log('[Mobile Phone] Style Config still loading — wait');
             return window._styleConfigLoading;
         }
 
@@ -5474,14 +5447,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个样式配置文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} style-config files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有样式配置文件加载完成，等待模块初始化...');
 
                     // 等待模块完全初始化
                     setTimeout(() => {
                         if (window.getStyleConfigAppContent && window.bindStyleConfigEvents) {
-                            console.log('[Mobile Phone] ✅ Style Config 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Style Config module loaded and initialized');
                             window._styleConfigLoading = null;
                             resolve();
                         } else {
@@ -5491,29 +5464,29 @@ class MobilePhone {
                                 bindStyleConfigEvents: !!window.bindStyleConfigEvents,
                             });
                             window._styleConfigLoading = null;
-                            reject(new Error('样式配置模块初始化失败'));
+                            reject(new Error('Style config init failed'));
                         }
                     }, 500); // 等待0.5秒让模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._styleConfigLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的样式配置标签
             const removeExistingTags = () => {
                 const existingCss = document.querySelector('link[href*="style-config-manager.css"]');
                 if (existingCss) {
-                    console.log('[Mobile Phone] 移除已存在的 style-config-manager.css');
+                    console.log('[Mobile Phone] Removed existing style-config-manager.css');
                     existingCss.remove();
                 }
 
                 const existingScript = document.querySelector('script[src*="style-config-manager.js"]');
                 if (existingScript) {
-                    console.log('[Mobile Phone] 移除已存在的 style-config-manager.js');
+                    console.log('[Mobile Phone] Removed existing style-config-manager.js');
                     existingScript.remove();
                 }
             };
@@ -5559,13 +5532,13 @@ class MobilePhone {
             window.forumManager &&
             window.forumStyles
         ) {
-            console.log('[Mobile Phone] Forum App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Forum App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._forumAppLoading) {
-            console.log('[Mobile Phone] Forum App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Forum App still loading — wait');
             return window._forumAppLoading;
         }
 
@@ -5576,7 +5549,7 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个论坛文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Forum files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有论坛文件加载完成，等待模块初始化...');
 
@@ -5594,11 +5567,11 @@ class MobilePhone {
                             window.forumManager &&
                             window.forumStyles
                         ) {
-                            console.log('[Mobile Phone] ✅ Forum App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Forum App module loaded and initialized');
                             window._forumAppLoading = null;
                             resolve();
                         } else if (retryCount < maxRetries) {
-                            console.log(`[Mobile Phone] 论坛模块正在初始化中... (${retryCount}/${maxRetries})`);
+                            console.log(`[Mobile Phone] Forum module init... (${retryCount}/${maxRetries})`);
                             setTimeout(checkInitialization, 500); // 每500ms检查一次
                         } else {
                             console.error('[Mobile Phone] ❌ 论坛模块加载完成但全局变量未正确设置');
@@ -5612,7 +5585,7 @@ class MobilePhone {
                                 forumStyles: !!window.forumStyles,
                             });
                             window._forumAppLoading = null;
-                            reject(new Error('论坛模块初始化失败'));
+                            reject(new Error('Forum module init failed'));
                         }
                     };
                     setTimeout(checkInitialization, 500); // 首次等待500ms
@@ -5620,13 +5593,13 @@ class MobilePhone {
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 loadedCount++; // 即使失败也要计数，避免永远等待
                 // 检查是否所有文件都已尝试加载（成功或失败）
                 if (loadedCount === totalFiles) {
                     console.error('[Mobile Phone] ❌ 论坛模块加载失败，某些文件无法加载');
                     window._forumAppLoading = null;
-                    reject(new Error(`论坛模块加载失败: ${name} 加载失败`));
+                    reject(new Error(`Forum module failed: ${name}`));
                 }
             };
 
@@ -5737,13 +5710,13 @@ class MobilePhone {
             window.weiboManager &&
             window.weiboStyles
         ) {
-            console.log('[Mobile Phone] Weibo App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Weibo App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._weiboAppLoading) {
-            console.log('[Mobile Phone] Weibo App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Weibo App still loading — wait');
             return window._weiboAppLoading;
         }
 
@@ -5754,7 +5727,7 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个微博文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Weibo files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有微博文件加载完成，等待模块初始化...');
 
@@ -5772,11 +5745,11 @@ class MobilePhone {
                             window.weiboManager &&
                             window.weiboStyles
                         ) {
-                            console.log('[Mobile Phone] ✅ Weibo App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Weibo App module loaded and initialized');
                             window._weiboAppLoading = null;
                             resolve();
                         } else if (retryCount < maxRetries) {
-                            console.log(`[Mobile Phone] 微博模块正在初始化中... (${retryCount}/${maxRetries})`);
+                            console.log(`[Mobile Phone] Weibo module init... (${retryCount}/${maxRetries})`);
                             setTimeout(checkInitialization, 500); // 每500ms检查一次
                         } else {
                             console.error('[Mobile Phone] ❌ 微博模块加载完成但全局变量未正确设置');
@@ -5790,7 +5763,7 @@ class MobilePhone {
                                 weiboStyles: !!window.weiboStyles,
                             });
                             window._weiboAppLoading = null;
-                            reject(new Error('微博模块初始化失败'));
+                            reject(new Error('Weibo module init failed'));
                         }
                     };
                     setTimeout(checkInitialization, 500); // 首次等待500ms
@@ -5798,13 +5771,13 @@ class MobilePhone {
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 loadedCount++; // 即使失败也要计数，避免永远等待
                 // 检查是否所有文件都已尝试加载（成功或失败）
                 if (loadedCount === totalFiles) {
                     console.error('[Mobile Phone] ❌ 微博模块加载失败，某些文件无法加载');
                     window._weiboAppLoading = null;
-                    reject(new Error(`微博模块加载失败: ${name} 加载失败`));
+                    reject(new Error(`微博模块加载失败: ${name} failed to load`));
                 }
             };
 
@@ -5866,7 +5839,7 @@ class MobilePhone {
                 if (typeof window.WeiboStyles !== 'undefined' && typeof window.weiboStyles !== 'undefined') {
                     console.log('[Mobile Phone] ✅ WeiboStyles 类和实例已正确创建');
                 } else {
-                    console.warn('[Mobile Phone] ⚠️ weibo-styles.js 加载完成但全局变量未创建');
+                    console.warn('[Mobile Phone] ⚠️ weibo-styles.js loaded but globals missing');
                     console.log('[Mobile Phone] WeiboStyles 类型:', typeof window.WeiboStyles);
                     console.log('[Mobile Phone] weiboStyles 类型:', typeof window.weiboStyles);
                 }
@@ -5887,7 +5860,7 @@ class MobilePhone {
                 checkComplete();
             };
             fixScript.onerror = () => {
-                console.warn('[Mobile Phone] weibo-styles-fix.js 加载失败，但不影响主要功能');
+                console.warn('[Mobile Phone] weibo-styles-fix.js failed to load (non-fatal)');
                 checkComplete();
             };
             document.head.appendChild(fixScript);
@@ -5932,13 +5905,13 @@ class MobilePhone {
 
         // 检查是否已加载 - 只检查必要的全局变量
         if (window.MessageApp && window.getMessageAppContent && window.bindMessageAppEvents) {
-            console.log('[Mobile Phone] Message App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Message App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._messageAppLoading) {
-            console.log('[Mobile Phone] Message App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Message App still loading — wait');
             return window._messageAppLoading;
         }
 
@@ -5949,14 +5922,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有文件加载完成，等待模块初始化...');
 
                     // 等待所有模块完全初始化
                     setTimeout(() => {
                         if (window.MessageApp && window.getMessageAppContent && window.bindMessageAppEvents) {
-                            console.log('[Mobile Phone] ✅ Message App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Message App module loaded and initialized');
                             window._messageAppLoading = null;
                             resolve();
                         } else {
@@ -5967,16 +5940,16 @@ class MobilePhone {
                                 bindMessageAppEvents: !!window.bindMessageAppEvents,
                             });
                             window._messageAppLoading = null;
-                            reject(new Error('模块初始化失败'));
+                            reject(new Error('Module init failed'));
                         }
                     }, 1000); // 等待1秒让所有模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._messageAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6001,7 +5974,7 @@ class MobilePhone {
 
                 const existingScripts = document.querySelectorAll('script[src*="mobile/app/"]');
                 if (existingScripts.length > 0) {
-                    console.log(`[Mobile Phone] 移除 ${existingScripts.length} 个已存在的脚本`);
+                    console.log(`[Mobile Phone] Removed ${existingScripts.length} existing scripts`);
                     existingScripts.forEach(script => script.remove());
                 }
             };
@@ -6057,13 +6030,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.StatusApp && window.getStatusAppContent && window.bindStatusAppEvents) {
-            console.log('[Mobile Phone] Status App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Status App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._statusAppLoading) {
-            console.log('[Mobile Phone] Status App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Status App still loading — wait');
             return window._statusAppLoading;
         }
 
@@ -6074,28 +6047,28 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个状态应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Status files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有状态应用文件加载完成，等待模块初始化...');
 
                     setTimeout(() => {
                         if (window.StatusApp && window.getStatusAppContent && window.bindStatusAppEvents) {
-                            console.log('[Mobile Phone] ✅ Status App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Status App module loaded and initialized');
                             window._statusAppLoading = null;
                             resolve();
                         } else {
                             console.error('[Mobile Phone] ❌ 状态应用模块加载完成但全局变量未正确设置');
                             window._statusAppLoading = null;
-                            reject(new Error('状态应用模块初始化失败'));
+                            reject(new Error('Status app init failed'));
                         }
                     }, 500);
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._statusAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6146,13 +6119,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.DiaryApp && window.getDiaryAppContent && window.bindDiaryAppEvents) {
-            console.log('[Mobile Phone] Diary App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Diary App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._diaryAppLoading) {
-            console.log('[Mobile Phone] Diary App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Diary App still loading — wait');
             return window._diaryAppLoading;
         }
 
@@ -6163,28 +6136,28 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个日记应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Diary files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有日记应用文件加载完成，等待模块初始化...');
 
                     setTimeout(() => {
                         if (window.DiaryApp && window.getDiaryAppContent && window.bindDiaryAppEvents) {
-                            console.log('[Mobile Phone] ✅ Diary App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Diary App module loaded and initialized');
                             window._diaryAppLoading = null;
                             resolve();
                         } else {
                             console.error('[Mobile Phone] ❌ 日记应用模块加载完成但全局变量未正确设置');
                             window._diaryAppLoading = null;
-                            reject(new Error('日记应用模块初始化失败'));
+                            reject(new Error('Diary app init failed'));
                         }
                     }, 500);
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._diaryAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6235,13 +6208,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.ShopApp && window.getShopAppContent && window.bindShopAppEvents) {
-            console.log('[Mobile Phone] Shop App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Shop App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._shopAppLoading) {
-            console.log('[Mobile Phone] Shop App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Shop App still loading — wait');
             return window._shopAppLoading;
         }
 
@@ -6252,14 +6225,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个购物应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Shop files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有购物应用文件加载完成，等待模块初始化...');
 
                     // 等待模块完全初始化
                     setTimeout(() => {
                         if (window.ShopApp && window.getShopAppContent && window.bindShopAppEvents) {
-                            console.log('[Mobile Phone] ✅ Shop App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Shop App module loaded and initialized');
                             window._shopAppLoading = null;
                             resolve();
                         } else {
@@ -6270,16 +6243,16 @@ class MobilePhone {
                                 bindShopAppEvents: !!window.bindShopAppEvents,
                             });
                             window._shopAppLoading = null;
-                            reject(new Error('购物应用模块初始化失败'));
+                            reject(new Error('Shop app init failed'));
                         }
                     }, 500); // 等待0.5秒让模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._shopAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6330,13 +6303,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.BackpackApp && window.getBackpackAppContent && window.bindBackpackAppEvents) {
-            console.log('[Mobile Phone] Backpack App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Backpack App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._backpackAppLoading) {
-            console.log('[Mobile Phone] Backpack App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Backpack App still loading — wait');
             return window._backpackAppLoading;
         }
 
@@ -6347,14 +6320,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个背包应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Bag files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有背包应用文件加载完成，等待模块初始化...');
 
                     // 等待模块完全初始化
                     setTimeout(() => {
                         if (window.BackpackApp && window.getBackpackAppContent && window.bindBackpackAppEvents) {
-                            console.log('[Mobile Phone] ✅ Backpack App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Backpack App module loaded and initialized');
                             window._backpackAppLoading = null;
                             resolve();
                         } else {
@@ -6365,16 +6338,16 @@ class MobilePhone {
                                 bindBackpackAppEvents: !!window.bindBackpackAppEvents,
                             });
                             window._backpackAppLoading = null;
-                            reject(new Error('背包应用模块初始化失败'));
+                            reject(new Error('Bag app init failed'));
                         }
                     }, 500); // 等待0.5秒让模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._backpackAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6425,13 +6398,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.TaskApp && window.getTaskAppContent && window.bindTaskAppEvents) {
-            console.log('[Mobile Phone] Task App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Task App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._taskAppLoading) {
-            console.log('[Mobile Phone] Task App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Task App still loading — wait');
             return window._taskAppLoading;
         }
 
@@ -6442,14 +6415,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个任务应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Tasks files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有任务应用文件加载完成，等待模块初始化...');
 
                     // 等待模块完全初始化
                     setTimeout(() => {
                         if (window.TaskApp && window.getTaskAppContent && window.bindTaskAppEvents) {
-                            console.log('[Mobile Phone] ✅ Task App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Task App module loaded and initialized');
                             window._taskAppLoading = null;
                             resolve();
                         } else {
@@ -6460,16 +6433,16 @@ class MobilePhone {
                                 bindTaskAppEvents: !!window.bindTaskAppEvents,
                             });
                             window._taskAppLoading = null;
-                            reject(new Error('任务应用模块初始化失败'));
+                            reject(new Error('Tasks app init failed'));
                         }
                     }, 500); // 等待0.5秒让模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._taskAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6520,13 +6493,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.LiveApp && window.getLiveAppContent && window.bindLiveAppEvents) {
-            console.log('[Mobile Phone] Live App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Live App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._liveAppLoading) {
-            console.log('[Mobile Phone] Live App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Live App still loading — wait');
             return window._liveAppLoading;
         }
 
@@ -6537,14 +6510,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个直播应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Live files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有直播应用文件加载完成，等待模块初始化...');
 
                     // 等待模块完全初始化
                     setTimeout(() => {
                         if (window.LiveApp && window.getLiveAppContent && window.bindLiveAppEvents) {
-                            console.log('[Mobile Phone] ✅ Live App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Live App module loaded and initialized');
                             window._liveAppLoading = null;
                             resolve();
                         } else {
@@ -6555,16 +6528,16 @@ class MobilePhone {
                                 bindLiveAppEvents: !!window.bindLiveAppEvents,
                             });
                             window._liveAppLoading = null;
-                            reject(new Error('直播应用模块初始化失败'));
+                            reject(new Error('Live app init failed'));
                         }
                     }, 500); // 等待0.5秒让模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._liveAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6615,13 +6588,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.WatchLiveApp && window.getWatchLiveAppContent && window.bindWatchLiveAppEvents) {
-            console.log('[Mobile Phone] Watch Live App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Watch Live App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._watchLiveAppLoading) {
-            console.log('[Mobile Phone] Watch Live App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Watch Live App still loading — wait');
             return window._watchLiveAppLoading;
         }
 
@@ -6632,14 +6605,14 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个观看直播应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Watch Live files`);
                 if (loadedCount === totalFiles) {
-                    console.log('[Mobile Phone] 所有观看直播应用文件加载完成，等待模块初始化...');
+                    console.log('[Mobile Phone] Watch Live files loaded — waiting for init...');
 
                     // 等待模块完全初始化
                     setTimeout(() => {
                         if (window.WatchLiveApp && window.getWatchLiveAppContent && window.bindWatchLiveAppEvents) {
-                            console.log('[Mobile Phone] ✅ Watch Live App 模块加载并初始化完成');
+                            console.log('[Mobile Phone] ✅ Watch Live App module loaded and initialized');
                             window._watchLiveAppLoading = null;
                             resolve();
                         } else {
@@ -6650,16 +6623,16 @@ class MobilePhone {
                                 bindWatchLiveAppEvents: !!window.bindWatchLiveAppEvents,
                             });
                             window._watchLiveAppLoading = null;
-                            reject(new Error('观看直播应用模块初始化失败'));
+                            reject(new Error('Watch Live init failed'));
                         }
                     }, 500); // 等待0.5秒让模块完成初始化
                 }
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._watchLiveAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 检查并移除已存在的标签
@@ -6711,13 +6684,13 @@ class MobilePhone {
         // 检查是否已加载 - 只检查必要的全局变量
         if (window.ParallelEventsApp && window.getParallelEventsAppContent &&
             window.bindParallelEventsAppEvents && window.parallelEventsStyles) {
-            console.log('[Mobile Phone] Parallel Events App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Parallel Events already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._parallelEventsAppLoading) {
-            console.log('[Mobile Phone] Parallel Events App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Parallel Events still loading — wait');
             return window._parallelEventsAppLoading;
         }
 
@@ -6728,9 +6701,9 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个平行事件应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Parallel Events files`);
                 if (loadedCount === totalFiles) {
-                    console.log('[Mobile Phone] 所有平行事件应用文件加载完成，等待模块初始化...');
+                    console.log('[Mobile Phone] Parallel Events files loaded — waiting for init...');
 
                     // 等待模块完全初始化
                     const checkInitialization = (attempt = 1, maxAttempts = 10) => {
@@ -6741,7 +6714,7 @@ class MobilePhone {
                             const hasStyles = !!window.parallelEventsStyles;
                             const hasManager = !!window.parallelEventsManager;
 
-                            console.log(`[Mobile Phone] 初始化检查 ${attempt}/${maxAttempts}:`, {
+                            console.log(`[Mobile Phone] Init check ${attempt}/${maxAttempts}:`, {
                                 ParallelEventsApp: hasClass,
                                 getParallelEventsAppContent: hasContent,
                                 bindParallelEventsAppEvents: hasEvents,
@@ -6751,16 +6724,16 @@ class MobilePhone {
 
                             // 只检查必要的模块，管理器会在后续异步创建
                             if (hasClass && hasContent && hasEvents && hasStyles) {
-                                console.log('[Mobile Phone] ✅ Parallel Events App 模块加载并初始化完成');
+                                console.log('[Mobile Phone] ✅ Parallel Events App module loaded and initialized');
                                 window._parallelEventsAppLoading = null;
                                 resolve();
                             } else if (attempt < maxAttempts) {
-                                console.log(`[Mobile Phone] 等待初始化完成... (${attempt}/${maxAttempts})`);
+                                console.log(`[Mobile Phone] Waiting for init... (${attempt}/${maxAttempts})`);
                                 checkInitialization(attempt + 1, maxAttempts);
                             } else {
-                                console.error('[Mobile Phone] ❌ 平行事件应用模块初始化超时');
+                                console.error('[Mobile Phone] ❌ Parallel Events init timed out');
                                 window._parallelEventsAppLoading = null;
-                                reject(new Error('平行事件应用模块初始化超时'));
+                                reject(new Error('Parallel Events init timed out'));
                             }
                         }, 500); // 每0.5秒检查一次
                     };
@@ -6770,9 +6743,9 @@ class MobilePhone {
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._parallelEventsAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 加载CSS文件
@@ -6790,7 +6763,7 @@ class MobilePhone {
             const stylesScript = document.createElement('script');
             stylesScript.src = './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-styles.js';
             stylesScript.onload = () => {
-                console.log('[Mobile Phone] parallel-events-styles.js 加载完成');
+                console.log('[Mobile Phone] parallel-events-styles.js loaded');
                 console.log('[Mobile Phone] parallelEventsStyles 状态:', typeof window.parallelEventsStyles);
                 checkComplete();
             };
@@ -6827,7 +6800,7 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 简化加载: ${loadedCount}/${totalFiles} 完成`);
+                console.log(`[Mobile Phone] Simple load ${loadedCount}/${totalFiles} done`);
                 if (loadedCount === totalFiles) {
                     // 等待一下让模块初始化
                     setTimeout(() => {
@@ -6836,8 +6809,8 @@ class MobilePhone {
                             console.log('[Mobile Phone] ✅ 简化加载成功');
                             resolve();
                         } else {
-                            console.error('[Mobile Phone] ❌ 简化加载失败，全局变量未设置');
-                            reject(new Error('简化加载失败'));
+                            console.error('[Mobile Phone] ❌ Simple load failed，全局变量未设置');
+                            reject(new Error('Simple load failed'));
                         }
                     }, 1000);
                 }
@@ -6848,21 +6821,21 @@ class MobilePhone {
             css.rel = 'stylesheet';
             css.href = './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-app.css';
             css.onload = checkComplete;
-            css.onerror = () => reject(new Error('CSS加载失败'));
+            css.onerror = () => reject(new Error('CSS failed to load'));
             document.head.appendChild(css);
 
             // 加载样式JS
             const stylesJs = document.createElement('script');
             stylesJs.src = './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-styles.js';
             stylesJs.onload = checkComplete;
-            stylesJs.onerror = () => reject(new Error('样式JS加载失败'));
+            stylesJs.onerror = () => reject(new Error('Styles JS failed to load'));
             document.head.appendChild(stylesJs);
 
             // 加载主JS
             const mainJs = document.createElement('script');
             mainJs.src = './scripts/extensions/third-party/mobile/app/parallel-events-app/parallel-events-app.js';
             mainJs.onload = checkComplete;
-            mainJs.onerror = () => reject(new Error('主JS加载失败'));
+            mainJs.onerror = () => reject(new Error('Main JS failed to load'));
             document.head.appendChild(mainJs);
         });
     }
@@ -6873,13 +6846,13 @@ class MobilePhone {
 
         // 检查是否已加载
         if (window.ProfileApp && window.profileApp) {
-            console.log('[Mobile Phone] Profile App 模块已存在，跳过加载');
+            console.log('[Mobile Phone] Profile App already loaded — skip');
             return Promise.resolve();
         }
 
         // 检查是否正在加载
         if (window._profileAppLoading) {
-            console.log('[Mobile Phone] Profile App 正在加载中，等待完成');
+            console.log('[Mobile Phone] Profile App still loading — wait');
             return window._profileAppLoading;
         }
 
@@ -6890,7 +6863,7 @@ class MobilePhone {
 
             const checkComplete = () => {
                 loadedCount++;
-                console.log(`[Mobile Phone] 已加载 ${loadedCount}/${totalFiles} 个档案应用文件`);
+                console.log(`[Mobile Phone] Loaded ${loadedCount}/${totalFiles} Profile files`);
                 if (loadedCount === totalFiles) {
                     console.log('[Mobile Phone] 所有档案应用文件加载完成，等待模块初始化...');
 
@@ -6900,22 +6873,22 @@ class MobilePhone {
                             const hasClass = !!window.ProfileApp;
                             const hasInstance = !!window.profileApp;
 
-                            console.log(`[Mobile Phone] 初始化检查 ${attempt}/${maxAttempts}:`, {
+                            console.log(`[Mobile Phone] Init check ${attempt}/${maxAttempts}:`, {
                                 ProfileApp: hasClass,
                                 profileApp: hasInstance,
                             });
 
                             if (hasClass && hasInstance) {
-                                console.log('[Mobile Phone] ✅ Profile App 模块加载并初始化完成');
+                                console.log('[Mobile Phone] ✅ Profile App module loaded and initialized');
                                 window._profileAppLoading = null;
                                 resolve();
                             } else if (attempt < maxAttempts) {
-                                console.log(`[Mobile Phone] 等待初始化完成... (${attempt}/${maxAttempts})`);
+                                console.log(`[Mobile Phone] Waiting for init... (${attempt}/${maxAttempts})`);
                                 checkInitialization(attempt + 1, maxAttempts);
                             } else {
-                                console.error('[Mobile Phone] ❌ 档案应用模块初始化超时');
+                                console.error('[Mobile Phone] ❌ Profile app init timed out');
                                 window._profileAppLoading = null;
-                                reject(new Error('档案应用模块初始化超时'));
+                                reject(new Error('Profile app init timed out'));
                             }
                         }, 500); // 每0.5秒检查一次
                     };
@@ -6925,9 +6898,9 @@ class MobilePhone {
             };
 
             const handleError = name => {
-                console.error(`[Mobile Phone] ${name} 加载失败`);
+                console.error(`[Mobile Phone] ${name} failed to load`);
                 window._profileAppLoading = null;
-                reject(new Error(`${name} 加载失败`));
+                reject(new Error(`${name} failed to load`));
             };
 
             // 加载CSS文件
@@ -6959,17 +6932,17 @@ class MobilePhone {
         return window._profileAppLoading;
     }
 
-    // 返回主界面
+    // go home
     goHome() {
-        // 防抖检查：如果正在返回主界面，直接返回
+        // 防抖检查：如果正在go home，直接返回
         if (this._goingHome) {
-            console.log('[Mobile Phone] 防抖：正在返回主界面，跳过重复操作');
+            console.log('[Mobile Phone] debounce: already going home');
             return;
         }
 
         // 如果已经在主界面，直接返回
         if (!this.currentApp && !this.currentAppState && this.appStack.length === 0) {
-            console.log('[Mobile Phone] 已在主界面，跳过重复操作');
+            console.log('[Mobile Phone] already home — skip');
             return;
         }
 
@@ -6977,7 +6950,7 @@ class MobilePhone {
         this._goingHome = true;
 
         try {
-            console.log('[Mobile Phone] 返回主界面');
+            console.log('[Mobile Phone] go home');
 
             // 清除用户导航意图
             this._userNavigationIntent = null;
@@ -7002,7 +6975,7 @@ class MobilePhone {
     startClock() {
         const updateTime = () => {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('zh-CN', {
+            const timeString = now.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false,
@@ -7044,7 +7017,7 @@ class MobilePhone {
     returnToAppMain(appName) {
         // 防抖检查：如果正在返回相同应用主界面，直接返回
         if (this._returningToApp === appName) {
-            console.log('[Mobile Phone] 防抖：正在返回相同应用主界面，跳过重复操作:', appName);
+            console.log('[Mobile Phone] debounce: already returning to app home:', appName);
             return;
         }
 
@@ -7053,13 +7026,13 @@ class MobilePhone {
             this.currentAppState &&
             this.currentAppState.app === appName &&
             this.isAppRootPage(this.currentAppState)) {
-            console.log('[Mobile Phone] 已在目标应用主界面，跳过重复操作:', appName);
+            console.log('[Mobile Phone] already on that app home — skip:', appName);
             return;
         }
 
-        console.log('=== [Mobile Phone] returnToAppMain 开始 ===');
-        console.log('[Mobile Phone] 目标应用:', appName);
-        console.log('[Mobile Phone] 调用前状态:');
+        console.log('=== returnToAppMain start ===');
+        console.log('[Mobile Phone] target app:', appName);
+        console.log('[Mobile Phone] state before call:');
         console.log('  - currentApp:', this.currentApp);
         console.log('  - currentAppState:', JSON.stringify(this.currentAppState, null, 2));
 
@@ -7069,19 +7042,19 @@ class MobilePhone {
         try {
             // 优先使用已有的专用方法以确保内部状态被完全重置
             if (appName === 'forum') {
-                console.log('[Mobile Phone] 使用专用方法 returnToForumMainList');
+                console.log('[Mobile Phone] using returnToForumMainList');
                 this.returnToForumMainList();
                 return;
             }
             if (appName === 'messages') {
-                console.log('[Mobile Phone] 使用专用方法 returnToMessageList');
+                console.log('[Mobile Phone] using returnToMessageList');
                 this.returnToMessageList();
                 return;
             }
 
             const app = this.apps[appName];
             if (!app) {
-                console.warn('[Mobile Phone] 未找到应用，返回主界面:', appName);
+                console.warn('[Mobile Phone] app missing — going home:', appName);
                 this.goHome();
                 return;
             }
@@ -7093,7 +7066,7 @@ class MobilePhone {
                 view: rootView,
             };
 
-            console.log('[Mobile Phone] 创建新状态:', JSON.stringify(state, null, 2));
+            console.log('[Mobile Phone] new state:', JSON.stringify(state, null, 2));
 
             // 重置应用栈为该应用的主界面
             this.appStack = [state];
@@ -7101,16 +7074,16 @@ class MobilePhone {
             this.currentApp = appName; // 确保当前应用设置正确
             this.updateAppHeader(state);
 
-            console.log('[Mobile Phone] 状态更新后:');
+            console.log('[Mobile Phone] state after update:');
             console.log('  - currentApp:', this.currentApp);
             console.log('  - currentAppState:', JSON.stringify(this.currentAppState, null, 2));
 
             // 渲染主界面
             if (app.isCustomApp && app.customHandler) {
-                console.log('[Mobile Phone] 调用自定义处理器');
+                console.log('[Mobile Phone] calling custom handler');
                 app.customHandler();
             } else if (app.content) {
-                console.log('[Mobile Phone] 使用静态内容');
+                console.log('[Mobile Phone] using static content');
                 const contentContainer = document.getElementById('app-content');
                 if (contentContainer) contentContainer.innerHTML = app.content;
             }
@@ -7123,10 +7096,10 @@ class MobilePhone {
                 appEl.style.display = 'block';
             }
 
-            console.log(`[Mobile Phone] 已返回 ${appName} 主界面`);
-            console.log('=== [Mobile Phone] returnToAppMain 结束 ===');
+            console.log(`[Mobile Phone] returned to ${appName} home`);
+            console.log('=== returnToAppMain end ===');
         } catch (error) {
-            console.error('[Mobile Phone] 返回应用主界面失败:', error);
+            console.error('[Mobile Phone] returnToAppMain failed:', error);
             this.goHome();
         } finally {
             // 清除防抖标记
@@ -7165,7 +7138,7 @@ class MobilePhone {
             // 其他应用暂以本地state为准
             return this.isAppRootPage(state);
         } catch (e) {
-            console.warn('[Mobile Phone] isCurrentlyAtAppRoot 检测异常，回退到state判断:', e);
+            console.warn('[Mobile Phone] isCurrentlyAtAppRoot failed — falling back to state:', e);
             return this.isAppRootPage(state);
         }
     }
@@ -7229,11 +7202,11 @@ class MobilePhone {
                         this.currentAppState = newState;
                         this.updateAppHeader(this.currentAppState);
                         syncCount++;
-                        console.log('[Mobile Phone] 同步模块视图到状态:', this.currentAppState);
+                        console.log('[Mobile Phone] synced module view to state:', this.currentAppState);
                     }
                 }
             } catch (e) {
-                console.warn('[Mobile Phone] 同步模块视图失败:', e);
+                console.warn('[Mobile Phone] sync module view failed:', e);
             }
         };
 
@@ -7249,18 +7222,18 @@ class MobilePhone {
             if (syncCount === maxSyncCount) {
                 clearInterval(this._stateSyncTimer);
                 this._stateSyncTimer = setInterval(syncOnce, getInterval());
-                console.log('[Mobile Phone] 状态同步频率已降低到1000ms');
+                console.log('[Mobile Phone] state sync interval now 1000ms');
             }
         }, getInterval());
 
-        console.log('[Mobile Phone] 已启动状态同步轮询，初始间隔:', getInterval(), 'ms');
+        console.log('[Mobile Phone] state sync started, interval:', getInterval(), 'ms');
     }
 
     stopStateSyncLoop() {
         if (this._stateSyncTimer) {
             clearInterval(this._stateSyncTimer);
             this._stateSyncTimer = null;
-            console.log('[Mobile Phone] 已停止状态同步轮询');
+            console.log('[Mobile Phone] state sync stopped');
         }
     }
 
@@ -7276,14 +7249,14 @@ class MobilePhone {
         return localStorage.getItem('messageTextColor') || 'black';
     }
 
-    // 切换文字颜色
+    // Toggle text color
     toggleTextColor() {
         // 直接从DOM获取当前状态，更可靠
         const body = document.body;
         const isCurrentlyWhite = body.classList.contains('text-color-white');
         const newColor = isCurrentlyWhite ? 'black' : 'white';
 
-        console.log(`[Mobile Phone] 切换文字颜色: ${isCurrentlyWhite ? 'white' : 'black'} -> ${newColor}`);
+        console.log(`[Mobile Phone] toggle text color: ${isCurrentlyWhite ? 'white' : 'black'} -> ${newColor}`);
 
         // 保存到全局CSS配置的Data Bank
         if (window.styleConfigManager && window.styleConfigManager.updateConfig) {
@@ -7302,7 +7275,7 @@ class MobilePhone {
         this.updateTextColorButton(newColor);
 
         // 显示提示
-        MobilePhone.showToast(`文字颜色已切换为${newColor === 'white' ? '白色' : '黑色'}`);
+        MobilePhone.showToast(`Text color is now ${newColor === 'white' ? 'white' : 'black'}`);
     }
 
     // 应用文字颜色到页面
@@ -7319,7 +7292,7 @@ class MobilePhone {
         // 设置CSS变量
         root.style.setProperty('--message-text-color', color === 'white' ? '#fff' : '#000');
 
-        console.log(`[Mobile Phone] 已应用文字颜色: ${color}`);
+        console.log(`[Mobile Phone] applied text color: ${color}`);
     }
 
     // 更新文字颜色按钮显示
@@ -7327,7 +7300,7 @@ class MobilePhone {
         const button = document.querySelector('.text-color-toggle');
         if (button) {
             // 显示将要切换到的颜色（与当前颜色相反）
-            button.innerHTML = color === 'white' ? '黑' : '白';
+            button.innerHTML = color === 'white' ? 'B' : 'W';
             button.title = `当前: ${color === 'white' ? '白色' : '黑色'}文字，点击切换为${color === 'white' ? '黑色' : '白色'
                 }`;
         }
@@ -7337,17 +7310,17 @@ class MobilePhone {
     initTextColor() {
         const savedColor = this.getCurrentTextColor();
         this.applyTextColor(savedColor);
-        console.log(`[Mobile Phone] 初始化文字颜色: ${savedColor}`);
+        console.log(`[Mobile Phone] init text color: ${savedColor}`);
     }
 
-    // 显示图片配置弹窗
+    // show image config modal
     showImageConfigModal() {
-        console.log('[Mobile Phone] 显示图片配置弹窗');
+        console.log('[Mobile Phone] show image config modal');
 
         // 确保ImageConfigModal已加载
         if (!window.ImageConfigModal) {
-            console.error('[Mobile Phone] ImageConfigModal未加载');
-            MobilePhone.showToast('图片配置功能未就绪', 'error');
+            console.error('[Mobile Phone] ImageConfigModal not loaded');
+            MobilePhone.showToast('Image settings not ready', 'error');
             return;
         }
 
@@ -7357,12 +7330,12 @@ class MobilePhone {
 
     // 显示好友图片配置弹窗
     showFriendImageConfigModal(friendId, friendName) {
-        console.log('[Mobile Phone] 显示好友图片配置弹窗:', friendId, friendName);
+        console.log('[Mobile Phone] show friend image config:', friendId, friendName);
 
         // 确保FriendImageConfigModal已加载
         if (!window.FriendImageConfigModal) {
-            console.error('[Mobile Phone] FriendImageConfigModal未加载');
-            console.log('[Mobile Phone] 当前全局对象状态:', {
+            console.error('[Mobile Phone] FriendImageConfigModal not loaded');
+            console.log('[Mobile Phone] current globals:', {
                 ImageConfigModal: typeof window.ImageConfigModal,
                 FriendImageConfigModal: typeof window.FriendImageConfigModal,
                 styleConfigManager: typeof window.styleConfigManager,
@@ -7371,10 +7344,10 @@ class MobilePhone {
             // 尝试延迟重试
             setTimeout(() => {
                 if (window.FriendImageConfigModal) {
-                    console.log('[Mobile Phone] 延迟重试成功，显示好友弹窗');
+                    console.log('[Mobile Phone] retry ok — show friend modal');
                     window.FriendImageConfigModal.show(friendId, friendName);
                 } else {
-                    MobilePhone.showToast('好友图片配置功能未就绪，请刷新页面重试', 'error');
+                    MobilePhone.showToast('Friend image settings not ready — refresh and retry', 'error');
                 }
             }, 500);
             return;
@@ -7402,12 +7375,12 @@ function initMobilePhone() {
         // 如果文档还在加载，等待DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             window.mobilePhone = new MobilePhone();
-            console.log('[Mobile Phone] 手机界面初始化完成');
+            console.log('[Mobile Phone] phone UI ready');
         });
     } else {
         // 如果文档已经加载完成，直接初始化
         window.mobilePhone = new MobilePhone();
-        console.log('[Mobile Phone] 手机界面初始化完成');
+        console.log('[Mobile Phone] phone UI ready');
     }
 }
 
