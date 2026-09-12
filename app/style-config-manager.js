@@ -300,14 +300,13 @@ if (typeof window.StyleConfigManager === 'undefined') {
           console.log('[Style Config Manager] 📁 Found config file:', configAttachment.name);
           console.log('[Style Config Manager] Config file URL:', configAttachment.url);
 
-          // Validate URL
-          if (configAttachment.url.endsWith('.txt')) {
-            console.error('[Style Config Manager] ❌ Config was saved as TXT — cannot load');
-            return false;
+          // ST Data Bank often stores JSON attachments under a .txt URL.
+          // Download anyway and try JSON.parse.
+          if (configAttachment.url && configAttachment.url.endsWith('.txt')) {
+            console.log('[Style Config Manager] Data Bank URL is .txt — still reading as JSON');
           }
 
-          // Download file contents
-          console.log('[Style Config Manager] 🔄 Downloading file...');
+          console.log('[Style Config Manager] Downloading file...');
           const configContent = await getFileAttachment(configAttachment.url);
           console.log('[Style Config Manager] Downloaded length:', configContent ? configContent.length : 0);
 
@@ -444,12 +443,11 @@ if (typeof window.StyleConfigManager === 'undefined') {
           }, 500);
 
           return true;
-        } else if (fileUrl && fileUrl.endsWith('.txt')) {
-          console.error('[Style Config Manager] ❌ File was saved as TXT:', fileUrl);
-          console.error(
-            '[Style Config Manager] uploadFileAttachmentToServer saved the JSON as TXT',
-          );
-          return false;
+        } else if (fileUrl) {
+          // ST 1.18 Data Bank returns .txt URLs for uploaded JSON. That is fine
+          // as long as we can read the file back.
+          console.log('[Style Config Manager] Saved to Data Bank:', fileUrl);
+          return true;
         }
 
         console.warn('[Style Config Manager] ⚠️ uploadFileAttachmentToServer returned an empty or invalid URL');
