@@ -30,10 +30,10 @@ class MobileCustomAPIConfig {
     getDefaultSettings() {
         return {
             enabled: false,
-            provider: 'openai', // Default provider: OpenAI
-            apiUrl: '',
+            provider: 'openrouter',
+            apiUrl: 'https://openrouter.ai/api/v1',
             apiKey: '',
-            model: '',
+            model: 'z-ai/glm-5.3-flash',
             temperature: 0.8,
             maxTokens: 30000,
             useProxy: false,
@@ -79,6 +79,8 @@ class MobileCustomAPIConfig {
                 urlSuffix: 'chat/completions',
                 modelsEndpoint: 'models',
                 defaultModels: [
+                    'z-ai/glm-5.3-flash',
+                    'z-ai/glm-5.3',
                     'openai/gpt-4o',
                     'openai/gpt-4o-mini',
                     'anthropic/claude-3.5-sonnet',
@@ -95,7 +97,7 @@ class MobileCustomAPIConfig {
                 defaultUrl: '',
                 urlSuffix: 'chat/completions',
                 modelsEndpoint: 'models',
-                defaultModels: [],
+                defaultModels: ['glm-5.3-flash', 'z-ai/glm-5.3-flash'],
                 authType: 'Bearer',
                 requiresKey: true,
                 icon: '⚙️'
@@ -137,6 +139,9 @@ class MobileCustomAPIConfig {
             const savedSettings = localStorage.getItem('mobile_custom_api_settings');
             if (savedSettings) {
                 this.currentSettings = { ...this.getDefaultSettings(), ...JSON.parse(savedSettings) };
+            }
+            if (!this.currentSettings.model) {
+                this.currentSettings.model = 'z-ai/glm-5.3-flash';
             }
 
             console.log('[Mobile API Config] Settings loaded:', this.currentSettings);
