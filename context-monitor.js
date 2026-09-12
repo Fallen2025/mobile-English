@@ -1,22 +1,22 @@
 /**
- * SillyTavern 移动端上下文监控器
- * 独立的监控器类，用于实时监控和提取上下文变化
+ * SillyTavern mobile context monitor
+ * Standalone monitor class for live context changes and extraction
  */
 
 class ContextMonitor {
   constructor(settings = {}) {
-    // 获取性能配置
+    // Load performance config
     const performanceConfig = window.MOBILE_PERFORMANCE_CONFIG?.monitoring || {};
 
     this.settings = {
       logLevel: 'info',
-      monitorInterval: performanceConfig.contextMonitorInterval || 5000, // 优化：从3秒改为5秒
+      monitorInterval: performanceConfig.contextMonitorInterval || 5000, // Optimized: 5s instead of 3s
       enableEventLogging: performanceConfig.enableSmartMonitoring !== false,
       enableContextLogging: true,
       enableAutoSave: false,
-      historyLimit: performanceConfig.maxHistoryRecords || 100, // 优化：增加历史记录限制但加入清理
-      debounceDelay: performanceConfig.debounceDelay || 500, // 新增：防抖延迟
-      enableSmartMonitoring: performanceConfig.enableSmartMonitoring !== false, // 新增：智能监控
+      historyLimit: performanceConfig.maxHistoryRecords || 100, // Higher history cap with cleanup
+      debounceDelay: performanceConfig.debounceDelay || 500, // Debounce delay
+      enableSmartMonitoring: performanceConfig.enableSmartMonitoring !== false, // Smart monitoring
       ...settings,
     };
 
@@ -29,27 +29,27 @@ class ContextMonitor {
     this.logs = [];
     this.eventListeners = new Map();
 
-    // 优化：新增防抖和智能监控相关属性
+    // Debounce + smart-monitoring state
     this.debounceTimer = null;
     this.lastActivity = Date.now();
-    this.idleThreshold = 30000; // 30秒无活动则减少监控频率
+    this.idleThreshold = 30000; // Slow the poll after 30s idle
     this.performanceMonitor = window.mobilePerformanceMonitor;
 
-    // 优化：监听内存清理事件
+    // Listen for memory-cleanup events
     this.setupMemoryCleanupListener();
 
-    this.log('info', 'ContextMonitor 已初始化（优化版）', this.settings);
+    this.log('info', 'ContextMonitor initialized (optimized)', this.settings);
   }
 
   init() {
     this.setupEventListeners();
-    this.log('info', 'ContextMonitor 初始化完成');
+    this.log('info', 'ContextMonitor init complete');
   }
 
   setupEventListeners() {
-    // 检查是否有事件源可用
+    // Check whether an event source exists
     if (!window.eventSource) {
-      this.log('warn', 'eventSource 不可用，将跳过事件监听');
+      this.log('warn', 'eventSource unavailable — skip event listeners');
       return;
     }
 
@@ -77,16 +77,16 @@ class ContextMonitor {
         window.eventSource.on(eventType, listener);
         this.eventListeners.set(eventType, listener);
 
-        this.log('debug', `已注册事件监听器: ${eventType}`);
+        this.log('debug', `Registered listener: ${eventType}`);
       } catch (error) {
-        this.log('warn', `注册事件监听器失败: ${eventType}`, error);
+        this.log('warn', `Failed to register listener: ${eventType}`, error);
       }
     });
   }
 
   start() {
     if (this.isRunning) {
-      this.log('warn', '监控器已在运行中');
+      this.log('warn', 'Monitor is already running');
       return;
     }
 
@@ -95,13 +95,13 @@ class ContextMonitor {
     this.lastContext = this.getCurrentContext();
     this.lastActivity = Date.now();
 
-    // 优化：开始智能定时检查
+    // Start smart interval checks
     this.startSmartMonitoring();
 
-    this.log('info', '上下文监控已启动（智能模式）');
+    this.log('info', 'Context monitor started (smart mode)');
   }
 
-  // 优化：智能监控，根据活动情况调整监控频率
+  // Smart monitoring — scale poll rate with activity
   startSmartMonitoring() {
     const baseInterval = this.settings.monitorInterval;
     let currentInterval = baseInterval;
@@ -109,88 +109,88 @@ class ContextMonitor {
     const adjustedCheck = () => {
       const timeSinceLastActivity = Date.now() - this.lastActivity;
 
-      // 如果启用智能监控，根据活动情况调整频率
+      // If smart monitoring is on, scale the interval
       if (this.settings.enableSmartMonitoring) {
         if (timeSinceLastActivity > this.idleThreshold) {
-          // 空闲时减少监控频率
+          // Idle: slower poll
           currentInterval = baseInterval * 2;
         } else {
-          // 活跃时保持正常频率
+          // Active: normal poll
           currentInterval = baseInterval;
         }
       }
 
-      // 执行检查
+      // Run check
       this.checkContextChanges();
 
-      // 设置下一次检查
+      // Schedule next check
       if (this.isRunning) {
         this.intervalId = setTimeout(adjustedCheck, currentInterval);
       }
     };
 
-    // 立即开始第一次检查
+    // First check immediately
     this.intervalId = setTimeout(adjustedCheck, currentInterval);
   }
 
   stop() {
     if (!this.isRunning) {
-      this.log('warn', '监控器未运行');
+      this.log('warn', 'Monitor is not running');
       return;
     }
 
     this.isRunning = false;
 
     if (this.intervalId) {
-      clearTimeout(this.intervalId); // 优化：使用clearTimeout而不是clearInterval
+      clearTimeout(this.intervalId); // clearTimeout, not clearInterval
       this.intervalId = null;
     }
 
-    // 清理防抖定时器
+    // Clear debounce timer
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
       this.debounceTimer = null;
     }
 
-    // 移除事件监听器
+    // Remove event listeners
     this.eventListeners.forEach((listener, eventType) => {
       try {
         if (window.eventSource) {
           window.eventSource.off(eventType, listener);
         }
       } catch (error) {
-        this.log('warn', `移除事件监听器失败: ${eventType}`, error);
+        this.log('warn', `Failed to remove listener: ${eventType}`, error);
       }
     });
     this.eventListeners.clear();
 
-    this.log('info', '上下文监控已停止');
+    this.log('info', 'Context monitor stopped');
   }
 
   handleEvent(eventType, ...args) {
     try {
-      // 更新活动时间
+      // Update last-activity time
       this.lastActivity = Date.now();
 
-      // 更新统计
+      // Update stats
       this.eventStats[eventType] = (this.eventStats[eventType] || 0) + 1;
 
       if (this.settings.enableEventLogging) {
-        this.log('debug', `事件触发: ${eventType}`, args);
+        this.log('debug', `Event fired: ${eventType}`, args);
       }
 
-      // 特定事件后立即检查上下文（添加防抖）
+      // Immediate context check after certain events (debounced)
       const immediateCheckEvents = ['message_sent', 'message_received', 'chat_id_changed', 'character_selected'];
 
       if (immediateCheckEvents.includes(eventType)) {
         this.debouncedContextCheck();
       }
     } catch (error) {
-      this.log('error', `处理事件失败: ${eventType}`, error);
+      this.log('error', `Failed to handle event: ${eventType}`, error);
     }
   }
 
-  // 优化：防抖的上下文检查
+  // Debounced context check
   debouncedContextCheck() {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -209,52 +209,52 @@ class ContextMonitor {
         const differences = this.getContextDifferences(this.lastContext, currentContext);
 
         if (this.settings.enableContextLogging) {
-          this.log('info', '上下文发生变化', {
+          this.log('info', 'Context changed', {
             differences,
             context: currentContext,
           });
         }
 
-        // 保存到历史记录
+        // Save to history
         this.contextHistory.push({
           timestamp: Date.now(),
           context: currentContext,
           differences: differences,
         });
 
-        // 优化：智能清理历史记录
+        // Smart history cleanup
         this.cleanupHistoryRecords();
 
         this.lastContext = currentContext;
 
-        // 自动保存
+        // Auto-save
         if (this.settings.enableAutoSave) {
           this.saveToStorage();
         }
       }
     } catch (error) {
-      this.log('error', '检查上下文变化失败', error);
+      this.log('error', 'Failed to check context changes', error);
     }
   }
 
   getCurrentContext() {
     try {
-      // 通过 SillyTavern 官方上下文API获取数据
+      // Read data from the official SillyTavern context API
       const stContext = window.SillyTavern?.getContext();
 
       let context;
       if (stContext) {
-        // 使用官方上下文API
+        // Use official context API
         const currentChat = stContext.chat || [];
         const isGroup = !!stContext.groupId;
 
         context = {
-          // 基础信息
+          // Basics
           timestamp: new Date(),
           chatId: stContext.chatId || null,
           characterId: stContext.characterId || null,
 
-          // 聊天信息
+          // Chat
           chat: {
             length: currentChat.length || 0,
             lastMessage:
@@ -274,7 +274,7 @@ class ContextMonitor {
             metadata: stContext.chatMetadata ? Object.keys(stContext.chatMetadata) : [],
           },
 
-          // 角色信息
+          // Character
           character:
             stContext.characterId && stContext.characters[stContext.characterId]
               ? {
@@ -287,7 +287,7 @@ class ContextMonitor {
                 }
               : null,
 
-          // 群组信息
+          // Group
           group:
             isGroup && stContext.groups
               ? {
@@ -296,7 +296,7 @@ class ContextMonitor {
                 }
               : null,
 
-          // 系统状态
+          // System
           system: {
             isGenerating: !!stContext.streamingProcessor,
             isStreamingEnabled: !!stContext.streamingProcessor,
@@ -304,7 +304,7 @@ class ContextMonitor {
           },
         };
       } else {
-        // 降级使用原有方法
+        // Fall back to the old globals
         const getCurrentChatId = this.safeGetGlobal('getCurrentChatId');
         const chat = this.safeGetGlobal('chat');
         const characters = this.safeGetGlobal('characters');
@@ -317,12 +317,12 @@ class ContextMonitor {
         const is_generation_stopped = this.safeGetGlobal('is_generation_stopped');
 
         context = {
-          // 基础信息
+          // Basics
           timestamp: new Date(),
           chatId: typeof getCurrentChatId === 'function' ? getCurrentChatId() : null,
           characterId: this_chid !== undefined ? this_chid : null,
 
-          // 聊天信息
+          // Chat
           chat: {
             length:
               chat && Array.isArray(chat) ? chat.length : chat && typeof chat.length === 'number' ? chat.length : 0,
@@ -341,7 +341,7 @@ class ContextMonitor {
             metadata: chat_metadata ? Object.keys(chat_metadata) : [],
           },
 
-          // 角色信息
+          // Character
           character:
             this_chid !== undefined && characters && characters[this_chid]
               ? {
@@ -353,7 +353,7 @@ class ContextMonitor {
                 }
               : null,
 
-          // 群组信息
+          // Group
           group:
             selected_group && groups
               ? {
@@ -362,7 +362,7 @@ class ContextMonitor {
                 }
               : null,
 
-          // 系统状态
+          // System
           system: {
             isGenerating: is_send_press || is_generation_stopped === false,
             isStreamingEnabled: this.safeGetGlobal('isStreamingEnabled')?.() || false,
@@ -373,7 +373,7 @@ class ContextMonitor {
 
       return context;
     } catch (error) {
-      this.log('error', '获取上下文失败', error);
+      this.log('error', 'Failed to get context', error);
       return null;
     }
   }
@@ -383,7 +383,7 @@ class ContextMonitor {
       return true;
     }
 
-    // 检查关键字段是否发生变化
+    // Check whether key fields changed
     const keyFields = ['chatId', 'characterId', 'chat.length', 'character.name', 'group.id'];
 
     for (const field of keyFields) {
@@ -395,7 +395,7 @@ class ContextMonitor {
       }
     }
 
-    // 检查最后一条消息是否发生变化
+    // Check whether the last message changed
     const oldLastMessage = oldContext.chat?.lastMessage;
     const newLastMessage = newContext.chat?.lastMessage;
 
@@ -410,50 +410,50 @@ class ContextMonitor {
     const differences = [];
 
     if (!oldContext) {
-      differences.push({ type: 'initial', description: '初始上下文' });
+      differences.push({ type: 'initial', description: 'Initial context' });
       return differences;
     }
 
     if (!newContext) {
-      differences.push({ type: 'error', description: '无法获取新上下文' });
+      differences.push({ type: 'error', description: 'Could not get new context' });
       return differences;
     }
 
-    // 聊天ID变化
+    // Chat ID changed
     if (oldContext.chatId !== newContext.chatId) {
       differences.push({
         type: 'chat_changed',
-        description: '聊天切换',
+        description: 'Chat switched',
         old: oldContext.chatId,
         new: newContext.chatId,
       });
     }
 
-    // 角色变化
+    // Character changed
     if (oldContext.characterId !== newContext.characterId) {
       differences.push({
         type: 'character_changed',
-        description: '角色切换',
+        description: 'Character switched',
         old: oldContext.character?.name,
         new: newContext.character?.name,
       });
     }
 
-    // 消息数量变化
+    // Message count changed
     if (oldContext.chat?.length !== newContext.chat?.length) {
       differences.push({
         type: 'message_count_changed',
-        description: '消息数量变化',
+        description: 'Message count changed',
         old: oldContext.chat?.length,
         new: newContext.chat?.length,
       });
     }
 
-    // 新消息
+    // New message
     if (oldContext.chat?.lastMessage?.id !== newContext.chat?.lastMessage?.id) {
       differences.push({
         type: 'new_message',
-        description: '新消息',
+        description: 'New message',
         message: newContext.chat?.lastMessage,
       });
     }
@@ -471,26 +471,26 @@ class ContextMonitor {
     try {
       return window[name] || null;
     } catch (error) {
-      this.log('warn', `无法访问全局变量: ${name}`, error);
+      this.log('warn', `Cannot access global: ${name}`, error);
       return null;
     }
   }
 
   safeGetMainAPI() {
     try {
-      // 尝试从 DOM 元素获取值
+      // Try reading from the DOM
       const mainApiSelect = document.getElementById('main_api');
       if (mainApiSelect && mainApiSelect.value) {
         return mainApiSelect.value;
       }
 
-      // 尝试从全局变量获取
+      // Try reading from a global
       const main_api = this.safeGetGlobal('main_api');
       if (main_api && typeof main_api === 'string') {
         return main_api;
       }
 
-      // 尝试从 jQuery 获取
+      // Try reading via jQuery
       if (window.$ && window.$('#main_api').length > 0) {
         const value = window.$('#main_api').val();
         if (value && typeof value === 'string') {
@@ -500,7 +500,7 @@ class ContextMonitor {
 
       return 'unknown';
     } catch (error) {
-      this.log('warn', '无法获取主API信息', error);
+      this.log('warn', 'Cannot read main API', error);
       return 'unknown';
     }
   }
@@ -524,14 +524,14 @@ class ContextMonitor {
 
   async getCurrentChatJsonl() {
     try {
-      // 方案1: 尝试从全局chat变量直接获取（最可靠）
+      // Plan 1: read window.chat directly (most reliable)
       if (window.chat && Array.isArray(window.chat) && window.chat.length > 0) {
         const currentChatId = window.characters?.[window.this_chid]?.chat || 'current_chat';
 
-        // 构建JSONL格式的数据
+        // Build JSONL
         const jsonlLines = window.chat.map(message => JSON.stringify(message));
 
-        this.log('info', `从全局chat变量获取JSONL数据: ${jsonlLines.length} 条记录`);
+        this.log('info', `Got JSONL from window.chat: ${jsonlLines.length} records`);
 
         return {
           chatId: currentChatId,
@@ -542,27 +542,27 @@ class ContextMonitor {
         };
       }
 
-      // 方案2: 尝试通过 SillyTavern API 获取
+      // Plan 2: SillyTavern export API
       const context = window.SillyTavern?.getContext();
       if (!context) {
-        this.log('error', '无全局chat数据且SillyTavern上下文未初始化');
+        this.log('error', 'No window.chat and SillyTavern context is not ready');
         return null;
       }
 
       const { getCurrentChatId, getRequestHeaders, characters, characterId, groupId } = context;
 
       if (!getCurrentChatId || !getRequestHeaders) {
-        this.log('error', '无法获取必要的上下文函数');
+        this.log('error', 'Required context helpers missing');
         return null;
       }
 
       const currentChatId = getCurrentChatId();
       if (!currentChatId) {
-        this.log('error', '当前没有活动聊天');
+        this.log('error', 'No active chat');
         return null;
       }
 
-      // 构建请求体
+      // Build request body
       const body = {
         is_group: !!groupId,
         avatar_url: groupId ? undefined : characters[characterId]?.avatar,
@@ -573,7 +573,7 @@ class ContextMonitor {
 
       const headers = getRequestHeaders();
 
-      this.log('debug', 'JSONL API 请求:', body);
+      this.log('debug', 'JSONL API request:', body);
 
       const response = await fetch('/api/chats/export', {
         method: 'POST',
@@ -591,16 +591,16 @@ class ContextMonitor {
       const jsonlData = await response.text();
       const lines = jsonlData.split('\n').filter(line => line.trim());
 
-      // 检查返回的数据格式
+      // Inspect returned data shape
       if (lines.length === 1 && lines[0].includes('"message"') && lines[0].includes('"result"')) {
-        // 这是API响应包装，需要解析内部的result
+        // Wrapped API response — parse result
         try {
           const apiResponse = JSON.parse(lines[0]);
           if (apiResponse.result) {
             const actualJsonl = apiResponse.result;
             const actualLines = actualJsonl.split('\n').filter(line => line.trim());
 
-            this.log('info', `从API响应中解析JSONL数据: ${actualLines.length} 条记录`);
+            this.log('info', `Parsed JSONL from API wrapper: ${actualLines.length} records`);
 
             return {
               chatId: currentChatId,
@@ -611,11 +611,11 @@ class ContextMonitor {
             };
           }
         } catch (parseError) {
-          this.log('warn', 'API响应解析失败', parseError);
+          this.log('warn', 'Failed to parse API wrapper', parseError);
         }
       }
 
-      this.log('info', `成功获取聊天JSONL数据: ${lines.length} 条记录`);
+      this.log('info', `Got chat JSONL: ${lines.length} records`);
 
       return {
         chatId: currentChatId,
@@ -625,25 +625,25 @@ class ContextMonitor {
         source: 'api_direct',
       };
     } catch (error) {
-      this.log('error', '获取聊天JSONL数据失败', error);
+      this.log('error', 'Failed to get chat JSONL', error);
       return null;
     }
   }
 
   async getCurrentChatMessages() {
     try {
-      // 方案1: 尝试通过 SillyTavern 官方上下文获取
+      // Plan 1: official SillyTavern context
       let context = window.SillyTavern?.getContext();
       let fallbackMode = false;
 
       if (!context) {
-        this.log('warn', 'SillyTavern 官方上下文不可用，使用降级方案');
+        this.log('warn', 'Official context unavailable — fallback');
         fallbackMode = true;
 
-        // 方案2: 直接使用全局变量
+        // Plan 2: raw globals
         context = {
           getCurrentChatId: () => {
-            // 尝试多种方式获取当前聊天ID
+            // Try several ways to get the current chat ID
             if (window.selected_group) {
               return window.selected_group;
             } else if (window.characters && window.this_chid !== undefined) {
@@ -652,7 +652,7 @@ class ContextMonitor {
             return null;
           },
           getRequestHeaders: () => {
-            // 基本请求头
+            // Basic headers
             return {
               'Content-Type': 'application/json',
             };
@@ -666,17 +666,17 @@ class ContextMonitor {
       const { getCurrentChatId, getRequestHeaders, characters, characterId, groupId } = context;
 
       if (!getCurrentChatId) {
-        this.log('error', '无法获取聊天ID函数');
+        this.log('error', 'getCurrentChatId is unavailable');
         return null;
       }
 
       const currentChatId = getCurrentChatId();
       if (!currentChatId) {
-        this.log('error', '当前没有活动聊天');
+        this.log('error', 'No active chat');
         return null;
       }
 
-      // 构建请求参数
+      // Build request params
       const isGroupChat = !!groupId;
       const endpoint = isGroupChat ? '/api/chats/group/get' : '/api/chats/get';
 
@@ -685,7 +685,7 @@ class ContextMonitor {
         requestBody = JSON.stringify({ id: currentChatId });
       } else {
         if (!characters || characterId === undefined || !characters[characterId]) {
-          this.log('error', '角色信息不可用');
+          this.log('error', 'Characters unavailable');
           return null;
         }
 
@@ -699,7 +699,7 @@ class ContextMonitor {
 
       const headers = getRequestHeaders ? getRequestHeaders() : {};
 
-      this.log('debug', `请求聊天消息: ${endpoint}`, {
+      this.log('debug', `Requesting chat messages: ${endpoint}`, {
         currentChatId,
         isGroupChat,
         fallbackMode,
@@ -721,21 +721,21 @@ class ContextMonitor {
 
       const data = await response.json();
 
-      // SillyTavern API 直接返回消息数组
+      // SillyTavern API returns a message array
       let messages = Array.isArray(data) ? data : [];
 
-      // 对于个人聊天，第一个元素是元数据，需要移除
+      // For 1:1 chats the first element is metadata — drop it
       if (!isGroupChat && messages.length > 0 && messages[0].user_name && messages[0].character_name) {
         messages = messages.slice(1);
       }
 
-      // 修复：添加日志节流，只在消息数量变化或10秒后才输出
+      // Throttle logs: only on message-count change or every 10s
       const now = Date.now();
       if (!this.lastLogTime) this.lastLogTime = 0;
       if (!this.lastMessageCount) this.lastMessageCount = 0;
 
       if (now - this.lastLogTime > 10000 || messages.length !== this.lastMessageCount) {
-        this.log('info', `成功获取聊天消息: ${messages.length} 条记录`, {
+        this.log('info', `Got chat messages: ${messages.length} records`, {
           chatId: currentChatId,
           isGroup: isGroupChat,
           fallbackMode,
@@ -750,7 +750,7 @@ class ContextMonitor {
         count: messages.length,
       };
     } catch (error) {
-      this.log('error', '获取聊天消息失败', error);
+      this.log('error', 'Failed to get chat messages', error);
       return null;
     }
   }
@@ -759,18 +759,18 @@ class ContextMonitor {
     const stats = this.getStats();
     const currentContext = this.getCurrentContext();
 
-    console.log('=== Mobile Context Monitor 状态 ===');
-    console.log('运行状态:', stats.isRunning ? '✅ 运行中' : '❌ 已停止');
-    console.log('运行时间:', stats.runtimeFormatted);
-    console.log('总事件数:', stats.totalEvents);
-    console.log('上下文历史:', stats.contextHistoryLength);
-    console.log('当前上下文:', currentContext);
-    console.log('事件统计:', stats.eventStats);
+    console.log('=== Mobile Context Monitor status ===');
+    console.log('Running:', stats.isRunning ? '✅ yes' : '❌ stopped');
+    console.log('Runtime:', stats.runtimeFormatted);
+    console.log('Total events:', stats.totalEvents);
+    console.log('Context history:', stats.contextHistoryLength);
+    console.log('Current context:', currentContext);
+    console.log('Event stats:', stats.eventStats);
   }
 
   clearLogs() {
     this.logs = [];
-    this.log('info', '日志已清空');
+    this.log('info', 'Logs cleared');
   }
 
   saveToStorage() {
@@ -779,13 +779,13 @@ class ContextMonitor {
         settings: this.settings,
         stats: this.getStats(),
         history: this.contextHistory,
-        logs: this.logs.slice(-100), // 只保存最近100条日志
+        logs: this.logs.slice(-100), // Keep the last 100 logs
       };
 
       localStorage.setItem('mobile-context-monitor', JSON.stringify(data));
-      this.log('debug', '数据已保存到localStorage');
+      this.log('debug', 'Saved to localStorage');
     } catch (error) {
-      this.log('error', '保存数据到localStorage失败', error);
+      this.log('error', 'Failed to save to localStorage', error);
     }
   }
 
@@ -797,21 +797,21 @@ class ContextMonitor {
         this.settings = { ...this.settings, ...parsed.settings };
         this.contextHistory = parsed.history || [];
         this.logs = parsed.logs || [];
-        this.log('info', '从localStorage加载数据成功');
+        this.log('info', 'Loaded from localStorage');
       }
     } catch (error) {
-      this.log('error', '从localStorage加载数据失败', error);
+      this.log('error', 'Failed to load from localStorage', error);
     }
   }
 
   updateSettings(newSettings) {
     this.settings = { ...this.settings, ...newSettings };
-    this.log('info', '设置已更新', newSettings);
+    this.log('info', 'Settings updated', newSettings);
   }
 
   setLogLevel(level) {
     this.settings.logLevel = level;
-    this.log('info', `日志级别已设置为: ${level}`);
+    this.log('info', `Log level set to: ${level}`);
   }
 
   log(level, message, data = null) {
@@ -822,7 +822,7 @@ class ContextMonitor {
       const timestamp = new Date().toLocaleTimeString();
       const logMessage = `[Mobile Context ${timestamp}] ${message}`;
 
-      // 记录到内部日志
+      // Write to internal log
       this.logs.push({
         timestamp: Date.now(),
         level,
@@ -830,12 +830,12 @@ class ContextMonitor {
         data,
       });
 
-      // 限制日志数量
+      // Cap log count
       if (this.logs.length > 200) {
         this.logs = this.logs.slice(-150);
       }
 
-      // 输出到控制台
+      // Mirror to console
       switch (level) {
         case 'debug':
           console.debug(logMessage, data);
@@ -868,154 +868,154 @@ class ContextMonitor {
   }
 
   // ===========================================
-  // 数据提取器功能
+  // Extractor
   // ===========================================
 
   /**
-   * 大文件处理配置
+   * Large-file processing config
    */
   getLargeFileConfig() {
     return {
-      // 分块大小（消息数量）
+      // Chunk size (message count)
       chunkSize: 100,
-      // 每个批次之间的延迟（毫秒）
+      // Delay between chunks (ms)
       processingDelay: 50,
-      // 内存清理阈值（MB）
+      // Memory cleanup threshold (MB)
       memoryThreshold: 100,
-      // 最大处理时间（秒）
+      // Max processing time (seconds)
       maxProcessingTime: 300,
-      // 启用流式处理
+      // Enable streaming
       enableStreaming: true,
-      // 启用 Web Worker（如果可用）
+      // Use a Web Worker when available
       enableWebWorker: typeof Worker !== 'undefined',
     };
   }
 
   /**
-   * 预定义的提取格式
-   * 统一管理所有正则表达式格式，方便集中维护
+   * Built-in extract formats
+   * Single registry of extract regexes
    */
   getExtractorFormats() {
     return {
-      // 我方消息格式: [我方消息|角色名|数字|消息类型|消息内容]
+      // Own-message format: [我方消息|name|id|type|content]
       myMessage: {
-        name: '我方消息',
+        name: 'Own message',
         regex: /\[我方消息\|([^|]*)\|(\d+)\|([^|]*)\|([^\]]*)\]/g,
         fields: ['character', 'number', 'messageType', 'content'],
-        description: '提取我方消息格式：[我方消息|角色名|数字id|消息类型|消息内容]',
+        description: 'Own-message format: [我方消息|name|id|type|content]',
       },
 
-      // 对方消息格式: [对方消息|角色名|数字|消息类型|消息内容]
+      // Other-message format: [对方消息|name|id|type|content]
       otherMessage: {
-        name: '对方消息',
+        name: 'Other message',
         regex: /\[对方消息\|([^|]*)\|(\d+)\|([^|]*)\|([^\]]*)\]/g,
         fields: ['character', 'number', 'messageType', 'content'],
-        description: '提取对方消息格式：[对方消息|角色名|数字id|消息类型|消息内容]',
+        description: 'Other-message format: [对方消息|name|id|type|content]',
       },
 
-      // 好友格式: [好友id|角色名|数字]
+      // Friend format: [好友id|name|id]
       friend: {
-        name: '好友',
+        name: 'Friend',
         regex: /\[好友id\|([^|]*)\|(\d+)\]/g,
         fields: ['character', 'number'],
-        description: '提取好友格式：[好友id|角色名|数字id]',
+        description: 'Friend format: [好友id|name|id]',
       },
 
-      // 通用消息格式: [消息类型|角色名|数字|消息分类|消息内容]（更灵活）
+      // Generic message format: [kind|name|id|type|content] (flexible)
       universalMessage: {
-        name: '通用消息',
+        name: 'Generic message',
         regex: /\[(我方消息|对方消息|群聊消息|我方群聊消息)\|([^|]*)\|([^|]*)\|([^|]*)\|([^\]]*)\]/g,
         fields: ['type', 'character', 'number', 'messageType', 'content'],
-        description: '提取通用消息格式：[消息类型|角色名|数字|消息分类|消息内容]',
+        description: 'Generic message format: [kind|name|id|type|content]',
       },
 
-      // 群聊消息格式: [群聊消息|群ID|发送者|消息类型|消息内容]
+      // Group-message format: [群聊消息|groupId|sender|type|content]
       groupMessage: {
-        name: '群聊消息',
+        name: 'Group message',
         regex: /\[群聊消息\|([^|]*)\|([^|]*)\|([^|]*)\|([^\]]*)\]/g,
-        fields: ['number', 'sender', 'messageType', 'content'], // 修复：number用于匹配群ID
-        description: '提取群聊消息格式：[群聊消息|群ID|发送者|消息类型|消息内容]',
+        fields: ['number', 'sender', 'messageType', 'content'], // number matches group id
+        description: 'Group-message format: [群聊消息|groupId|sender|type|content]',
       },
 
-      // 我方群聊消息格式: [我方群聊消息|我|群ID|消息类型|消息内容]
+      // Own group-message format: [我方群聊消息|我|groupId|type|content]
       myGroupMessage: {
-        name: '我方群聊消息',
+        name: 'Own group message',
         regex: /\[我方群聊消息\|我\|([^|]*)\|([^|]*)\|([^\]]*)\]/g,
-        fields: ['number', 'messageType', 'content'], // 修复：number用于匹配群ID
-        description: '提取我方群聊消息格式：[我方群聊消息|我|群ID|消息类型|消息内容]',
+        fields: ['number', 'messageType', 'content'], // number matches group id
+        description: 'Own group-message format: [我方群聊消息|我|groupId|type|content]',
       },
 
-      // QQ号格式: [qq号|姓名|号码|ID]
+      // QQ-number format: [qq号|name|number|id]
       qqNumber: {
-        name: 'QQ号',
+        name: 'QQ number',
         regex: /\[qq号\|([^|]*)\|(\d+)\|(\d+)\]/g,
         fields: ['name', 'number', 'id'],
-        description: '提取QQ号格式：[qq号|姓名|号码|ID]',
+        description: 'QQ format: [qq号|name|number|id]',
       },
 
-      // 群聊格式: [群聊|群名|群ID|描述]
+      // Group format: [群聊|name|id|desc]
       groupChat: {
-        name: '群聊',
+        name: 'Group',
         regex: /\[群聊\|([^|]*)\|(\d+)\|([^|]*)\]/g,
         fields: ['groupName', 'groupId', 'description'],
-        description: '提取群聊格式：[群聊|群名|群ID|群成员]',
+        description: 'Group format: [群聊|name|id|members]',
       },
 
-      // 创建群聊格式: [创建群聊|群ID|群名|描述]
+      // Create-group format: [创建群聊|id|name|desc]
       createGroupChat: {
-        name: '创建群聊',
+        name: 'Create group',
         regex: /\[创建群聊\|(\d+)\|([^|]*)\|([^|]*)\]/g,
         fields: ['groupId', 'groupName', 'description'],
-        description: '提取创建群聊格式：[创建群聊|群ID|群名|描述]',
+        description: 'Create-group format: [创建群聊|id|name|desc]',
       },
 
-      // 头像格式: [头像|用户类型|头像数据]
+      // Avatar format: [头像|userType|data]
       avatar: {
-        name: '头像',
+        name: 'Avatar',
         regex: /\[头像\|([^|]*)\|([^\]]*)\]/g,
         fields: ['userType', 'avatarData'],
-        description: '提取头像格式：[头像|用户类型|头像数据]',
+        description: 'Avatar format: [头像|userType|data]',
       },
 
-      // 系统事件格式: [系统|事件|数据]
+      // System-event format: [系统|event|data]
       systemEvent: {
-        name: '系统事件',
+        name: 'System event',
         regex: /\[系统\|([^|]*)\|([^|]*)\]/g,
         fields: ['event', 'data'],
-        description: '提取系统事件格式：[系统|事件|数据]',
+        description: 'System-event format: [系统|event|data]',
       },
 
-      // 敌方消息格式: [敌方消息|内容|伤害]
+      // Enemy-message format: [敌方消息|content|damage]
       enemyMessage: {
-        name: '敌方消息',
+        name: 'Enemy message',
         regex: /\[敌方消息\|([^|]*)\|(\d+)\]/g,
         fields: ['content', 'damage'],
-        description: '提取敌方消息格式：[敌方消息|内容|伤害]',
+        description: 'Enemy-message format: [敌方消息|content|damage]',
       },
     };
   }
 
   /**
-   * 移除thinking标签包裹的内容
-   * @param {string} text - 原始文本
-   * @returns {string} 移除thinking标签后的文本
+   * Strip content wrapped in thinking tags
+   * @param {string} text - Source text
+   * @returns {string} Text with thinking blocks removed
    */
   removeThinkingTags(text) {
     if (!text || typeof text !== 'string') {
       return text;
     }
 
-    // 移除 <think>...</think> 和 <thinking>...</thinking> 标签及其内容
+    // Remove <think> / <thinking> blocks and their contents
     const thinkingTagRegex = /<think>[\s\S]*?<\/think>|<thinking>[\s\S]*?<\/thinking>/gi;
     return text.replace(thinkingTagRegex, '');
   }
 
   /**
-   * 检查格式标记是否在thinking标签内
-   * @param {string} text - 原始文本
-   * @param {number} patternStart - 格式标记开始位置
-   * @param {number} patternEnd - 格式标记结束位置
-   * @returns {boolean} 是否在thinking标签内
+   * Check whether a format match sits inside a thinking tag
+   * @param {string} text - Source text
+   * @param {number} patternStart - Match start
+   * @param {number} patternEnd - Match end
+   * @returns {boolean} True if inside a thinking tag
    */
   isPatternInsideThinkingTags(text, patternStart, patternEnd) {
     if (!text || typeof text !== 'string') {
@@ -1029,7 +1029,7 @@ class ContextMonitor {
       const thinkStart = match.index;
       const thinkEnd = match.index + match[0].length;
 
-      // 检查格式标记是否完全在thinking标签内
+      // True only if the match is fully inside a thinking tag
       if (patternStart >= thinkStart && patternEnd <= thinkEnd) {
         return true;
       }
@@ -1039,28 +1039,28 @@ class ContextMonitor {
   }
 
   /**
-   * 只移除不在thinking标签内的格式标记
-   * @param {string} text - 原始文本
-   * @param {RegExp} pattern - 格式标记的正则表达式
-   * @returns {string} 移除指定格式标记后的文本
+   * Strip format markers that are NOT inside thinking tags
+   * @param {string} text - Source text
+   * @param {RegExp} pattern - Format regex
+   * @returns {string} Text with those markers removed
    */
   removePatternOutsideThinkingTags(text, pattern) {
     if (!text || typeof text !== 'string') {
       return text;
     }
 
-    // 创建新的正则表达式实例，避免lastIndex问题
+    // Fresh RegExp so lastIndex cannot leak
     const newPattern = new RegExp(pattern.source, pattern.flags);
     let result = text;
     const replacements = [];
     let match;
 
-    // 找到所有匹配
+    // Collect matches
     while ((match = newPattern.exec(text)) !== null) {
       const matchStart = match.index;
       const matchEnd = match.index + match[0].length;
 
-      // 检查这个匹配是否在thinking标签内
+      // Skip matches inside thinking tags
       if (!this.isPatternInsideThinkingTags(text, matchStart, matchEnd)) {
         replacements.push({
           start: matchStart,
@@ -1070,7 +1070,7 @@ class ContextMonitor {
       }
     }
 
-    // 从后往前替换，避免索引问题
+    // Replace from the end so indices stay valid
     replacements.reverse().forEach(replacement => {
       result = result.substring(0, replacement.start) + result.substring(replacement.end);
     });
@@ -1079,24 +1079,24 @@ class ContextMonitor {
   }
 
   /**
-   * 从文本中提取指定格式的数据
-   * @param {string} text - 要提取的文本
-   * @param {string} formatName - 格式名称
-   * @returns {Array} 提取结果数组
+   * Extract one format from text
+   * @param {string} text - Text to extract from
+   * @param {string} formatName - Format name
+   * @returns {Array} Extractions
    */
   extractDataFromText(text, formatName) {
     const formats = this.getExtractorFormats();
     const format = formats[formatName];
 
     if (!format) {
-      this.log('error', `未找到格式: ${formatName}`);
+      this.log('error', `Unknown format: ${formatName}`);
       return [];
     }
 
     const results = [];
     let match;
 
-    // 重置正则表达式的 lastIndex
+    // Reset regex lastIndex
     format.regex.lastIndex = 0;
 
     while ((match = format.regex.exec(text)) !== null) {
@@ -1106,7 +1106,7 @@ class ContextMonitor {
         timestamp: new Date(),
       };
 
-      // 添加命名字段
+      // Attach named fields
       format.fields.forEach((fieldName, index) => {
         extracted[fieldName] = match[index + 1] || '';
       });
@@ -1114,51 +1114,51 @@ class ContextMonitor {
       results.push(extracted);
     }
 
-    // 修复：只在调试模式下输出提取数据的详细信息
+    // Only dump extraction detail in debug mode
     if (window.DEBUG_CONTEXT_MONITOR) {
-      this.log('info', `从文本中提取了 ${results.length} 条 ${format.name} 数据`);
+      this.log('info', `Extracted ${results.length} ${format.name} records`);
     }
     return results;
   }
 
   /**
-   * 从当前聊天消息中提取数据
-   * @param {string} formatName - 格式名称
-   * @returns {Promise<Object>} 提取结果
+   * Extract from current chat messages
+   * @param {string} formatName - Format name
+   * @returns {Promise<Object>} Extractions
    */
   async extractFromCurrentChat(formatName) {
     try {
       const chatData = await this.getCurrentChatMessages();
       if (!chatData || !chatData.messages) {
-        this.log('error', '无法获取聊天消息');
+        this.log('error', 'Cannot get chat messages');
         return null;
       }
 
       const allExtractions = [];
       let totalMessageCount = 0;
-      let globalExtractionIndex = 0; // 全局提取索引
+      let globalExtractionIndex = 0; // Global extraction index
 
-      // 🔥 修复：按消息在原始文本中的出现顺序排序，而不是按时间戳
-      // 保持消息的原始顺序，确保对话的连贯性
+      // Keep original text order, do not sort by timestamp
+      // Preserve conversation order
       const originalMessages = [...chatData.messages];
 
-      this.log('info', `保持消息原始顺序，共 ${originalMessages.length} 条`);
+      this.log('info', `Kept original message order, ${originalMessages.length} messages`);
 
       originalMessages.forEach((message, messageIndex) => {
         if (message.mes) {
-          // 移除thinking标签后再进行数据提取，避免提取thinking内的内容
+          // Strip thinking tags so inner content is not extracted
           const messageForExtraction = this.removeThinkingTags(message.mes);
           const extractions = this.extractDataFromText(messageForExtraction, formatName);
 
-          // 为每个提取结果添加消息上下文和全局索引
+          // Attach message context + global index to each extraction
           extractions.forEach(extraction => {
             extraction.messageIndex = messageIndex;
-            extraction.globalIndex = globalExtractionIndex++; // 全局顺序索引
+            extraction.globalIndex = globalExtractionIndex++; // global order index
             extraction.messageId = message.id || messageIndex;
             extraction.messageName = message.name || 'Unknown';
             extraction.messageTimestamp = message.send_date || message.timestamp;
             extraction.isUser = message.is_user || false;
-            // 🔥 添加原始消息的name和extra信息，用于统一性检查
+            // Keep original name/extra for consistency checks
             extraction.originalMessageName = message.name;
             extraction.originalMessageExtra = message.extra;
             extraction.originalMessageIndex = messageIndex;
@@ -1178,19 +1178,19 @@ class ContextMonitor {
         extractedAt: new Date(),
       };
 
-      this.log('info', `从 ${totalMessageCount} 条消息中提取了 ${allExtractions.length} 条数据`, result);
+      this.log('info', `From ${totalMessageCount} messages extracted ${allExtractions.length} records`, result);
       return result;
     } catch (error) {
-      this.log('error', '从聊天中提取数据失败', error);
+      this.log('error', 'Failed to extract from chat', error);
       return null;
     }
   }
 
   /**
-   * 🚀 优化版：从当前聊天消息中分块提取数据（适用于大文件）
-   * @param {string} formatName - 格式名称
-   * @param {Object} options - 提取选项
-   * @returns {Promise<Object>} 提取结果
+   * Optimized chunked extract from current chat (large files)
+   * @param {string} formatName - Format name
+   * @param {Object} options - Extract options
+   * @returns {Promise<Object>} Extractions
    */
   async extractFromCurrentChatOptimized(formatName, options = {}) {
     const config = { ...this.getLargeFileConfig(), ...options };
@@ -1200,51 +1200,51 @@ class ContextMonitor {
     try {
       const chatData = await this.getCurrentChatMessages();
       if (!chatData || !chatData.messages) {
-        this.log('error', '无法获取聊天消息');
+        this.log('error', 'Cannot get chat messages');
         return null;
       }
 
       const originalMessages = [...chatData.messages];
       const totalMessages = originalMessages.length;
 
-      // 检查是否需要优化处理
+      // Decide whether to use the optimized path
       const shouldUseOptimization = totalMessages > 1000 || this.estimateDataSize(originalMessages) > 10 * 1024 * 1024; // 10MB
 
       if (!shouldUseOptimization) {
-        this.log('info', '数据量较小，使用标准提取方法');
+        this.log('info', 'Small dataset — standard extract');
         return await this.extractFromCurrentChat(formatName);
       }
 
-      this.log('info', `开始优化提取：${totalMessages} 条消息，使用分块大小 ${config.chunkSize}`);
+      this.log('info', `Starting optimized extract: ${totalMessages} messages, chunkSize ${config.chunkSize}`);
 
       const allExtractions = [];
       let globalExtractionIndex = 0;
       let processedMessages = 0;
 
-      // 分块处理消息
+      // Process messages in chunks
       for (let chunkStart = 0; chunkStart < totalMessages; chunkStart += config.chunkSize) {
-        // 检查是否被取消
+        // Cancelled?
         if (controller.signal.aborted) {
-          throw new Error('提取操作已被取消');
+          throw new Error('Extract cancelled');
         }
 
-        // 检查处理时间
+        // Timeout check
         if (Date.now() - startTime > config.maxProcessingTime * 1000) {
-          throw new Error('提取操作超时');
+          throw new Error('Extract timed out');
         }
 
         const chunkEnd = Math.min(chunkStart + config.chunkSize, totalMessages);
         const chunk = originalMessages.slice(chunkStart, chunkEnd);
 
-        this.log('debug', `处理分块 ${Math.floor(chunkStart / config.chunkSize) + 1}/${Math.ceil(totalMessages / config.chunkSize)}`);
+        this.log('debug', `Processing chunk ${Math.floor(chunkStart / config.chunkSize) + 1}/${Math.ceil(totalMessages / config.chunkSize)}`);
 
-        // 处理当前分块
+        // Process this chunk
         const chunkExtractions = await this.processMessageChunk(chunk, formatName, chunkStart, globalExtractionIndex);
         allExtractions.push(...chunkExtractions);
         globalExtractionIndex += chunkExtractions.length;
         processedMessages += chunk.length;
 
-        // 触发进度回调
+        // Progress callback
         if (options.onProgress) {
           const progress = {
             processed: processedMessages,
@@ -1257,12 +1257,12 @@ class ContextMonitor {
           await options.onProgress(progress);
         }
 
-        // 内存管理：定期清理和垃圾回收提示
+        // Periodic cleanup + GC hint
         if (chunkStart > 0 && chunkStart % (config.chunkSize * 10) === 0) {
           await this.performMemoryOptimization();
         }
 
-        // 添加延迟，避免阻塞UI
+        // Yield so the UI stays live
         if (config.processingDelay > 0) {
           await this.sleep(config.processingDelay);
         }
@@ -1280,14 +1280,14 @@ class ContextMonitor {
         chunks: Math.ceil(totalMessages / config.chunkSize),
       };
 
-      this.log('info', `优化提取完成：${processedMessages} 条消息，${allExtractions.length} 条数据，耗时 ${result.processingTime}ms`);
+      this.log('info', `Optimized extract done: ${processedMessages} messages, ${allExtractions.length} records, took ${result.processingTime}ms`);
       return result;
 
     } catch (error) {
-      this.log('error', '优化提取失败', error);
+      this.log('error', 'Optimized extract failed', error);
 
-      // 如果是取消操作，返回部分结果
-      if (error.message.includes('取消')) {
+      // On cancel, return partial results
+      if (error.message.includes('cancel') || error.message.includes('取消')) {
         return {
           formatName: formatName,
           extractedCount: 0,
@@ -1302,7 +1302,7 @@ class ContextMonitor {
   }
 
   /**
-   * 处理消息分块
+   * Process one message chunk
    */
   async processMessageChunk(messages, formatName, startIndex, globalStartIndex) {
     const chunkExtractions = [];
@@ -1313,11 +1313,11 @@ class ContextMonitor {
       const messageIndex = startIndex + i;
 
       if (message.mes) {
-        // 移除thinking标签后再进行数据提取
+        // Strip thinking tags before extract
         const messageForExtraction = this.removeThinkingTags(message.mes);
         const extractions = this.extractDataFromText(messageForExtraction, formatName);
 
-        // 为每个提取结果添加消息上下文
+        // Attach message context to each extraction
         extractions.forEach(extraction => {
           extraction.messageIndex = messageIndex;
           extraction.globalIndex = localExtractionIndex++;
@@ -1338,62 +1338,62 @@ class ContextMonitor {
   }
 
   /**
-   * 估算数据大小（字节）
+   * Estimate size in bytes
    */
   estimateDataSize(messages) {
     let totalSize = 0;
     for (const message of messages) {
       if (message.mes) {
-        totalSize += message.mes.length * 2; // 假设每个字符占2字节
+        totalSize += message.mes.length * 2; // Assume 2 bytes per character
       }
     }
     return totalSize;
   }
 
   /**
-   * 执行内存优化
+   * Run memory optimization
    */
   async performMemoryOptimization() {
-    // 触发垃圾回收提示
+    // Hint GC
     if (window.gc) {
       window.gc();
     }
 
-    // 清理不必要的缓存
+    // Drop spare caches
     this.performMemoryCleanup();
 
-    // 短暂延迟，允许垃圾回收执行
+    // Yield so GC can run
     await this.sleep(10);
   }
 
   /**
-   * 休眠函数
+   * Sleep helper
    */
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
-   * 从JSONL数据中提取
-   * @param {string} formatName - 格式名称
-   * @returns {Promise<Object>} 提取结果
+   * Extract from JSONL
+   * @param {string} formatName - Format name
+   * @returns {Promise<Object>} Extractions
    */
   async extractFromCurrentChatJsonl(formatName) {
     try {
       const jsonlData = await this.getCurrentChatJsonl();
       if (!jsonlData || !jsonlData.lines) {
-        this.log('error', '无法获取JSONL数据');
+        this.log('error', 'Could not get JSONL data');
         return null;
       }
 
       const allExtractions = [];
       let processedLines = 0;
 
-      // 🔥 修复：保持JSONL消息的原始顺序，而不是按时间戳排序
-      // 确保消息按照在文件中的出现顺序处理
+      // Keep JSONL order as written, do not sort by timestamp
+      // Process lines in file order
       const originalLines = [...jsonlData.lines];
 
-      this.log('info', `保持JSONL消息原始顺序，共 ${originalLines.length} 条`);
+      this.log('info', `Kept original JSONL order, ${originalLines.length} lines`);
 
       originalLines.forEach((line, lineIndex) => {
         try {
@@ -1401,14 +1401,14 @@ class ContextMonitor {
           if (messageObj.mes) {
             const extractions = this.extractDataFromText(messageObj.mes, formatName);
 
-            // 为每个提取结果添加JSONL上下文
+            // Attach JSONL context to each extraction
             extractions.forEach(extraction => {
               extraction.lineIndex = lineIndex;
               extraction.messageId = messageObj.id || lineIndex;
               extraction.messageName = messageObj.name || 'Unknown';
               extraction.messageTimestamp = messageObj.send_date || messageObj.timestamp;
               extraction.isUser = messageObj.is_user || false;
-              // 🔥 添加原始消息的name和extra信息，用于统一性检查
+              // Keep original name/extra for consistency checks
               extraction.originalMessageName = messageObj.name;
               extraction.originalMessageExtra = messageObj.extra;
               extraction.originalLineIndex = lineIndex;
@@ -1418,7 +1418,7 @@ class ContextMonitor {
             processedLines++;
           }
         } catch (error) {
-          this.log('warn', `解析JSONL行失败: ${lineIndex}`, error);
+          this.log('warn', `Failed to parse JSONL line: ${lineIndex}`, error);
         }
       });
 
@@ -1431,19 +1431,19 @@ class ContextMonitor {
         extractedAt: new Date(),
       };
 
-      this.log('info', `从 ${processedLines} 行JSONL中提取了 ${allExtractions.length} 条数据`, result);
+      this.log('info', `From ${processedLines} JSONL lines extracted ${allExtractions.length} records`, result);
       return result;
     } catch (error) {
-      this.log('error', '从JSONL中提取数据失败', error);
+      this.log('error', 'Failed to extract from JSONL', error);
       return null;
     }
   }
 
   /**
-   * 🚀 优化版：从JSONL数据中分块提取数据（适用于大文件）
-   * @param {string} formatName - 格式名称
-   * @param {Object} options - 提取选项
-   * @returns {Promise<Object>} 提取结果
+   * Optimized chunked JSONL extract (large files)
+   * @param {string} formatName - Format name
+   * @param {Object} options - Extract options
+   * @returns {Promise<Object>} Extractions
    */
   async extractFromCurrentChatJsonlOptimized(formatName, options = {}) {
     const config = { ...this.getLargeFileConfig(), ...options };
@@ -1453,50 +1453,50 @@ class ContextMonitor {
     try {
       const jsonlData = await this.getCurrentChatJsonl();
       if (!jsonlData || !jsonlData.lines) {
-        this.log('error', '无法获取JSONL数据');
+        this.log('error', 'Could not get JSONL data');
         return null;
       }
 
       const originalLines = [...jsonlData.lines];
       const totalLines = originalLines.length;
 
-      // 检查是否需要优化处理
+      // Decide whether to use the optimized path
       const estimatedSize = this.estimateJsonlSize(originalLines);
       const shouldUseOptimization = totalLines > 1000 || estimatedSize > 10 * 1024 * 1024; // 10MB
 
       if (!shouldUseOptimization) {
-        this.log('info', 'JSONL数据量较小，使用标准提取方法');
+        this.log('info', 'Small JSONL — using standard extract');
         return await this.extractFromCurrentChatJsonl(formatName);
       }
 
-      this.log('info', `开始优化JSONL提取：${totalLines} 行，估计大小 ${this.formatBytes(estimatedSize)}`);
+      this.log('info', `Starting optimized JSONL extract: ${totalLines} lines, estimated size ${this.formatBytes(estimatedSize)}`);
 
       const allExtractions = [];
       let processedLines = 0;
 
-      // 分块处理JSONL行
+      // Process JSONL in chunks
       for (let chunkStart = 0; chunkStart < totalLines; chunkStart += config.chunkSize) {
-        // 检查是否被取消
+        // Cancelled?
         if (controller.signal.aborted) {
-          throw new Error('JSONL提取操作已被取消');
+          throw new Error('JSONL extract cancelled');
         }
 
-        // 检查处理时间
+        // Timeout check
         if (Date.now() - startTime > config.maxProcessingTime * 1000) {
-          throw new Error('JSONL提取操作超时');
+          throw new Error('JSONL extract timed out');
         }
 
         const chunkEnd = Math.min(chunkStart + config.chunkSize, totalLines);
         const chunk = originalLines.slice(chunkStart, chunkEnd);
 
-        this.log('debug', `处理JSONL分块 ${Math.floor(chunkStart / config.chunkSize) + 1}/${Math.ceil(totalLines / config.chunkSize)}`);
+        this.log('debug', `Processing JSONL chunk ${Math.floor(chunkStart / config.chunkSize) + 1}/${Math.ceil(totalLines / config.chunkSize)}`);
 
-        // 处理当前分块
+        // Process this chunk
         const chunkExtractions = await this.processJsonlChunk(chunk, formatName, chunkStart);
         allExtractions.push(...chunkExtractions);
         processedLines += chunk.length;
 
-        // 触发进度回调
+        // Progress callback
         if (options.onProgress) {
           const progress = {
             processed: processedLines,
@@ -1509,12 +1509,12 @@ class ContextMonitor {
           await options.onProgress(progress);
         }
 
-        // 内存管理
+        // Memory management
         if (chunkStart > 0 && chunkStart % (config.chunkSize * 10) === 0) {
           await this.performMemoryOptimization();
         }
 
-        // 添加延迟，避免阻塞UI
+        // Yield so the UI stays live
         if (config.processingDelay > 0) {
           await this.sleep(config.processingDelay);
         }
@@ -1533,13 +1533,13 @@ class ContextMonitor {
         estimatedSize: estimatedSize,
       };
 
-      this.log('info', `优化JSONL提取完成：${processedLines} 行，${allExtractions.length} 条数据，耗时 ${result.processingTime}ms`);
+      this.log('info', `Optimized JSONL extract done: ${processedLines} lines, ${allExtractions.length} records, took ${result.processingTime}ms`);
       return result;
 
     } catch (error) {
-      this.log('error', '优化JSONL提取失败', error);
+      this.log('error', 'Optimized JSONL extract failed', error);
 
-      if (error.message.includes('取消')) {
+      if (error.message.includes('cancel') || error.message.includes('取消')) {
         return {
           formatName: formatName,
           extractedCount: 0,
@@ -1554,7 +1554,7 @@ class ContextMonitor {
   }
 
   /**
-   * 处理JSONL分块
+   * Process a JSONL chunk
    */
   async processJsonlChunk(lines, formatName, startIndex) {
     const chunkExtractions = [];
@@ -1566,11 +1566,11 @@ class ContextMonitor {
       try {
         const messageObj = JSON.parse(line);
         if (messageObj.mes) {
-          // 移除thinking标签后再进行数据提取
+          // Strip thinking tags before extract
           const messageForExtraction = this.removeThinkingTags(messageObj.mes);
           const extractions = this.extractDataFromText(messageForExtraction, formatName);
 
-          // 为每个提取结果添加JSONL上下文
+          // Attach JSONL context to each extraction
           extractions.forEach(extraction => {
             extraction.lineIndex = lineIndex;
             extraction.messageId = messageObj.id || lineIndex;
@@ -1585,7 +1585,7 @@ class ContextMonitor {
           chunkExtractions.push(...extractions);
         }
       } catch (error) {
-        this.log('warn', `解析JSONL行失败: ${lineIndex}`, error);
+        this.log('warn', `Failed to parse JSONL line: ${lineIndex}`, error);
       }
     }
 
@@ -1593,18 +1593,18 @@ class ContextMonitor {
   }
 
   /**
-   * 估算JSONL数据大小
+   * Estimate JSONL size
    */
   estimateJsonlSize(lines) {
     let totalSize = 0;
     for (const line of lines) {
-      totalSize += line.length * 2; // 假设每个字符占2字节
+      totalSize += line.length * 2; // Assume 2 bytes per character
     }
     return totalSize;
   }
 
   /**
-   * 格式化字节数为可读字符串
+   * Format bytes as a readable string
    */
   formatBytes(bytes) {
     if (bytes === 0) return '0 Bytes';
@@ -1615,17 +1615,17 @@ class ContextMonitor {
   }
 
   /**
-   * 添加自定义提取格式
-   * @param {string} name - 格式名称
-   * @param {Object} format - 格式配置
+   * Add a custom extract format
+   * @param {string} name - Format name
+   * @param {Object} format - Format config
    */
   addExtractorFormat(name, format) {
     if (!format.regex || !format.fields || !Array.isArray(format.fields)) {
-      this.log('error', '无效的格式配置', format);
+      this.log('error', 'Invalid format config', format);
       return false;
     }
 
-    // 将自定义格式存储到实例中
+    // Store custom format on the instance
     if (!this.customFormats) {
       this.customFormats = {};
     }
@@ -1634,16 +1634,16 @@ class ContextMonitor {
       name: format.name || name,
       regex: format.regex,
       fields: format.fields,
-      description: format.description || `自定义格式: ${name}`,
+      description: format.description || `Custom format: ${name}`,
       isCustom: true,
     };
 
-    this.log('info', `已添加自定义格式: ${name}`, this.customFormats[name]);
+    this.log('info', `Added custom format: ${name}`, this.customFormats[name]);
     return true;
   }
 
   /**
-   * 获取所有可用的格式（包括自定义格式）
+   * All formats including custom
    */
   getAllExtractorFormats() {
     const predefined = this.getExtractorFormats();
@@ -1652,19 +1652,19 @@ class ContextMonitor {
   }
 
   /**
-   * 列出所有可用的提取格式
+   * List extract formats
    */
   listExtractorFormats() {
     const formats = this.getAllExtractorFormats();
 
-    console.group('=== 可用的数据提取格式 ===');
+    console.group('=== Available extract formats ===');
     Object.entries(formats).forEach(([key, format]) => {
       console.log(`${key}: ${format.name}`);
-      console.log(`  描述: ${format.description}`);
-      console.log(`  字段: [${format.fields.join(', ')}]`);
-      console.log(`  正则: ${format.regex}`);
+      console.log(`  Description: ${format.description}`);
+      console.log(`  Fields: [${format.fields.join(', ')}]`);
+      console.log(`  Regex: ${format.regex}`);
       if (format.isCustom) {
-        console.log('  类型: 自定义格式');
+        console.log('  Type: custom');
       }
       console.log('');
     });
@@ -1674,76 +1674,76 @@ class ContextMonitor {
   }
 
   /**
-   * 导出提取结果为JSON
-   * @param {Object} extractionResult - 提取结果
-   * @returns {string} JSON字符串
+   * Export extractions as JSON
+   * @param {Object} extractionResult - Extractions
+   * @returns {string} JSON string
    */
   exportExtractions(extractionResult) {
     return JSON.stringify(extractionResult, null, 2);
   }
 
   // ===========================================
-  // 大文件处理便捷方法
+  // Large-file helpers
   // ===========================================
 
   /**
-   * 智能提取方法 - 自动选择最佳提取策略
-   * @param {string} formatName - 格式名称
-   * @param {Object} options - 提取选项
-   * @returns {Promise<Object>} 提取结果
+   * Smart extract — pick the best strategy
+   * @param {string} formatName - Format name
+   * @param {Object} options - Extract options
+   * @returns {Promise<Object>} Extractions
    */
   async smartExtract(formatName, options = {}) {
     const startTime = Date.now();
 
     try {
-      // 首先尝试获取聊天数据
+      // Try chat messages first
       const chatData = await this.getCurrentChatMessages();
 
       if (!chatData || !chatData.messages) {
-        this.log('warn', '无法获取聊天消息，尝试JSONL方法');
+        this.log('warn', 'Chat messages unavailable — trying JSONL');
 
-        // 如果聊天消息获取失败，尝试JSONL
+        // Fall back to JSONL
         const jsonlData = await this.getCurrentChatJsonl();
         if (!jsonlData || !jsonlData.lines) {
-          this.log('error', '无法获取任何聊天数据');
+          this.log('error', 'No chat data available');
           return null;
         }
 
-        // 使用JSONL优化提取
+        // Use optimized JSONL extract
         return await this.extractFromCurrentChatJsonlOptimized(formatName, options);
       }
 
-      // 估算数据量，决定使用哪种方法
+      // Estimate size and pick a path
       const messageCount = chatData.messages.length;
       const estimatedSize = this.estimateDataSize(chatData.messages);
 
-      this.log('info', `智能提取分析：${messageCount} 条消息，估计大小 ${this.formatBytes(estimatedSize)}`);
+      this.log('info', `Smart-extract analysis: ${messageCount} messages, estimated size ${this.formatBytes(estimatedSize)}`);
 
-      // 判断是否需要使用优化方法
+      // Decide whether to use the optimized path
       if (messageCount > 1000 || estimatedSize > 10 * 1024 * 1024) {
-        this.log('info', '使用优化提取方法处理大文件');
+        this.log('info', 'Large file — optimized extract');
         return await this.extractFromCurrentChatOptimized(formatName, options);
       } else {
-        this.log('info', '使用标准提取方法处理小文件');
+        this.log('info', 'Small file — standard extract');
         return await this.extractFromCurrentChat(formatName);
       }
 
     } catch (error) {
-      this.log('error', '智能提取失败', error);
+      this.log('error', 'Smart extract failed', error);
       return null;
     }
   }
 
   /**
-   * 带进度显示的提取方法
-   * @param {string} formatName - 格式名称
-   * @param {Function} progressCallback - 进度回调函数
-   * @returns {Promise<Object>} 提取结果
+   * Extract with progress
+   * @param {string} formatName - Format name
+   * @param {Function} progressCallback - Progress callback
+   * @returns {Promise<Object>} Extractions
    */
   async extractWithProgress(formatName, progressCallback) {
     const options = {
       onProgress: async (progress) => {
-        this.log('debug', `提取进度：${progress.percentage}% (${progress.processed}/${progress.total})`);
+        this.log('debug', `Extract progress: ${progress.percentage}% (${progress.processed}/${progress.total})`);
 
         if (progressCallback && typeof progressCallback === 'function') {
           await progressCallback(progress);
@@ -1755,8 +1755,8 @@ class ContextMonitor {
   }
 
   /**
-   * 快速检查文件大小和复杂度
-   * @returns {Promise<Object>} 文件分析结果
+   * Quick size/complexity check
+   * @returns {Promise<Object>} file analysis
    */
   async analyzeFileComplexity() {
     const startTime = Date.now();
@@ -1765,14 +1765,14 @@ class ContextMonitor {
       const chatData = await this.getCurrentChatMessages();
 
       if (!chatData || !chatData.messages) {
-        return { error: '无法获取聊天数据' };
+        return { error: 'Could not get chat data' };
       }
 
       const messages = chatData.messages;
       const messageCount = messages.length;
       const estimatedSize = this.estimateDataSize(messages);
 
-      // 分析消息类型分布
+      // Message-type mix
       let userMessages = 0;
       let botMessages = 0;
       let avgMessageLength = 0;
@@ -1795,7 +1795,7 @@ class ContextMonitor {
 
       avgMessageLength = messageCount > 0 ? Math.round(totalTextLength / messageCount) : 0;
 
-      // 计算复杂度评分
+      // Complexity score
       let complexityScore = 0;
       if (messageCount > 5000) complexityScore += 3;
       else if (messageCount > 1000) complexityScore += 2;
@@ -1808,7 +1808,7 @@ class ContextMonitor {
       if (avgMessageLength > 2000) complexityScore += 2;
       else if (avgMessageLength > 1000) complexityScore += 1;
 
-      // 确定推荐策略
+      // Pick recommended strategy
       let recommendedStrategy = 'standard';
       if (complexityScore >= 5) {
         recommendedStrategy = 'optimized';
@@ -1830,76 +1830,76 @@ class ContextMonitor {
         recommendations: this.generateRecommendations(complexityScore, messageCount, estimatedSize)
       };
 
-      this.log('info', '文件复杂度分析完成', result);
+      this.log('info', 'File-complexity analysis done', result);
       return result;
 
     } catch (error) {
-      this.log('error', '文件复杂度分析失败', error);
+      this.log('error', 'File-complexity analysis failed', error);
       return { error: error.message };
     }
   }
 
   /**
-   * 生成处理建议
+   * Build recommendations
    */
   generateRecommendations(complexityScore, messageCount, estimatedSize) {
     const recommendations = [];
 
     if (complexityScore >= 5) {
-      recommendations.push('建议使用 extractFromCurrentChatOptimized() 方法');
-      recommendations.push('建议设置较小的分块大小 (chunkSize: 50-100)');
-      recommendations.push('建议增加处理延迟以避免UI阻塞');
-      recommendations.push('建议监控内存使用情况');
+      recommendations.push('Prefer extractFromCurrentChatOptimized()');
+      recommendations.push('Use a smaller chunkSize (50–100)');
+      recommendations.push('Increase processing delay so the UI stays responsive');
+      recommendations.push('Watch memory use');
     } else if (complexityScore >= 3) {
-      recommendations.push('建议使用 smartExtract() 方法自动选择策略');
-      recommendations.push('可以考虑启用进度回调');
+      recommendations.push('Prefer smartExtract() to pick a strategy');
+      recommendations.push('Consider an onProgress callback');
     } else {
-      recommendations.push('可以使用标准的 extractFromCurrentChat() 方法');
-      recommendations.push('数据量较小，处理速度应该很快');
+      recommendations.push('Standard extractFromCurrentChat() is fine');
+      recommendations.push('Small dataset — should be fast');
     }
 
     if (messageCount > 10000) {
-      recommendations.push('⚠️  消息数量超过10000条，建议分批处理');
+      recommendations.push('⚠️ Over 10,000 messages — process in batches');
     }
 
     if (estimatedSize > 100 * 1024 * 1024) {
-      recommendations.push('⚠️  文件大小超过100MB，建议考虑预处理或筛选');
+      recommendations.push('⚠️ Over 100MB — consider prefiltering');
     }
 
     return recommendations;
   }
 
   /**
-   * 批量格式提取（优化版）
-   * @param {Array} formatNames - 格式名称数组
-   * @param {Object} options - 提取选项
-   * @returns {Promise<Object>} 批量提取结果
+   * Batch extract (optimized)
+   * @param {Array} formatNames - Format-name list
+   * @param {Object} options - Extract options
+   * @returns {Promise<Object>} Batch result
    */
   async batchExtractOptimized(formatNames, options = {}) {
     const startTime = Date.now();
     const results = {};
 
     try {
-      // 首先分析文件复杂度
+      // Analyze complexity first
       const complexity = await this.analyzeFileComplexity();
 
       if (complexity.error) {
         return { error: complexity.error };
       }
 
-      this.log('info', `开始批量提取 ${formatNames.length} 种格式，推荐策略：${complexity.recommendedStrategy}`);
+      this.log('info', `Starting batch extract of ${formatNames.length} formats; recommended strategy: ${complexity.recommendedStrategy}`);
 
       let totalExtracted = 0;
       let processedFormats = 0;
 
       for (const formatName of formatNames) {
         try {
-          this.log('debug', `提取格式：${formatName}`);
+          this.log('debug', `Extracting format: ${formatName}`);
 
           const formatOptions = {
             ...options,
             onProgress: async (progress) => {
-              // 计算总体进度
+              // Overall progress
               const overallProgress = {
                 currentFormat: formatName,
                 formatProgress: progress,
@@ -1914,7 +1914,7 @@ class ContextMonitor {
             }
           };
 
-          // 根据复杂度选择策略
+          // Pick strategy from complexity
           let result;
           if (complexity.recommendedStrategy === 'optimized') {
             result = await this.extractFromCurrentChatOptimized(formatName, formatOptions);
@@ -1926,18 +1926,18 @@ class ContextMonitor {
             results[formatName] = result;
             totalExtracted += result.extractedCount || 0;
           } else {
-            results[formatName] = { error: '提取失败' };
+            results[formatName] = { error: 'Extract failed' };
           }
 
           processedFormats++;
 
-          // 添加间隔，避免过度占用资源
+          // Yield so we do not starve the UI
           if (formatNames.length > 5) {
             await this.sleep(100);
           }
 
         } catch (error) {
-          this.log('error', `提取格式 ${formatName} 失败`, error);
+          this.log('error', `Extract format ${formatName} failed`, error);
           results[formatName] = { error: error.message };
           processedFormats++;
         }
@@ -1955,63 +1955,63 @@ class ContextMonitor {
         }
       };
 
-      this.log('info', `批量提取完成`, batchResult.summary);
+      this.log('info', `Batch extract done`, batchResult.summary);
       return batchResult;
 
     } catch (error) {
-      this.log('error', '批量提取失败', error);
+      this.log('error', 'Batch extract failed', error);
       return { error: error.message };
     }
   }
 
   // ===========================================
-  // 便捷辅助方法
+  // Helpers
   // ===========================================
 
   /**
-   * 获取特定格式的正则表达式
-   * @param {string} formatName - 格式名称
-   * @returns {RegExp|null} 正则表达式对象
+   * Get regex for a format
+   * @param {string} formatName - Format name
+   * @returns {RegExp|null} RegExp
    */
   getRegexForFormat(formatName) {
     const formats = this.getAllExtractorFormats();
     const format = formats[formatName];
     if (!format) {
-      this.log('warn', `未找到格式: ${formatName}`);
+      this.log('warn', `Unknown format: ${formatName}`);
       return null;
     }
-    // 返回新的正则表达式对象，避免lastIndex问题
+    // Fresh RegExp so lastIndex cannot leak
     return new RegExp(format.regex.source, format.regex.flags);
   }
 
   /**
-   * 创建基于特定friendId的消息匹配器
-   * @param {string|number} friendId - 好友ID
-   * @returns {Object} 包含各类消息匹配器的对象
+   * Build matchers for a friendId
+   * @param {string|number} friendId - Friend ID
+   * @returns {Object} Matcher set
    */
   createFriendMessageMatchers(friendId) {
     const escapeRegex = str => str.toString().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const escapedFriendId = escapeRegex(friendId);
 
     return {
-      // 好友信息匹配
+      // Friend record
       friend: new RegExp(`\\[好友id\\|([^|]*)\\|${escapedFriendId}\\]`, 'g'),
 
-      // 我方消息匹配
+      // Own-message match
       myMessage: new RegExp(`\\[我方消息\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'g'),
 
-      // 对方消息匹配
+      // Other-message match
       otherMessage: new RegExp(`\\[对方消息\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'g'),
 
-      // 通用消息匹配
+      // Either-side match
       universalMessage: new RegExp(`\\[(我方消息|对方消息)\\|[^|]*\\|${escapedFriendId}\\|[^|]*\\|[^\\]]*\\]`, 'g'),
     };
   }
 
   /**
-   * 创建基于特定好友名称的匹配器
-   * @param {string} friendName - 好友名称
-   * @returns {RegExp} 好友匹配器
+   * Build a matcher for a friend name
+   * @param {string} friendName - Friend name
+   * @returns {RegExp} Friend matcher
    */
   createFriendNameMatcher(friendName) {
     const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -2021,10 +2021,10 @@ class ContextMonitor {
   }
 
   /**
-   * 测试文本是否包含特定格式
-   * @param {string} text - 要测试的文本
-   * @param {string} formatName - 格式名称
-   * @returns {boolean} 是否包含该格式
+   * Test whether text contains a format
+   * @param {string} text - Text to test
+   * @param {string} formatName - Format name
+   * @returns {boolean} Whether the format is present
    */
   testFormat(text, formatName) {
     const regex = this.getRegexForFormat(formatName);
@@ -2032,9 +2032,9 @@ class ContextMonitor {
   }
 
   /**
-   * 获取所有匹配的格式类型
-   * @param {string} text - 要检查的文本
-   * @returns {Array} 匹配的格式类型数组
+   * List matching format types
+   * @param {string} text - Text to inspect
+   * @returns {Array} Matching format names
    */
   getMatchingFormats(text) {
     const formats = this.getAllExtractorFormats();
@@ -2050,37 +2050,37 @@ class ContextMonitor {
   }
 
   /**
-   * 快速提取好友信息
-   * @param {string} text - 要提取的文本
-   * @returns {Array} 好友信息数组
+   * Quick-extract friends
+   * @param {string} text - Text to extract from
+   * @returns {Array} Friend records
    */
   extractFriends(text) {
     return this.extractDataFromText(text, 'friend');
   }
 
   /**
-   * 快速提取我方消息
-   * @param {string} text - 要提取的文本
-   * @returns {Array} 我方消息数组
+   * Quick-extract own messages
+   * @param {string} text - Text to extract from
+   * @returns {Array} Own messages
    */
   extractMyMessages(text) {
     return this.extractDataFromText(text, 'myMessage');
   }
 
   /**
-   * 快速提取对方消息
-   * @param {string} text - 要提取的文本
-   * @returns {Array} 对方消息数组
+   * Quick-extract other messages
+   * @param {string} text - Text to extract from
+   * @returns {Array} Other messages
    */
   extractOtherMessages(text) {
     return this.extractDataFromText(text, 'otherMessage');
   }
 
   /**
-   * 批量提取多种格式
-   * @param {string} text - 要提取的文本
-   * @param {Array} formatNames - 格式名称数组
-   * @returns {Object} 按格式名称分组的提取结果
+   * Extract several formats
+   * @param {string} text - Text to extract from
+   * @param {Array} formatNames - Format-name list
+   * @returns {Object} Results keyed by format
    */
   extractMultipleFormats(text, formatNames) {
     const results = {};
@@ -2093,9 +2093,9 @@ class ContextMonitor {
   }
 
   /**
-   * 统计文本中各种格式的数量
-   * @param {string} text - 要统计的文本
-   * @returns {Object} 格式数量统计
+   * Count each format in text
+   * @param {string} text - Text to count
+   * @returns {Object} Counts by format
    */
   countFormats(text) {
     const formats = this.getAllExtractorFormats();
@@ -2110,8 +2110,8 @@ class ContextMonitor {
   }
 
   /**
-   * 重置所有格式的正则表达式lastIndex
-   * 用于避免全局正则表达式的状态问题
+   * Reset lastIndex on every format regex
+   * Avoid leftover global-regex state
    */
   resetRegexStates() {
     const formats = this.getAllExtractorFormats();
@@ -2123,13 +2123,13 @@ class ContextMonitor {
   }
 
   // ===========================================
-  // 高级工具方法
+  // Advanced tools
   // ===========================================
 
   /**
-   * 创建格式验证器
-   * @param {string} formatName - 格式名称
-   * @returns {Function} 验证函数
+   * Create a format validator
+   * @param {string} formatName - Format name
+   * @returns {Function} Validator
    */
   createFormatValidator(formatName) {
     const regex = this.getRegexForFormat(formatName);
@@ -2144,9 +2144,9 @@ class ContextMonitor {
   }
 
   /**
-   * 创建格式提取器
-   * @param {string} formatName - 格式名称
-   * @returns {Function} 提取函数
+   * Create a format extractor
+   * @param {string} formatName - Format name
+   * @returns {Function} Extractor
    */
   createFormatExtractor(formatName) {
     return text => {
@@ -2155,9 +2155,9 @@ class ContextMonitor {
   }
 
   /**
-   * 批量创建格式工具
-   * @param {Array} formatNames - 格式名称数组
-   * @returns {Object} 工具对象
+   * Build tools for several formats
+   * @param {Array} formatNames - Format-name list
+   * @returns {Object} Tool map
    */
   createFormatTools(formatNames = []) {
     const tools = {};
@@ -2175,8 +2175,8 @@ class ContextMonitor {
   }
 
   /**
-   * 获取所有格式的工具集合
-   * @returns {Object} 完整的工具集合
+   * Tools for every format
+   * @returns {Object} Full toolset
    */
   getAllFormatTools() {
     const formats = this.getAllExtractorFormats();
@@ -2184,9 +2184,9 @@ class ContextMonitor {
   }
 
   /**
-   * 智能文本分析
-   * @param {string} text - 要分析的文本
-   * @returns {Object} 分析结果
+   * Analyze text
+   * @param {string} text - Text to analyze
+   * @returns {Object} Analysis
    */
   analyzeText(text) {
     const analysis = {
@@ -2214,7 +2214,7 @@ class ContextMonitor {
       }
     });
 
-    // 生成摘要
+    // Build summary
     analysis.summary = {
       hasMatches: analysis.totalMatches > 0,
       formatCount: analysis.matchingFormats.length,
@@ -2226,9 +2226,9 @@ class ContextMonitor {
   }
 
   /**
-   * 获取最常见的格式
-   * @param {Object} formats - 格式统计
-   * @returns {string|null} 最常见的格式名称
+   * Most common format
+   * @param {Object} formats - Format stats
+   * @returns {string|null} Most common format name
    */
   getMostCommonFormat(formats) {
     let maxCount = 0;
@@ -2245,9 +2245,9 @@ class ContextMonitor {
   }
 
   /**
-   * 猜测文本类型
-   * @param {Array} matchingFormats - 匹配的格式数组
-   * @returns {string} 文本类型
+   * Guess text type
+   * @param {Array} matchingFormats - Matching formats
+   * @returns {string} Text type
    */
   guessTextType(matchingFormats) {
     if (matchingFormats.length === 0) {
@@ -2274,22 +2274,22 @@ class ContextMonitor {
   }
 
   /**
-   * 格式化提取结果为可读文本
-   * @param {Array} extractions - 提取结果
-   * @param {string} formatName - 格式名称
-   * @returns {string} 格式化的文本
+   * Format extractions as readable text
+   * @param {Array} extractions - Extractions
+   * @param {string} formatName - Format name
+   * @returns {string} Formatted text
    */
   formatExtractionsAsText(extractions, formatName) {
     if (!extractions || extractions.length === 0) {
-      return `没有找到 ${formatName} 格式的数据`;
+      return `No ${formatName} data found`;
     }
 
     const format = this.getAllExtractorFormats()[formatName];
     if (!format) {
-      return '未知格式';
+      return 'Unknown format';
     }
 
-    const lines = [`${format.name} (${extractions.length} 条记录):`];
+    const lines = [`${format.name} (${extractions.length} records):`];
 
     extractions.forEach((extraction, index) => {
       const fieldTexts = format.fields
@@ -2305,8 +2305,8 @@ class ContextMonitor {
   }
 
   /**
-   * 导出格式配置
-   * @returns {Object} 格式配置对象
+   * Export format config
+   * @returns {Object} Format config object
    */
   exportFormatConfig() {
     return {
@@ -2318,9 +2318,9 @@ class ContextMonitor {
   }
 
   /**
-   * 导入格式配置
-   * @param {Object} config - 格式配置对象
-   * @returns {boolean} 是否成功导入
+   * Import format config
+   * @param {Object} config - Format config object
+   * @returns {boolean} Whether import succeeded
    */
   importFormatConfig(config) {
     try {
@@ -2328,22 +2328,22 @@ class ContextMonitor {
         this.customFormats = { ...this.customFormats, ...config.customFormats };
       }
 
-      this.log('info', '格式配置导入成功', config);
+      this.log('info', 'Format config imported', config);
       return true;
     } catch (error) {
-      this.log('error', '格式配置导入失败', error);
+      this.log('error', 'Format config import failed', error);
       return false;
     }
   }
 
-  // 优化：设置内存清理监听器
+  // Memory-cleanup listener
   setupMemoryCleanupListener() {
     window.addEventListener('mobile-memory-cleanup', event => {
       this.performMemoryCleanup();
     });
   }
 
-  // 优化：执行内存清理
+  // Run memory cleanup
   performMemoryCleanup() {
     const beforeCleanup = {
       contextHistory: this.contextHistory.length,
@@ -2351,18 +2351,18 @@ class ContextMonitor {
       eventStats: Object.keys(this.eventStats).length,
     };
 
-    // 清理历史记录（保留最新的一半）
+    // Trim history to the newest half
     const keepCount = Math.floor(this.settings.historyLimit / 2);
     if (this.contextHistory.length > keepCount) {
       this.contextHistory = this.contextHistory.slice(-keepCount);
     }
 
-    // 清理日志（保留最新的100条）
+    // Trim logs to the newest 100
     if (this.logs.length > 100) {
       this.logs = this.logs.slice(-100);
     }
 
-    // 重置事件统计（保留重要事件）
+    // Reset event stats (keep important events)
     const importantEvents = ['message_sent', 'message_received', 'chat_id_changed'];
     const filteredStats = {};
     importantEvents.forEach(event => {
@@ -2378,23 +2378,23 @@ class ContextMonitor {
       eventStats: Object.keys(this.eventStats).length,
     };
 
-    this.log('info', '内存清理完成', { beforeCleanup, afterCleanup });
+    this.log('info', 'Memory cleanup done', { beforeCleanup, afterCleanup });
   }
 
-  // 优化：智能清理历史记录
+  // Smart history cleanup
   cleanupHistoryRecords() {
     if (this.contextHistory.length <= this.settings.historyLimit) {
       return;
     }
 
-    // 如果超过限制，删除最旧的记录
+    // Drop oldest records past the cap
     const excess = this.contextHistory.length - this.settings.historyLimit;
     this.contextHistory.splice(0, excess);
 
-    this.log('debug', `清理了 ${excess} 条历史记录`);
+    this.log('debug', `Cleaned ${excess} history records`);
   }
 
-  // 优化：获取性能统计
+  // Performance stats
   getPerformanceStats() {
     const memoryUsage = this.performanceMonitor?.getMetrics()?.memoryUsage || 0;
     const runtime = this.startTime ? Date.now() - this.startTime : 0;
@@ -2412,120 +2412,120 @@ class ContextMonitor {
   }
 }
 
-// 导出类
+// Export class
 window.ContextMonitor = ContextMonitor;
 
-// 创建全局实例
+// Create global instance
 window.contextMonitor = new ContextMonitor();
 
-// 自动初始化
+// Auto-init
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     window.contextMonitor.init();
-    console.log('[Context Monitor] 上下文监控器已自动初始化');
+    console.log('[Context Monitor] Context monitor auto-initialized');
   });
 } else {
   window.contextMonitor.init();
-  console.log('[Context Monitor] 上下文监控器已自动初始化');
+  console.log('[Context Monitor] Context monitor auto-initialized');
 }
 
 // ===========================================
-// 大文件优化处理使用示例
+// Large-file optimization examples
 // ===========================================
 
 /**
- * 🚀 大文件处理使用示例
+ * 🚀 Large-file usage examples
  *
- * 以下是使用新优化功能处理30MB+大文件的示例代码：
+ * Examples for 30MB+ files with the optimized extractors:
  *
- * # 1. 智能提取 - 自动选择最佳策略
+ * # 1. Smart extract — pick the best strategy
  * ```javascript
- * // 简单使用
+ * // Simple
  * const result = await window.contextMonitor.smartExtract('myMessage');
  *
- * // 带进度回调
+ * // With progress
  * const result = await window.contextMonitor.extractWithProgress('myMessage', (progress) => {
- *   console.log(`进度: ${progress.percentage}% (${progress.processed}/${progress.total})`);
+ *   console.log(`Progress: ${progress.percentage}% (${progress.processed}/${progress.total})`);
  * });
  * ```
  *
- * # 2. 手动优化提取 - 完全控制
+ * # 2. Manual optimized extract — full control
  * ```javascript
  * const result = await window.contextMonitor.extractFromCurrentChatOptimized('myMessage', {
- *   chunkSize: 50,           // 分块大小
- *   processingDelay: 100,    // 处理延迟（毫秒）
+ *   chunkSize: 50,           // Chunk size
+ *   processingDelay: 100,    // Processing delay (ms)
  *   onProgress: async (progress) => {
- *     console.log(`分块进度: ${progress.currentChunk}/${progress.totalChunks}`);
- *     console.log(`消息进度: ${progress.percentage}% (${progress.processed}/${progress.total})`);
- *     console.log(`已提取: ${progress.extractedCount} 条数据`);
+ *     console.log(`Chunk progress: ${progress.currentChunk}/${progress.totalChunks}`);
+ *     console.log(`Message progress: ${progress.percentage}% (${progress.processed}/${progress.total})`);
+ *     console.log(`Extracted: ${progress.extractedCount} records`);
  *   }
  * });
  * ```
  *
- * # 3. 文件复杂度分析
+ * # 3. File-complexity analysis
  * ```javascript
  * const analysis = await window.contextMonitor.analyzeFileComplexity();
- * console.log('文件分析结果:', analysis);
- * console.log('推荐策略:', analysis.recommendedStrategy);
- * console.log('处理建议:', analysis.recommendations);
+ * console.log('File analysis:', analysis);
+ * console.log('Recommended strategy:', analysis.recommendedStrategy);
+ * console.log('Recommendations:', analysis.recommendations);
  * ```
  *
- * # 4. 批量格式提取
+ * # 4. Batch format extract
  * ```javascript
  * const batchResult = await window.contextMonitor.batchExtractOptimized(
  *   ['myMessage', 'otherMessage', 'friend'],
  *   {
  *     onProgress: (progress) => {
- *       console.log(`批量进度: ${progress.overallPercentage}%`);
- *       console.log(`当前格式: ${progress.currentFormat}`);
+ *       console.log(`Batch progress: ${progress.overallPercentage}%`);
+ *       console.log(`Current format: ${progress.currentFormat}`);
  *     }
  *   }
  * );
  * ```
  *
- * # 5. JSONL 优化提取
+ * # 5. Optimized JSONL extract
  * ```javascript
  * const jsonlResult = await window.contextMonitor.extractFromCurrentChatJsonlOptimized('myMessage', {
  *   chunkSize: 100,
  *   onProgress: (progress) => {
- *     console.log(`JSONL处理进度: ${progress.percentage}%`);
+ *     console.log(`JSONL progress: ${progress.percentage}%`);
  *   }
  * });
  * ```
  *
- * # 6. 自定义配置
+ * # 6. Custom config
  * ```javascript
  * const customConfig = {
- *   chunkSize: 200,           // 更大的分块（适用于高性能设备）
- *   processingDelay: 10,      // 更短的延迟（更快处理）
- *   maxProcessingTime: 600,   // 10分钟超时
- *   memoryThreshold: 200      // 200MB内存阈值
+ *   chunkSize: 200,           // Larger chunks (fast devices)
+ *   processingDelay: 10,      // Shorter delay (faster)
+ *   maxProcessingTime: 600,   // 10-minute timeout
+ *   memoryThreshold: 200      // 200MB memory threshold
  * };
  *
  * const result = await window.contextMonitor.extractFromCurrentChatOptimized('myMessage', customConfig);
  * ```
  *
- * # 性能提升对比：
- * - 🐌 原方法：30MB文件可能需要10-30秒，容易造成浏览器卡死
- * - 🚀 优化方法：30MB文件通常在2-5秒内完成，UI保持响应
- * - 📊 内存使用：从峰值300MB+降低到50-100MB稳定使用
- * - ⚡ 响应性：分块处理确保UI不会被阻塞
+ * # Performance vs old path:
+ * - 🐌 Old path: 30MB can take 10–30s and freeze the tab
+ * - 🚀 Optimized: 30MB usually finishes in 2–5s with a live UI
+ * - 📊 Memory: peak 300MB+ down to a steady 50–100MB
+ * - ⚡ Responsiveness: chunking keeps the UI unblocked
  *
- * # 推荐使用场景：
- * - 📁 文件大小 > 10MB：使用 `smartExtract()`
- * - 💾 文件大小 > 30MB：使用 `extractFromCurrentChatOptimized()`
- * - 🔄 批量处理：使用 `batchExtractOptimized()`
- * - 📈 需要进度显示：使用 `extractWithProgress()`
- * - 🔍 不确定文件大小：先运行 `analyzeFileComplexity()`
+ * # When to use what:
+ * - 📁 File > 10MB: use `smartExtract()`
+ * - 💾 File > 30MB: use `extractFromCurrentChatOptimized()`
+ * - 🔄 Batch work: use `batchExtractOptimized()`
+ * - 📈 Need a progress bar: use `extractWithProgress()`
+ * - 🔍 Unknown size: run `analyzeFileComplexity()`
  */
 
 console.log(`
-🚀 Context Monitor 大文件优化功能已加载！
+🚀 Context Monitor large-file optimizations loaded.
 
-快速开始：
-• 智能提取：window.contextMonitor.smartExtract('formatName')
-• 文件分析：window.contextMonitor.analyzeFileComplexity()
-• 进度提取：window.contextMonitor.extractWithProgress('formatName', callback)
+Quick start:
+• Smart extract: window.contextMonitor.smartExtract('formatName')
+• File analysis: window.contextMonitor.analyzeFileComplexity()
+• Progress extract: window.contextMonitor.extractWithProgress('formatName', callback)
 
-更多示例请查看源码中的注释文档。
+More examples are in the source comments.
 `);
