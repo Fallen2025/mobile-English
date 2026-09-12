@@ -1,44 +1,44 @@
 // ==SillyTavern Extension==
 // @name         Mobile Context Monitor with Upload & Editor & Custom API & MesID Floor Monitor
 // @version      2.3.0
-// @description  实时监控 SillyTavern 上下文变化的移动端插件，带文件上传功能、上下文编辑器、自定义API配置和MesID楼层监听器 v2.3（SillyTavern.getContext() API集成）
+// @description  Mobile plugin that monitors SillyTavern context in real time, with file upload, context editor, Custom API config, and MesID floor monitor v2.3 (SillyTavern.getContext() API integration)
 // @author       Assistant
 // @license      MIT
 
-// 优化：首先加载性能配置和优化加载器
+// Optimization: load performance config and optimized loader first
 const performanceScript = document.createElement('script');
 performanceScript.src = './scripts/extensions/third-party/mobile/performance-config.js';
 performanceScript.onload = () => {
-  console.log('[Mobile Context] 性能配置加载完成');
+  console.log('[Mobile Context] Performance config loaded');
 
-  // 加载优化加载器
+  // Load optimized loader
   const optimizedLoaderScript = document.createElement('script');
   optimizedLoaderScript.src = './scripts/extensions/third-party/mobile/optimized-loader.js';
   optimizedLoaderScript.onload = () => {
-    console.log('[Mobile Context] 优化加载器加载完成');
+    console.log('[Mobile Context] Optimized loader loaded');
 
-    // 加载性能测试器
+    // Load performance tester
     const performanceTestScript = document.createElement('script');
     performanceTestScript.src = './scripts/extensions/third-party/mobile/performance-test.js';
     performanceTestScript.onload = () => {
-      console.log('[Mobile Context] 性能测试器加载完成');
+      console.log('[Mobile Context] Performance tester loaded');
 
-      // 加载诊断工具
+      // Load diagnostic tool
       const diagnosticScript = document.createElement('script');
       diagnosticScript.src = './scripts/extensions/third-party/mobile/diagnostic-tool.js';
       diagnosticScript.onload = () => {
-        console.log('[Mobile Context] 诊断工具加载完成');
-        // 开始优化加载流程
+        console.log('[Mobile Context] Diagnostic tool loaded');
+        // Start optimized load flow
         initOptimizedLoading();
       };
       diagnosticScript.onerror = () => {
-        console.warn('[Mobile Context] 诊断工具加载失败，继续初始化');
+        console.warn('[Mobile Context] Diagnostic tool failed to load, continuing init');
         initOptimizedLoading();
       };
       document.head.appendChild(diagnosticScript);
     };
     performanceTestScript.onerror = () => {
-      console.warn('[Mobile Context] 性能测试器加载失败，继续初始化');
+      console.warn('[Mobile Context] Performance tester failed to load, continuing init');
       initOptimizedLoading();
     };
     document.head.appendChild(performanceTestScript);
@@ -47,12 +47,12 @@ performanceScript.onload = () => {
 };
 document.head.appendChild(performanceScript);
 
-// 优化：使用并行加载替代顺序加载
+// Optimization: parallel load instead of sequential
 async function initOptimizedLoading() {
   try {
     const loader = window.optimizedLoader;
 
-    // 定义核心模块（高优先级）
+    // Define core modules (high priority)
     const coreModules = [
       {
         src: './scripts/extensions/third-party/mobile/context-monitor.js',
@@ -74,7 +74,7 @@ async function initOptimizedLoading() {
       },
     ];
 
-    // 定义扩展模块（中优先级）
+    // Define extension modules (medium priority)
     const extensionModules = [
       {
         src: './scripts/extensions/third-party/mobile/context-editor.js',
@@ -120,325 +120,325 @@ async function initOptimizedLoading() {
       },
     ];
 
-    // 优化：并行加载核心模块
-    console.log('[Mobile Context] 开始并行加载核心模块...');
+    // Optimization: load core modules in parallel
+    console.log('[Mobile Context] Starting parallel load of core modules...');
     await loader.loadScriptsParallel(coreModules);
 
-    // 延迟加载扩展模块
+    // Defer loading extension modules
     setTimeout(() => {
-      console.log('[Mobile Context] 开始加载扩展模块...');
+      console.log('[Mobile Context] Starting extension module load...');
       loader.loadScriptsParallel(extensionModules);
     }, 1000);
 
-    console.log('[Mobile Context] 优化加载流程完成');
+    console.log('[Mobile Context] Optimized load flow complete');
   } catch (error) {
-    console.error('[Mobile Context] 优化加载失败，回退到传统加载方式:', error);
-    // 回退到传统加载方式
+    console.error('[Mobile Context] Optimized load failed, falling back to legacy load:', error);
+    // Fall back to legacy load
     fallbackToTraditionalLoading();
   }
 }
 
-// 回退到传统加载方式
+// Fall back to legacy load
 function fallbackToTraditionalLoading() {
-  console.log('[Mobile Context] 使用传统加载方式...');
+  console.log('[Mobile Context] Using legacy load...');
 
-  // 引入上下文监控器
+  // Import context monitor
   const contextScript = document.createElement('script');
   contextScript.src = './scripts/extensions/third-party/mobile/context-monitor.js';
   contextScript.onload = () => {
-    console.log('[Mobile Context] 上下文监控器加载完成');
+    console.log('[Mobile Context] Context monitor loaded');
   };
   document.head.appendChild(contextScript);
 
-  // 加载移动端上传管理器
+  // Load mobile upload manager
   const uploadScript = document.createElement('script');
   uploadScript.src = './scripts/extensions/third-party/mobile/mobile-upload.js';
   uploadScript.onload = () => {
-    console.log('[Mobile Context] 移动端上传管理器加载完成');
-    // 检查上传管理器是否创建成功
+    console.log('[Mobile Context] Mobile upload manager loaded');
+    // Check whether upload manager was created
     setTimeout(() => {
       if (window.mobileUploadManager) {
-        console.log('[Mobile Context] ✅ 移动端上传管理器创建成功');
+        console.log('[Mobile Context] ✅ Mobile upload manager created');
       } else {
-        console.error('[Mobile Context] ❌ 移动端上传管理器创建失败');
+        console.error('[Mobile Context] ❌ Mobile upload manager create failed');
       }
     }, 100);
   };
   uploadScript.onerror = () => {
-    console.error('[Mobile Context] 移动端上传管理器加载失败');
+    console.error('[Mobile Context] Mobile upload manager failed to load');
   };
   document.head.appendChild(uploadScript);
 
-  // 加载性能测试器（传统方式）
+  // Load performance tester (legacy)
   const performanceTestScript = document.createElement('script');
   performanceTestScript.src = './scripts/extensions/third-party/mobile/performance-test.js';
   performanceTestScript.onload = () => {
-    console.log('[Mobile Context] 性能测试器加载完成（传统方式）');
+    console.log('[Mobile Context] Performance tester loaded (legacy)');
 
-    // 加载诊断工具（传统方式）
+    // Load diagnostic tool (legacy)
     const diagnosticScript = document.createElement('script');
     diagnosticScript.src = './scripts/extensions/third-party/mobile/diagnostic-tool.js';
     diagnosticScript.onload = () => {
-      console.log('[Mobile Context] 诊断工具加载完成（传统方式）');
+      console.log('[Mobile Context] Diagnostic tool loaded (legacy)');
     };
     diagnosticScript.onerror = () => {
-      console.warn('[Mobile Context] 诊断工具加载失败（传统方式）');
+      console.warn('[Mobile Context] Diagnostic tool failed to load (legacy)');
     };
     document.head.appendChild(diagnosticScript);
   };
   performanceTestScript.onerror = () => {
-    console.warn('[Mobile Context] 性能测试器加载失败（传统方式）');
+    console.warn('[Mobile Context] Performance tester failed to load (legacy)');
   };
   document.head.appendChild(performanceTestScript);
 }
 
-// 加载移动端上下文编辑器
+// Load mobile context editor
 const contextEditorScript = document.createElement('script');
 contextEditorScript.src = './scripts/extensions/third-party/mobile/context-editor.js';
 contextEditorScript.onload = () => {
-  console.log('[Mobile Context] 移动端上下文编辑器加载完成');
-  // 检查上下文编辑器是否创建成功
+  console.log('[Mobile Context] Mobile context editor loaded');
+  // Check whether context editor was created
   setTimeout(() => {
     if (window.mobileContextEditor) {
-      console.log('[Mobile Context] ✅ 移动端上下文编辑器创建成功');
+      console.log('[Mobile Context] ✅ Mobile context editor created');
     } else {
-      console.error('[Mobile Context] ❌ 移动端上下文编辑器创建失败');
+      console.error('[Mobile Context] ❌ Mobile context editor create failed');
     }
   }, 100);
 };
 contextEditorScript.onerror = () => {
-  console.error('[Mobile Context] 移动端上下文编辑器加载失败');
+  console.error('[Mobile Context] Mobile context editor failed to load');
 };
 document.head.appendChild(contextEditorScript);
 
-// 加载自定义API配置模块
+// Load Custom API config module
 const customAPIScript = document.createElement('script');
 customAPIScript.src = './scripts/extensions/third-party/mobile/custom-api-config.js';
 customAPIScript.onload = () => {
-  console.log('[Mobile Context] 自定义API配置模块加载完成');
-  // 检查API配置模块是否创建成功
+  console.log('[Mobile Context] Custom API config module loaded');
+  // Check whether API config module was created
   setTimeout(() => {
     if (window.mobileCustomAPIConfig) {
-      console.log('[Mobile Context] ✅ 自定义API配置模块创建成功');
+      console.log('[Mobile Context] ✅ Custom API config module created');
     } else {
-      console.error('[Mobile Context] ❌ 自定义API配置模块创建失败');
+      console.error('[Mobile Context] ❌ Custom API config module create failed');
     }
   }, 100);
 };
 customAPIScript.onerror = () => {
-  console.error('[Mobile Context] 自定义API配置模块加载失败');
+  console.error('[Mobile Context] Custom API config module failed to load');
 };
 document.head.appendChild(customAPIScript);
 
-// 加载MesID楼层监听器模块
+// Load MesID floor monitor module
 const mesidFloorScript = document.createElement('script');
 mesidFloorScript.src = './scripts/extensions/third-party/mobile/mesid-floor-monitor.js';
 mesidFloorScript.onload = () => {
-  console.log('[Mobile Context] MesID楼层监听器模块加载完成');
-  // 检查楼层监听器是否创建成功
+  console.log('[Mobile Context] MesID floor monitor module loaded');
+  // Check whether floor monitor was created
   setTimeout(() => {
     if (window.mesidFloorMonitor) {
-      console.log('[Mobile Context] ✅ MesID楼层监听器创建成功');
+      console.log('[Mobile Context] ✅ MesID floor monitor created');
     } else {
-      console.error('[Mobile Context] ❌ MesID楼层监听器创建失败');
+      console.error('[Mobile Context] ❌ MesID floor monitor create failed');
     }
   }, 100);
 };
 mesidFloorScript.onerror = () => {
-  console.error('[Mobile Context] MesID楼层监听器模块加载失败');
+  console.error('[Mobile Context] MesID floor monitor module failed to load');
 };
 document.head.appendChild(mesidFloorScript);
 
-// 加载微博功能模块
-// 1. 加载微博管理器
+// Load Weibo feature modules
+// 1. Load Weibo manager
 const weiboManagerScript = document.createElement('script');
 weiboManagerScript.src = './scripts/extensions/third-party/mobile/app/weibo-app/weibo-manager.js';
 weiboManagerScript.onload = () => {
-  console.log('[Mobile Context] 微博管理器加载完成');
-  // 检查微博管理器是否创建成功
+  console.log('[Mobile Context] Weibo manager loaded');
+  // Check whether Weibo manager was created
   setTimeout(() => {
     if (window.weiboManager) {
-      console.log('[Mobile Context] ✅ 微博管理器创建成功');
+      console.log('[Mobile Context] ✅ Weibo manager created');
     } else {
-      console.error('[Mobile Context] ❌ 微博管理器创建失败');
+      console.error('[Mobile Context] ❌ Weibo manager create failed');
     }
   }, 100);
 };
 weiboManagerScript.onerror = () => {
-  console.error('[Mobile Context] 微博管理器加载失败');
+  console.error('[Mobile Context] Weibo manager failed to load');
 };
 document.head.appendChild(weiboManagerScript);
 
-// 2. 加载微博自动监听器
+// 2. Load Weibo auto-listener
 const weiboAutoListenerScript = document.createElement('script');
 weiboAutoListenerScript.src = './scripts/extensions/third-party/mobile/app/weibo-app/weibo-auto-listener.js';
 weiboAutoListenerScript.onload = () => {
-  console.log('[Mobile Context] 微博自动监听器加载完成');
-  // 检查微博自动监听器是否创建成功
+  console.log('[Mobile Context] Weibo auto-listener loaded');
+  // Check whether Weibo auto-listener was created
   setTimeout(() => {
     if (window.weiboAutoListener) {
-      console.log('[Mobile Context] ✅ 微博自动监听器创建成功');
+      console.log('[Mobile Context] ✅ Weibo auto-listener created');
     } else {
-      console.error('[Mobile Context] ❌ 微博自动监听器创建失败');
+      console.error('[Mobile Context] ❌ Weibo auto-listener create failed');
     }
   }, 100);
 };
 weiboAutoListenerScript.onerror = () => {
-  console.error('[Mobile Context] 微博自动监听器加载失败');
+  console.error('[Mobile Context] Weibo auto-listener failed to load');
 };
 document.head.appendChild(weiboAutoListenerScript);
 
-// 加载论坛功能模块
-// 1. 先加载论坛管理器
+// Load forum feature modules
+// 1. Load forum manager first
 const forumManagerScript = document.createElement('script');
 forumManagerScript.src = './scripts/extensions/third-party/mobile/app/forum-app/forum-manager.js';
 forumManagerScript.onload = () => {
-  console.log('[Mobile Context] 论坛管理器加载完成');
-  // 检查论坛管理器是否创建成功
+  console.log('[Mobile Context] Forum manager loaded');
+  // Check whether forum manager was created
   setTimeout(() => {
     if (window.forumManager) {
-      console.log('[Mobile Context] ✅ 论坛管理器创建成功');
+      console.log('[Mobile Context] ✅ Forum manager created');
     } else {
-      console.error('[Mobile Context] ❌ 论坛管理器创建失败');
+      console.error('[Mobile Context] ❌ Forum manager create failed');
     }
   }, 100);
 };
 forumManagerScript.onerror = () => {
-  console.error('[Mobile Context] 论坛管理器加载失败');
+  console.error('[Mobile Context] Forum manager failed to load');
 };
 document.head.appendChild(forumManagerScript);
 
-// 2. 加载论坛风格定义
+// 2. Load forum style definitions
 const forumStylesScript = document.createElement('script');
 forumStylesScript.src = './scripts/extensions/third-party/mobile/app/forum-app/forum-styles.js';
 forumStylesScript.onload = () => {
-  console.log('[Mobile Context] 论坛风格模块加载完成');
-  // 检查论坛风格是否创建成功
+  console.log('[Mobile Context] Forum styles module loaded');
+  // Check whether forum styles were created
   setTimeout(() => {
     if (window.forumStyles) {
-      console.log('[Mobile Context] ✅ 论坛风格模块创建成功');
+      console.log('[Mobile Context] ✅ Forum styles module created');
     } else {
-      console.error('[Mobile Context] ❌ 论坛风格模块创建失败');
+      console.error('[Mobile Context] ❌ Forum styles module create failed');
     }
   }, 100);
 };
 forumStylesScript.onerror = () => {
-  console.error('[Mobile Context] 论坛风格模块加载失败');
+  console.error('[Mobile Context] Forum styles module failed to load');
 };
 document.head.appendChild(forumStylesScript);
 
-// 3. 加载论坛自动监听器
+// 3. Load forum auto-listener
 const forumAutoListenerScript = document.createElement('script');
 forumAutoListenerScript.src = './scripts/extensions/third-party/mobile/app/forum-app/forum-auto-listener.js';
 forumAutoListenerScript.onload = () => {
-  console.log('[Mobile Context] 论坛自动监听器加载完成');
-  // 检查论坛自动监听器是否创建成功
+  console.log('[Mobile Context] Forum auto-listener loaded');
+  // Check whether forum auto-listener was created
   setTimeout(() => {
     if (window.forumAutoListener) {
-      console.log('[Mobile Context] ✅ 论坛自动监听器创建成功');
+      console.log('[Mobile Context] ✅ Forum auto-listener created');
     } else {
-      console.error('[Mobile Context] ❌ 论坛自动监听器创建失败');
+      console.error('[Mobile Context] ❌ Forum auto-listener create failed');
     }
   }, 100);
 };
 forumAutoListenerScript.onerror = () => {
-  console.error('[Mobile Context] 论坛自动监听器加载失败');
+  console.error('[Mobile Context] Forum auto-listener failed to load');
 };
 document.head.appendChild(forumAutoListenerScript);
 
-// 加载手机界面样式（先加载样式）
+// Load phone UI stylesheet (styles first)
 const phoneStyle = document.createElement('link');
 phoneStyle.rel = 'stylesheet';
 phoneStyle.type = 'text/css';
 phoneStyle.href = './scripts/extensions/third-party/mobile/mobile-phone.css';
 phoneStyle.onload = () => {
-  console.log('[Mobile Context] 手机界面样式加载完成');
+  console.log('[Mobile Context] Phone UI stylesheet loaded');
 };
 phoneStyle.onerror = () => {
-  console.error('[Mobile Context] 手机界面样式加载失败');
+  console.error('[Mobile Context] Phone UI stylesheet failed to load');
 };
 document.head.appendChild(phoneStyle);
 
-// 加载图片配置弹窗样式
+// Load image-config modal stylesheet
 const imageConfigStyle = document.createElement('link');
 imageConfigStyle.rel = 'stylesheet';
 imageConfigStyle.type = 'text/css';
 imageConfigStyle.href = './scripts/extensions/third-party/mobile/app/image-config-modal.css';
 imageConfigStyle.onload = () => {
-  console.log('[Mobile Context] 图片配置弹窗样式加载完成');
+  console.log('[Mobile Context] Image-config modal stylesheet loaded');
 };
 imageConfigStyle.onerror = () => {
-  console.error('[Mobile Context] 图片配置弹窗样式加载失败');
+  console.error('[Mobile Context] Image-config modal stylesheet failed to load');
 };
 document.head.appendChild(imageConfigStyle);
 
-// 加载手机界面脚本（在样式之后）
+// Load phone UI script (after styles)
 const phoneScript = document.createElement('script');
 phoneScript.src = './scripts/extensions/third-party/mobile/mobile-phone.js';
 phoneScript.onload = () => {
-  console.log('[Mobile Context] 手机界面脚本加载完成');
-  // 检查按钮是否创建成功
+  console.log('[Mobile Context] Phone UI script loaded');
+  // Check whether the button was created
   setTimeout(() => {
     const trigger = document.getElementById('mobile-phone-trigger');
     if (trigger) {
-      console.log('[Mobile Context] ✅ 手机按钮创建成功');
-      // 添加上传按钮到手机界面
+      console.log('[Mobile Context] ✅ Phone button created');
+      // Add upload button to phone UI
       addUploadButtonToMobilePhone();
-      // 应用手机可见性设置
+      // Apply phone visibility setting
       updatePhoneVisibility();
     } else {
-      console.error('[Mobile Context] ❌ 手机按钮创建失败');
+      console.error('[Mobile Context] ❌ Phone button create failed');
     }
   }, 100);
 };
 phoneScript.onerror = () => {
-  console.error('[Mobile Context] 手机界面脚本加载失败');
+  console.error('[Mobile Context] Phone UI script failed to load');
 };
 document.head.appendChild(phoneScript);
 
-// 加载语音消息处理器脚本
+// Load voice-message handler script
 const voiceMessageScript = document.createElement('script');
 voiceMessageScript.src = './scripts/extensions/third-party/mobile/app/voice-message-handler.js';
 voiceMessageScript.onload = () => {
-  console.log('[Mobile Context] 语音消息处理器加载完成');
-  // 检查语音消息处理器是否创建成功
+  console.log('[Mobile Context] Voice-message handler loaded');
+  // Check whether voice-message handler was created
   setTimeout(() => {
     if (window.voiceMessageHandler) {
-      console.log('[Mobile Context] ✅ 语音消息处理器创建成功');
+      console.log('[Mobile Context] ✅ Voice-message handler created');
     } else {
-      console.error('[Mobile Context] ❌ 语音消息处理器创建失败');
+      console.error('[Mobile Context] ❌ Voice-message handler create failed');
     }
   }, 100);
 };
 voiceMessageScript.onerror = () => {
-  console.error('[Mobile Context] 语音消息处理器加载失败');
+  console.error('[Mobile Context] Voice-message handler failed to load');
 };
 document.head.appendChild(voiceMessageScript);
 
-// 加载图片配置弹窗脚本
+// Load image-config modal script
 const imageConfigScript = document.createElement('script');
 imageConfigScript.src = './scripts/extensions/third-party/mobile/app/image-config-modal.js';
 imageConfigScript.onload = () => {
-  console.log('[Mobile Context] 图片配置弹窗加载完成');
-  // 检查图片配置弹窗是否创建成功
+  console.log('[Mobile Context] Image-config modal loaded');
+  // Check whether image-config modal was created
   setTimeout(() => {
     if (window.ImageConfigModal) {
-      console.log('[Mobile Context] ✅ 图片配置弹窗创建成功');
+      console.log('[Mobile Context] ✅ Image-config modal created');
     } else {
-      console.error('[Mobile Context] ❌ 图片配置弹窗创建失败');
+      console.error('[Mobile Context] ❌ Image-config modal create failed');
     }
   }, 100);
 };
 imageConfigScript.onerror = () => {
-  console.error('[Mobile Context] 图片配置弹窗加载失败');
+  console.error('[Mobile Context] Image-config modal failed to load');
 };
 document.head.appendChild(imageConfigScript);
 
-// 等待页面加载完成后初始化
+// Init after page load
 jQuery(async () => {
-  // 等待 SillyTavern 完全加载
+  // Wait for SillyTavern to fully load
   if (!window.SillyTavern) {
-    console.log('[Mobile Context] 等待 SillyTavern 启动...');
+    console.log('[Mobile Context] Waiting for SillyTavern to start...');
     const waitForST = setInterval(() => {
       if (window.SillyTavern) {
         clearInterval(waitForST);
@@ -450,11 +450,11 @@ jQuery(async () => {
   }
 });
 
-// 全局变量
+// Globals
 let contextMonitor = null;
 let isInitialized = false;
 
-// 设置默认配置
+// Default settings
 const defaultSettings = {
   enabled: true,
   monitorChat: true,
@@ -467,37 +467,37 @@ const defaultSettings = {
   enableEventLogging: true,
   enableContextLogging: true,
   enableAutoSave: false,
-  // 新增上传功能设置
+  // Upload feature settings
   uploadEnabled: true,
   maxUploadSize: 50 * 1024 * 1024, // 50MB
   showUploadNotifications: true,
-  // 新增上下文编辑器设置
+  // Context editor settings
   contextEditorEnabled: true,
-  // 新增自定义API配置设置
+  // Custom API config settings
   customAPIEnabled: true,
   showAPIConfigButton: true,
-  // 新增MesID楼层监听器设置
+  // MesID floor monitor settings
   mesidFloorEnabled: true,
   floorSelector: '.message',
   enableFloorNotifications: true,
-  // 新增论坛管理器设置
+  // Forum manager settings
   forumEnabled: true,
   forumAutoUpdate: true,
   forumThreshold: 10,
-  forumStyle: '贴吧老哥',
-  // 新增手机交互设置
+  forumStyle: 'Tieba Bro',
+  // Phone interaction settings
   tavernCompatibilityMode: true,
   hidePhone: false,
-  // 新增禁止正文设置
+  // Block story text setting
   disableBodyText: false,
 };
 
-// 插件设置 - 将在初始化时与 SillyTavern 的 extension_settings 集成
+// Plugin settings — merged into SillyTavern extension_settings on init
 let extension_settings = {
   mobile_context: { ...defaultSettings },
 };
 
-// 等待 ContextMonitor 类加载
+// Wait for ContextMonitor class
 function waitForContextMonitor() {
   return new Promise(resolve => {
     if (window.ContextMonitor) {
@@ -513,7 +513,7 @@ function waitForContextMonitor() {
   });
 }
 
-// 等待所有模块加载完成
+// Wait for all modules
 function waitForAllModules() {
   return new Promise(resolve => {
     const checkModules = () => {
@@ -526,7 +526,7 @@ function waitForAllModules() {
       const forumManagerReady = window.forumManager !== undefined;
       const voiceMessageReady = window.voiceMessageHandler !== undefined;
 
-      console.log('[Mobile Context] 模块加载状态:', {
+      console.log('[Mobile Context] Module load status:', {
         contextEditor: contextEditorReady,
         customAPI: customAPIReady,
         uploadManager: uploadManagerReady,
@@ -548,31 +548,31 @@ function waitForAllModules() {
         forumManagerReady &&
         voiceMessageReady
       ) {
-        console.log('[Mobile Context] ✅ 所有模块加载完成');
+        console.log('[Mobile Context] ✅ All modules loaded');
         resolve();
       } else {
-        // 继续等待
+        // Keep waiting
         setTimeout(checkModules, 200);
       }
     };
 
-    // 开始检查
+    // Start checking
     checkModules();
   });
 }
 
 /**
- * 主插件初始化函数
+ * Main plugin init
  */
 async function initMobileContextPlugin() {
   try {
-    // 集成 SillyTavern 的 extension_settings
+    // Integrate SillyTavern extension_settings
     const context = SillyTavern.getContext();
     if (!context.extensionSettings.mobile_context) {
       context.extensionSettings.mobile_context = { ...defaultSettings };
       context.saveSettingsDebounced();
     } else {
-      // 合并默认设置，确保新增的设置项存在
+      // Merge defaults so new keys exist
       for (const key of Object.keys(defaultSettings)) {
         if (context.extensionSettings.mobile_context[key] === undefined) {
           context.extensionSettings.mobile_context[key] = defaultSettings[key];
@@ -581,218 +581,218 @@ async function initMobileContextPlugin() {
       context.saveSettingsDebounced();
     }
 
-    // 使用 SillyTavern 的 extension_settings
+    // Use SillyTavern extension_settings
     extension_settings = context.extensionSettings;
 
-    // 等待 ContextMonitor 类加载
+    // Wait for ContextMonitor class
     await waitForContextMonitor();
 
-    // 初始化上下文监控器
+    // Init context monitor
     contextMonitor = new window.ContextMonitor(extension_settings.mobile_context);
 
-    // 创建设置UI
+    // Create settings UI
     createSettingsUI();
 
-    // 等待所有模块加载完成后再注册控制台命令
+    // Register console commands after all modules load
     await waitForAllModules();
 
-    // 注册控制台命令
+    // Register console commands
     registerConsoleCommands();
 
-    // 启动监控
+    // Start monitoring
     if (extension_settings.mobile_context.enabled) {
       contextMonitor.start();
     }
 
-    // 初始化上传功能
+    // Init upload feature
     if (extension_settings.mobile_context.uploadEnabled) {
       initUploadFeature();
     }
 
-    // 初始化楼层监听器
+    // Init floor monitor
     if (extension_settings.mobile_context.mesidFloorEnabled) {
       initMesIDFloorMonitor();
     }
 
-    // 初始化论坛功能
+    // Init forum features
     initForumFeatures();
 
-    // 初始化微博功能
+    // Init Weibo features
     initWeiboFeatures();
 
-    // 应用手机可见性设置
+    // Apply phone visibility setting
     updatePhoneVisibility();
 
     isInitialized = true;
     console.log(
-      '[Mobile Context] v2.4 插件已加载（包含上传功能、上下文编辑器、自定义API配置、MesID楼层监听器和论坛管理器，使用SillyTavern.getContext() API集成）',
+      '[Mobile Context] v2.4 plugin loaded (upload, context editor, Custom API config, MesID floor monitor, and forum manager; SillyTavern.getContext() API integration)',
     );
   } catch (error) {
-    console.error('[Mobile Context] 插件初始化失败:', error);
+    console.error('[Mobile Context] Plugin init failed:', error);
   }
 }
 
 /**
- * 初始化上传功能
+ * Init upload feature
  */
 function initUploadFeature() {
   try {
-    // 监听上传完成事件
+    // Listen for upload-complete events
     document.addEventListener('mobile-upload-complete', function (event) {
       const detail = event.detail;
-      console.log('[Mobile Context] 文件上传完成:', detail);
+      console.log('[Mobile Context] File upload complete:', detail);
 
-      // 如果上下文监控器存在，记录上传事件
+      // Log upload event if context monitor exists
       if (contextMonitor && contextMonitor.log) {
-        contextMonitor.log('info', `文件上传: ${detail.originalFilename} (${(detail.size / 1024).toFixed(1)} KB)`);
+        contextMonitor.log('info', `File upload: ${detail.originalFilename} (${(detail.size / 1024).toFixed(1)} KB)`);
       }
     });
 
-    console.log('[Mobile Context] 上传功能初始化完成');
+    console.log('[Mobile Context] Upload feature initialized');
   } catch (error) {
-    console.error('[Mobile Context] 上传功能初始化失败:', error);
+    console.error('[Mobile Context] Upload feature init failed:', error);
   }
 }
 
 /**
- * 初始化MesID楼层监听器
+ * Init MesID floor monitor
  */
 function initMesIDFloorMonitor() {
   try {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未就绪，等待中...');
-      // 等待楼层监听器加载完成
+      console.warn('[Mobile Context] MesID floor monitor not ready, waiting...');
+      // Wait for floor monitor to load
       setTimeout(initMesIDFloorMonitor, 1000);
       return;
     }
 
-    // 设置楼层选择器
+    // Set floor selector
     if (extension_settings.mobile_context.floorSelector) {
       window.mesidFloorMonitor.setFloorSelector(extension_settings.mobile_context.floorSelector);
     }
 
-    // 如果启用了通知，添加默认的楼层变化监听器
+    // If notifications are on, add default floor-change listeners
     if (extension_settings.mobile_context.enableFloorNotifications) {
       window.mesidFloorMonitor.addEventListener('onFloorAdded', function (data) {
-        console.log(`[MesID楼层监听器] 🟢 楼层增加: ${data.oldCount} -> ${data.newCount} (+${data.change})`);
+        console.log(`[MesIDFloor monitor] 🟢 Floors added: ${data.oldCount} -> ${data.newCount} (+${data.change})`);
         if (contextMonitor && contextMonitor.log) {
-          contextMonitor.log('info', `楼层增加: ${data.oldCount} -> ${data.newCount} (+${data.change})`);
+          contextMonitor.log('info', `Floors added: ${data.oldCount} -> ${data.newCount} (+${data.change})`);
         }
       });
 
       window.mesidFloorMonitor.addEventListener('onFloorRemoved', function (data) {
-        console.log(`[MesID楼层监听器] 🔴 楼层减少: ${data.oldCount} -> ${data.newCount} (${data.change})`);
+        console.log(`[MesIDFloor monitor] 🔴 Floors removed: ${data.oldCount} -> ${data.newCount} (${data.change})`);
         if (contextMonitor && contextMonitor.log) {
-          contextMonitor.log('info', `楼层减少: ${data.oldCount} -> ${data.newCount} (${data.change})`);
+          contextMonitor.log('info', `Floors removed: ${data.oldCount} -> ${data.newCount} (${data.change})`);
         }
       });
     }
 
-    // 开始监听
+    // Start listening
     window.mesidFloorMonitor.start();
 
-    console.log('[Mobile Context] MesID楼层监听器初始化完成');
+    console.log('[Mobile Context] MesID floor monitor initialized');
   } catch (error) {
-    console.error('[Mobile Context] MesID楼层监听器初始化失败:', error);
+    console.error('[Mobile Context] MesID floor monitor init failed:', error);
   }
 }
 
 /**
- * 初始化论坛功能
+ * Init forum features
  */
 function initForumFeatures() {
   try {
-    console.log('[Mobile Context] 开始初始化论坛功能...');
+    console.log('[Mobile Context] Starting forum feature init...');
 
     if (!window.forumManager) {
-      console.warn('[Mobile Context] 论坛管理器未就绪，等待中...');
-      // 等待论坛管理器加载完成
+      console.warn('[Mobile Context] Forum manager not ready, waiting...');
+      // Wait for forum manager to load
       setTimeout(initForumFeatures, 1000);
       return;
     }
 
-    // 初始化论坛管理器
+    // Init forum manager
     window.forumManager
       .initialize()
       .then(() => {
-        console.log('[Mobile Context] ✅ 论坛管理器初始化成功');
+        console.log('[Mobile Context] ✅ Forum manager initialized');
 
-        // 启动自动监听器（如果论坛设置为自动更新）
+        // Start auto-listener if forum auto-update is on
         if (window.forumAutoListener) {
           window.forumAutoListener.start();
-          console.log('[Mobile Context] ✅ 论坛自动监听器已启动');
+          console.log('[Mobile Context] ✅ Forum auto-listener started');
         }
 
-        // 记录初始化事件
+        // Log init event
         if (contextMonitor && contextMonitor.log) {
-          contextMonitor.log('info', '论坛管理器已启动');
+          contextMonitor.log('info', 'Forum manager started');
         }
       })
       .catch(error => {
-        console.error('[Mobile Context] 论坛管理器初始化失败:', error);
+        console.error('[Mobile Context] Forum manager init failed:', error);
       });
 
-    console.log('[Mobile Context] 论坛功能初始化完成');
+    console.log('[Mobile Context] Forum features initialized');
   } catch (error) {
-    console.error('[Mobile Context] 论坛功能初始化失败:', error);
+    console.error('[Mobile Context] Forum features init failed:', error);
   }
 }
 
 /**
- * 初始化微博功能
+ * Init Weibo features
  */
 function initWeiboFeatures() {
   try {
-    console.log('[Mobile Context] 开始初始化微博功能...');
+    console.log('[Mobile Context] Starting Weibo feature init...');
 
     if (!window.weiboManager) {
-      console.warn('[Mobile Context] 微博管理器未就绪，等待中...');
-      // 等待微博管理器加载完成
+      console.warn('[Mobile Context] Weibo manager not ready, waiting...');
+      // Wait for Weibo manager to load
       setTimeout(initWeiboFeatures, 1000);
       return;
     }
 
-    // 初始化微博管理器
+    // Init Weibo manager
     window.weiboManager
       .initialize()
       .then(() => {
-        console.log('[Mobile Context] ✅ 微博管理器初始化成功');
+        console.log('[Mobile Context] ✅ Weibo manager initialized');
 
-        // 启动自动监听器（如果微博设置为自动更新）
+        // Start auto-listener if Weibo auto-update is on
         if (window.weiboAutoListener) {
           window.weiboAutoListener.start();
-          console.log('[Mobile Context] ✅ 微博自动监听器已启动');
+          console.log('[Mobile Context] ✅ Weibo auto-listener started');
         }
 
-        // 记录初始化事件
+        // Log init event
         if (contextMonitor && contextMonitor.log) {
-          contextMonitor.log('info', '微博管理器已启动');
+          contextMonitor.log('info', 'Weibo manager started');
         }
       })
       .catch(error => {
-        console.error('[Mobile Context] 微博管理器初始化失败:', error);
+        console.error('[Mobile Context] Weibo manager init failed:', error);
       });
 
-    console.log('[Mobile Context] 微博功能初始化完成');
+    console.log('[Mobile Context] Weibo features initialized');
   } catch (error) {
-    console.error('[Mobile Context] 微博功能初始化失败:', error);
+    console.error('[Mobile Context] Weibo features init failed:', error);
   }
 }
 
 /**
- * 添加上传按钮到手机界面
+ * Add upload button to phone UI
  */
 function addUploadButtonToMobilePhone() {
-  // 等待手机界面完全加载
+  // Wait for phone UI to finish loading
   setTimeout(() => {
     const phoneContainer = document.querySelector('.mobile-phone-container');
     if (phoneContainer) {
-      // 创建上传按钮
+      // Create upload button
       const uploadButton = document.createElement('button');
       uploadButton.id = 'mobile-upload-trigger';
       uploadButton.className = 'mobile-upload-btn';
       uploadButton.innerHTML = '📁';
-      uploadButton.title = '文件上传';
+      uploadButton.title = 'Upload file';
       uploadButton.style.cssText = `
                 position: fixed;
                 bottom: 140px;
@@ -813,7 +813,7 @@ function addUploadButtonToMobilePhone() {
                 justify-content: center;
             `;
 
-      // 悬停效果
+      // Hover effect
       uploadButton.addEventListener('mouseenter', function () {
         this.style.transform = 'scale(1.1)';
         this.style.boxShadow = '0 6px 25px rgba(0,0,0,0.4)';
@@ -824,57 +824,57 @@ function addUploadButtonToMobilePhone() {
         this.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
       });
 
-      // 点击事件
+      // Click handler
       uploadButton.addEventListener('click', function () {
         if (window.mobileUploadManager) {
           window.mobileUploadManager.toggleMobileUploadUI();
         } else {
-          console.warn('[Mobile Context] 上传管理器未就绪');
+          console.warn('[Mobile Context] Upload manager not ready');
         }
       });
 
       document.body.appendChild(uploadButton);
-      console.log('[Mobile Context] ✅ 上传按钮已添加到手机界面');
+      console.log('[Mobile Context] ✅ Upload button added to phone UI');
     } else {
-      console.warn('[Mobile Context] 未找到手机界面容器');
+      console.warn('[Mobile Context] Phone UI container not found');
     }
   }, 500);
 }
 
 /**
- * 创建设置UI
+ * Create settings UI
  */
 function createSettingsUI() {
   const settingsHtml = `
     <div id="mobile_context_settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>外置手机</b>
+                <b>External Phone</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down"></div>
             </div>
             <div class="inline-drawer-content">
                 <div class="flex-container" style='flex-wrap: wrap;flex-direction: row;'>
                     <label class="checkbox_label" for="mobile_tavern_compatibility_mode">
                         <input id="mobile_tavern_compatibility_mode" type="checkbox" />
-                        <span>酒馆页面与手机控制兼容</span>
+                        <span>Tavern page compatible with phone controls</span>
                     </label>
                     <label class="checkbox_label" for="mobile_hide_phone">
                         <input id="mobile_hide_phone" type="checkbox" />
-                        <span>隐藏手机按钮</span>
+                        <span>Hide phone button</span>
                     </label>
                     <label class="checkbox_label" for="mobile_auto_send_enabled">
                         <input id="mobile_auto_send_enabled" type="checkbox" />
-                        <span>专一模式（一次只和一人聊天）</span>
+                        <span>Exclusive mode (one chat at a time)</span>
                     </label>
                     <label class="checkbox_label" for="mobile_disable_body_text">
                         <input id="mobile_disable_body_text" type="checkbox" />
-                        <span>禁止正文</span>
+                        <span>Block story text</span>
                     </label>
                     <div class="flex m-t-1" style='flex-wrap: wrap;'>
-                        <button id="mobile_context_status_btn" class="menu_button" style='width: auto;background:#777;color:#fff;display:none'>查看状态</button>
-                        <button id="mobile_context_clear_btn" class="menu_button" style='width: auto;background:#777;color:#fff'>清除日志</button>
-                        <button id="mobile_custom_api_show_btn" class="menu_button" style='width: auto;background:#777;color:#fff'>自定义API配置</button>
-                        <button id="mobile_mesid_floor_status_btn" class="menu_button" style='width: auto;background:#777;color:#fff;display:none'>楼层监听器状态</button>
+                        <button id="mobile_context_status_btn" class="menu_button" style='width: auto;background:#777;color:#fff;display:none'>View status</button>
+                        <button id="mobile_context_clear_btn" class="menu_button" style='width: auto;background:#777;color:#fff'>Clear logs</button>
+                        <button id="mobile_custom_api_show_btn" class="menu_button" style='width: auto;background:#777;color:#fff'>Custom API config</button>
+                        <button id="mobile_mesid_floor_status_btn" class="menu_button" style='width: auto;background:#777;color:#fff;display:none'>Floor monitor status</button>
                     </div>
                 </div>
             </div>
@@ -883,61 +883,61 @@ function createSettingsUI() {
 
   $('#extensions_settings').append(settingsHtml);
 
-  // 绑定设置控件
+  // Bind settings controls
   bindSettingsControls();
 
-  // 绑定样式配置器
+  // Bind style configurator
   bindStyleConfigControls();
 }
 
 /**
- * 绑定样式配置器控件
+ * Bind style-configurator controls
  */
 function bindStyleConfigControls() {
-  console.log('[Mobile Extension] 绑定样式配置器控件');
+  console.log('[Mobile Extension] Bind style-configurator controls');
 
-  // 绑定样式配置器按钮
+  // Bind style-configurator button
   $('#mobile_style_config_btn').on('click', function () {
-    console.log('[Mobile Extension] 样式配置器按钮被点击');
+    console.log('[Mobile Extension] Style configurator button clicked');
     const container = $('#mobile_style_config_app_container');
 
     if (container.is(':visible')) {
-      // 如果已经显示，则隐藏
+      // If already visible, hide it
       container.slideUp(300);
-      $(this).text('🎨 打开样式配置器');
+      $(this).text('🎨 Open style configurator');
     } else {
-      // 如果隐藏，则显示并加载内容
+      // If hidden, show and load content
       if (typeof window.getStyleConfigAppContent === 'function') {
         try {
           const content = window.getStyleConfigAppContent();
           container.html(content);
           container.slideDown(300);
-          $(this).text('🎨 关闭样式配置器');
+          $(this).text('🎨 Close style configurator');
 
-          // 绑定事件
+          // Bind events
           setTimeout(() => {
             if (typeof window.bindStyleConfigEvents === 'function') {
               window.bindStyleConfigEvents();
-              console.log('[Mobile Extension] 样式配置器事件绑定完成');
+              console.log('[Mobile Extension] Style configurator events bound');
             }
           }, 100);
         } catch (error) {
-          console.error('[Mobile Extension] 加载样式配置器失败:', error);
-          toastr.error('加载样式配置器失败，请检查控制台');
+          console.error('[Mobile Extension] Failed to load style configurator:', error);
+          toastr.error('Failed to load style configurator — check the console');
         }
       } else {
-        console.error('[Mobile Extension] 样式配置器未加载');
-        toastr.error('样式配置器未加载，请确保相关文件已正确加载');
+        console.error('[Mobile Extension] Style configurator not loaded');
+        toastr.error('Style configurator not loaded — make sure the related files loaded');
       }
     }
   });
 }
 
 /**
- * 绑定设置控件
+ * Bind settings controls
  */
 function bindSettingsControls() {
-  // 启用/禁用监控
+  // Enable/disable monitoring
   $('#mobile_context_enabled')
     .prop('checked', extension_settings.mobile_context.enabled)
     .on('change', function () {
@@ -953,7 +953,7 @@ function bindSettingsControls() {
       }
     });
 
-  // 监控聊天变化
+  // Monitor chat changes
   $('#mobile_context_monitor_chat')
     .prop('checked', extension_settings.mobile_context.monitorChat)
     .on('change', function () {
@@ -965,7 +965,7 @@ function bindSettingsControls() {
       }
     });
 
-  // 监控角色变化
+  // Monitor character changes
   $('#mobile_context_monitor_character')
     .prop('checked', extension_settings.mobile_context.monitorCharacter)
     .on('change', function () {
@@ -977,7 +977,7 @@ function bindSettingsControls() {
       }
     });
 
-  // 监控系统事件
+  // Monitor system events
   $('#mobile_context_monitor_events')
     .prop('checked', extension_settings.mobile_context.monitorEvents)
     .on('change', function () {
@@ -989,7 +989,7 @@ function bindSettingsControls() {
       }
     });
 
-  // 日志级别
+  // Log level
   $('#mobile_context_log_level')
     .val(extension_settings.mobile_context.logLevel)
     .on('change', function () {
@@ -1001,7 +1001,7 @@ function bindSettingsControls() {
       }
     });
 
-  // 最大日志条目
+  // Max log entries
   $('#mobile_context_max_log_entries')
     .val(extension_settings.mobile_context.maxLogEntries)
     .on('change', function () {
@@ -1013,21 +1013,21 @@ function bindSettingsControls() {
       }
     });
 
-  // 上传功能启用/禁用
+  // Enable/disable upload
   $('#mobile_upload_enabled')
     .prop('checked', extension_settings.mobile_context.uploadEnabled)
     .on('change', function () {
       extension_settings.mobile_context.uploadEnabled = $(this).prop('checked');
       saveSettings();
 
-      // 切换上传按钮显示/隐藏
+      // Toggle upload button visibility
       const uploadButton = document.getElementById('mobile-upload-trigger');
       if (uploadButton) {
         uploadButton.style.display = extension_settings.mobile_context.uploadEnabled ? 'flex' : 'none';
       }
     });
 
-  // 上传通知启用/禁用
+  // Enable/disable upload notifications
   $('#mobile_upload_notifications')
     .prop('checked', extension_settings.mobile_context.showUploadNotifications)
     .on('change', function () {
@@ -1035,42 +1035,42 @@ function bindSettingsControls() {
       saveSettings();
     });
 
-  // 上下文编辑器启用/禁用
+  // Enable/disable context editor
   $('#mobile_context_editor_enabled')
     .prop('checked', extension_settings.mobile_context.contextEditorEnabled)
     .on('change', function () {
       extension_settings.mobile_context.contextEditorEnabled = $(this).prop('checked');
       saveSettings();
 
-      // 切换上下文编辑器按钮显示/隐藏
+      // Toggle context-editor button visibility
       const editorButton = document.getElementById('mobile-context-editor-btn');
       if (editorButton) {
         editorButton.style.display = extension_settings.mobile_context.contextEditorEnabled ? 'flex' : 'none';
       }
     });
 
-  // 自定义API配置启用/禁用
+  // Enable/disable Custom API config
   $('#mobile_custom_api_enabled')
     .prop('checked', extension_settings.mobile_context.customAPIEnabled)
     .on('change', function () {
       extension_settings.mobile_context.customAPIEnabled = $(this).prop('checked');
       saveSettings();
 
-      // 切换API配置按钮显示/隐藏
+      // Toggle API-config button visibility
       const apiButton = document.getElementById('mobile-api-config-trigger');
       if (apiButton) {
         apiButton.style.display = extension_settings.mobile_context.customAPIEnabled ? 'flex' : 'none';
       }
     });
 
-  // API配置按钮显示/隐藏
+  // Show/hide API-config button
   $('#mobile_show_api_config_button')
     .prop('checked', extension_settings.mobile_context.showAPIConfigButton)
     .on('change', function () {
       extension_settings.mobile_context.showAPIConfigButton = $(this).prop('checked');
       saveSettings();
 
-      // 切换API配置按钮显示/隐藏
+      // Toggle API-config button visibility
       const apiButton = document.getElementById('mobile-api-config-trigger');
       if (apiButton) {
         apiButton.style.display =
@@ -1080,29 +1080,29 @@ function bindSettingsControls() {
       }
     });
 
-  // 酒馆页面与手机控制兼容模式
+  // Tavern page compat mode
   $('#mobile_tavern_compatibility_mode')
     .prop('checked', extension_settings.mobile_context.tavernCompatibilityMode)
     .on('change', function () {
       extension_settings.mobile_context.tavernCompatibilityMode = $(this).prop('checked');
       saveSettings();
 
-      // 应用pointer-events设置
+      // Apply pointer-events setting
       updatePointerEventsSettings();
     });
 
-  // 隐藏手机按钮
+  // Hide phone button
   $('#mobile_hide_phone')
     .prop('checked', extension_settings.mobile_context.hidePhone)
     .on('change', function () {
       extension_settings.mobile_context.hidePhone = $(this).prop('checked');
       saveSettings();
 
-      // 应用隐藏设置
+      // Apply hide setting
       updatePhoneVisibility();
     });
 
-  // 按钮事件
+  // Button events
   $('#mobile_context_status_btn').on('click', function () {
     if (contextMonitor) {
       contextMonitor.showStatus();
@@ -1119,7 +1119,7 @@ function bindSettingsControls() {
     if (window.mobileUploadManager) {
       window.mobileUploadManager.showMobileUploadUI();
     } else {
-      console.warn('[Mobile Context] 上传管理器未就绪');
+      console.warn('[Mobile Context] Upload manager not ready');
     }
   });
 
@@ -1127,7 +1127,7 @@ function bindSettingsControls() {
     if (window.mobileContextEditor) {
       window.mobileContextEditor.showEditor();
     } else {
-      console.warn('[Mobile Context] 上下文编辑器未就绪');
+      console.warn('[Mobile Context] Context editor not ready');
     }
   });
 
@@ -1135,11 +1135,11 @@ function bindSettingsControls() {
     if (window.mobileCustomAPIConfig) {
       window.mobileCustomAPIConfig.showConfigPanel();
     } else {
-      console.warn('[Mobile Context] 自定义API配置模块未就绪');
+      console.warn('[Mobile Context] Custom API config module not ready');
     }
   });
 
-  // MesID楼层监听器设置
+  // MesID floor monitor settings
   $('#mobile_mesid_floor_enabled')
     .prop('checked', extension_settings.mobile_context.mesidFloorEnabled)
     .on('change', function () {
@@ -1177,25 +1177,25 @@ function bindSettingsControls() {
     if (window.mesidFloorMonitor) {
       const status = window.mesidFloorMonitor.getStatus();
       const debugInfo = window.mesidFloorMonitor.getDebugInfo();
-      console.log('[Mobile Context] MesID楼层监听器状态:', status);
-      console.log('[Mobile Context] MesID楼层监听器调试信息:', debugInfo);
+      console.log('[Mobile Context] MesIDFloor monitor status:', status);
+      console.log('[Mobile Context] MesID floor monitor debug info:', debugInfo);
       alert(
-        `MesID楼层监听器状态:\n监听中: ${status.isMonitoring}\n当前楼层数: ${status.currentFloorCount}\n上次楼层数: ${status.lastFloorCount}\n回调数量: ${status.callbacks.onFloorChanged}`,
+        `MesIDFloor monitor status:\nMonitoring: ${status.isMonitoring}\nCurrent floors: ${status.currentFloorCount}\nPrevious floors: ${status.lastFloorCount}\nCallback count: ${status.callbacks.onFloorChanged}`,
       );
     } else {
-      console.warn('[Mobile Context] MesID楼层监听器未就绪');
-      alert('MesID楼层监听器未就绪');
+      console.warn('[Mobile Context] MesID floor monitor not ready');
+      alert('MesID floor monitor not ready');
     }
   });
 
-  // 论坛管理器设置
+  // Forum manager settings
   $('#mobile_forum_enabled')
     .prop('checked', extension_settings.mobile_context.forumEnabled)
     .on('change', function () {
       extension_settings.mobile_context.forumEnabled = $(this).prop('checked');
       saveSettings();
 
-      // 切换论坛按钮显示/隐藏
+      // Toggle forum button visibility
       const forumButton = document.getElementById('mobile-forum-trigger');
       if (forumButton) {
         forumButton.style.display = extension_settings.mobile_context.forumEnabled ? 'flex' : 'none';
@@ -1242,7 +1242,7 @@ function bindSettingsControls() {
     if (window.forumManager) {
       window.forumManager.showForumPanel();
     } else {
-      console.warn('[Mobile Context] 论坛管理器未就绪');
+      console.warn('[Mobile Context] Forum manager not ready');
     }
   });
 
@@ -1250,59 +1250,59 @@ function bindSettingsControls() {
     if (window.forumManager) {
       window.forumManager.generateForumContent();
     } else {
-      console.warn('[Mobile Context] 论坛管理器未就绪');
+      console.warn('[Mobile Context] Forum manager not ready');
     }
   });
 
-  // 消息自动发送功能启用/禁用
+  // Enable/disable auto-send
   $('#mobile_auto_send_enabled')
     .prop('checked', getAutoSendEnabled())
     .on('change', function () {
       const enabled = $(this).prop('checked');
       setAutoSendEnabled(enabled);
-      console.log('[Mobile Context] 消息自动发送功能已', enabled ? '启用' : '禁用');
+      console.log('[Mobile Context] Auto-send is now', enabled ? 'enabled' : 'disabled');
     });
 
-  // 禁止正文功能启用/禁用
+  // Enable/disable Block story text
   $('#mobile_disable_body_text')
     .prop('checked', extension_settings.mobile_context.disableBodyText)
     .on('change', function () {
       extension_settings.mobile_context.disableBodyText = $(this).prop('checked');
       saveSettings();
-      console.log('[Mobile Context] 禁止正文功能已', extension_settings.mobile_context.disableBodyText ? '启用' : '禁用');
+      console.log('[Mobile Context] Block story text is now', extension_settings.mobile_context.disableBodyText ? 'enabled' : 'disabled');
     });
 }
 
 /**
- * 获取消息自动发送功能启用状态
+ * Get auto-send enabled state
  */
 function getAutoSendEnabled() {
   if (window.messageSender && typeof window.messageSender.isDelayClickEnabled === 'function') {
     return window.messageSender.isDelayClickEnabled();
   }
-  // 如果 MessageSender 还未初始化，从 localStorage 直接读取
+  // If MessageSender is not ready, read localStorage directly
   try {
     const settings = localStorage.getItem('messageSenderSettings');
     if (settings) {
       const parsed = JSON.parse(settings);
-      // 如果明确设置了 delayClickEnabled，使用该值；否则默认为 true
+      // Use delayClickEnabled when set; otherwise default true
       return parsed.delayClickEnabled === undefined ? true : parsed.delayClickEnabled;
     }
-    return true; // 默认启用
+    return true; // Enabled by default
   } catch (error) {
-    console.warn('[Mobile Context] 获取消息自动发送设置失败:', error);
-    return true; // 默认启用
+    console.warn('[Mobile Context] Failed to read auto-send setting:', error);
+    return true; // Enabled by default
   }
 }
 
 /**
- * 设置消息自动发送功能启用状态
+ * Set auto-send enabled state
  */
 function setAutoSendEnabled(enabled) {
   if (window.messageSender && typeof window.messageSender.setDelayClickEnabled === 'function') {
     window.messageSender.setDelayClickEnabled(enabled);
   } else {
-    // 如果 MessageSender 还未初始化，直接写入 localStorage
+    // If MessageSender is not ready, write localStorage directly
     try {
       let settings = {};
       const existing = localStorage.getItem('messageSenderSettings');
@@ -1311,15 +1311,15 @@ function setAutoSendEnabled(enabled) {
       }
       settings.delayClickEnabled = enabled;
       localStorage.setItem('messageSenderSettings', JSON.stringify(settings));
-      console.log('[Mobile Context] 消息自动发送设置已保存:', enabled);
+      console.log('[Mobile Context] Auto-send setting saved:', enabled);
     } catch (error) {
-      console.error('[Mobile Context] 保存消息自动发送设置失败:', error);
+      console.error('[Mobile Context] Failed to save auto-send setting:', error);
     }
   }
 }
 
 /**
- * 保存设置
+ * Save settings
  */
 function saveSettings() {
   try {
@@ -1330,8 +1330,8 @@ function saveSettings() {
       window.saveSettingsDebounced();
     }
   } catch (error) {
-    console.warn('[Mobile Context] 保存设置失败:', error);
-    // 回退到旧的保存方式
+    console.warn('[Mobile Context] Failed to save settings:', error);
+    // Fall back to legacy save
     if (window.saveSettingsDebounced) {
       window.saveSettingsDebounced();
     }
@@ -1339,92 +1339,92 @@ function saveSettings() {
 }
 
 /**
- * 注册控制台命令
+ * Register console commands
  */
 function registerConsoleCommands() {
-  // 将命令注册到全局对象
+  // Register commands on the global object
   if (!window.MobileContext) {
     window.MobileContext = {};
   }
 
-  // 获取当前上下文
+  // Get current context
   window.MobileContext.getContext = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return null;
     }
     return contextMonitor.getCurrentContext();
   };
 
-  // 获取上下文历史
+  // Get context history
   window.MobileContext.getHistory = function (limit = 10) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return [];
     }
     return contextMonitor.getHistory(limit);
   };
 
-  // 获取统计信息
+  // Get stats
   window.MobileContext.getStats = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return null;
     }
     return contextMonitor.getStats();
   };
 
-  // 显示状态
+  // Show status
   window.MobileContext.showStatus = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
     contextMonitor.showStatus();
   };
 
-  // 开始监控
+  // Start monitoring
   window.MobileContext.start = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
     contextMonitor.start();
   };
 
-  // 停止监控
+  // Stop monitoring
   window.MobileContext.stop = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
     contextMonitor.stop();
   };
 
-  // 获取当前聊天的 JSONL 数据
+  // Get current chat JSONL
   window.MobileContext.getChatJsonl = async function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return null;
     }
     return await contextMonitor.getCurrentChatJsonl();
   };
 
-  // 获取当前聊天的消息数组
+  // Get current chat messages
   window.MobileContext.getChatMessages = async function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return null;
     }
     return await contextMonitor.getCurrentChatMessages();
   };
 
-  // 一键下载当前聊天的 JSONL 文件
+  // Download current chat JSONL
   window.MobileContext.downloadChatJsonl = async function () {
     try {
       const chatData = await window.MobileContext.getChatJsonl();
       if (!chatData) {
-        console.error('[Mobile Context] 无法获取聊天数据');
+        console.error('[Mobile Context] Cannot get chat data');
         return;
       }
 
@@ -1438,92 +1438,92 @@ function registerConsoleCommands() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      console.log(`[Mobile Context] 已下载聊天文件: ${a.download}`);
+      console.log(`[Mobile Context] Downloaded chat file: ${a.download}`);
     } catch (error) {
-      console.error('[Mobile Context] 下载失败:', error);
+      console.error('[Mobile Context] Download failed:', error);
     }
   };
 
-  // 设置日志级别
+  // Set log level
   window.MobileContext.setLogLevel = function (level) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
     contextMonitor.setLogLevel(level);
   };
 
-  // 清除日志
+  // Clear logs
   window.MobileContext.clearLogs = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
     contextMonitor.clearLogs();
   };
 
   // ===========================================
-  // 数据提取器控制台命令
+  // Data extractor console commands
   // ===========================================
 
-  // 列出所有可用的提取格式
+  // List extractor formats
   window.MobileContext.listFormats = function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
     return contextMonitor.listExtractorFormats();
   };
 
-  // 从当前聊天消息中提取数据
+  // Extract from current chat messages
   window.MobileContext.extractFromChat = async function (formatName) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return null;
     }
     if (!formatName) {
-      console.warn('[Mobile Context] 请指定格式名称，使用 MobileContext.listFormats() 查看可用格式');
+      console.warn('[Mobile Context] Pass a format name; use MobileContext.listFormats() for available formats');
       return null;
     }
     return await contextMonitor.extractFromCurrentChat(formatName);
   };
 
-  // 从当前聊天JSONL中提取数据
+  // Extract from current chat JSONL
   window.MobileContext.extractFromJsonl = async function (formatName) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return null;
     }
     if (!formatName) {
-      console.warn('[Mobile Context] 请指定格式名称，使用 MobileContext.listFormats() 查看可用格式');
+      console.warn('[Mobile Context] Pass a format name; use MobileContext.listFormats() for available formats');
       return null;
     }
     return await contextMonitor.extractFromCurrentChatJsonl(formatName);
   };
 
-  // 从文本中提取数据（手动测试用）
+  // Extract from text (manual test)
   window.MobileContext.extractFromText = function (text, formatName) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return [];
     }
     if (!text || !formatName) {
-      console.warn('[Mobile Context] 请指定文本和格式名称');
+      console.warn('[Mobile Context] Pass text and a format name');
       return [];
     }
     return contextMonitor.extractDataFromText(text, formatName);
   };
 
-  // 添加自定义提取格式
+  // Add a custom extract format
   window.MobileContext.addFormat = function (name, regex, fields, description) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return false;
     }
     if (!name || !regex || !fields) {
-      console.warn('[Mobile Context] 用法: MobileContext.addFormat(name, regex, fields, description)');
+      console.warn('[Mobile Context] Usage: MobileContext.addFormat(name, regex, fields, description)');
       console.log(
-        "示例: MobileContext.addFormat('test', /\\[测试\\|([^|]*)\\|([^|]*)\\|([^|]*)\\|([^\\]]*)\\]/g, ['character', 'number', 'type', 'content'], '测试格式')",
+        "Example: MobileContext.addFormat('test', /\\[test\\|([^|]*)\\|([^|]*)\\|([^|]*)\\|([^\\]]*)\\]/g, ['character', 'number', 'type', 'content'], 'test format')",
       );
       return false;
     }
@@ -1537,371 +1537,371 @@ function registerConsoleCommands() {
     return contextMonitor.addExtractorFormat(name, format);
   };
 
-  // 快速提取
+  // Quick extract
   window.MobileContext.quickExtract = async function (formatName, useJsonl = false) {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
 
-    console.log(`[Mobile Context] 开始从${useJsonl ? 'JSONL' : '聊天消息'}中提取 ${formatName} 格式数据...`);
+    console.log(`[Mobile Context] Starting extract from ${useJsonl ? 'JSONL' : 'chat messages'} for format  ${formatName} ...`);
 
     const result = useJsonl
       ? await window.MobileContext.extractFromJsonl(formatName)
       : await window.MobileContext.extractFromChat(formatName);
 
     if (result && result.extractedCount > 0) {
-      console.log(`[Mobile Context] 提取成功! 找到 ${result.extractedCount} 条数据`);
-      console.log('提取结果:', result);
+      console.log(`[Mobile Context] Extract OK. Found ${result.extractedCount}  records`);
+      console.log('Extract result:', result);
       return result;
     } else {
-      console.log('[Mobile Context] 未找到匹配的数据');
+      console.log('[Mobile Context] No matching data');
       return null;
     }
   };
 
-  // 调试函数 - 测试聊天数据获取
+  // Debug — test chat data fetch
   window.MobileContext.debugChatData = async function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
 
-    console.group('=== 聊天数据调试信息 ===');
+    console.group('=== Chat data debug ===');
 
-    // 检查 SillyTavern 上下文
-    console.log('1. SillyTavern 全局对象:', window.SillyTavern);
+    // Inspect SillyTavern context
+    console.log('1. SillyTavern global:', window.SillyTavern);
 
     const context = window.SillyTavern?.getContext();
-    console.log('2. SillyTavern 上下文:', context);
+    console.log('2. SillyTavern context:', context);
 
     if (context) {
-      console.log('3. 当前聊天ID:', context.getCurrentChatId?.());
-      console.log('4. 角色ID:', context.characterId);
-      console.log('5. 群组ID:', context.groupId);
-      console.log('6. 角色数组:', context.characters);
+      console.log('3. Current chat ID:', context.getCurrentChatId?.());
+      console.log('4. Character ID:', context.characterId);
+      console.log('5. Group ID:', context.groupId);
+      console.log('6. Characters array:', context.characters);
 
       if (context.characterId && context.characters) {
         const char = context.characters[context.characterId];
-        console.log('7. 当前角色:', char);
+        console.log('7. Current character:', char);
       }
     }
 
-    // 测试全局变量
-    console.log('8. 全局 chat 变量:', window.chat);
-    console.log('9. 全局 this_chid 变量:', window.this_chid);
-    console.log('10. 全局 characters 变量:', window.characters);
+    // Test globals
+    console.log('8. Global chat var:', window.chat);
+    console.log('9. Global this_chid var:', window.this_chid);
+    console.log('10. Global characters var:', window.characters);
 
-    // 测试 API 调用
+    // Test API call
     try {
       const chatData = await contextMonitor.getCurrentChatMessages();
-      console.log('11. API 调用结果:', chatData);
+      console.log('11. API call result:', chatData);
     } catch (error) {
-      console.error('12. API 调用错误:', error);
+      console.error('12. API call error:', error);
     }
 
     console.groupEnd();
   };
 
-  // 调试 JSONL 数据内容
+  // Debug JSONL contents
   window.MobileContext.debugJsonlData = async function () {
     if (!contextMonitor) {
-      console.warn('[Mobile Context] 监控器未初始化');
+      console.warn('[Mobile Context] Monitor not initialized');
       return;
     }
 
-    console.group('=== JSONL 数据调试 ===');
+    console.group('=== JSONL data debug ===');
 
     try {
       const jsonlData = await contextMonitor.getCurrentChatJsonl();
-      console.log('JSONL 数据:', jsonlData);
+      console.log('JSONL data:', jsonlData);
 
       if (jsonlData && jsonlData.lines) {
-        console.log(`总行数: ${jsonlData.lines.length}`);
+        console.log(`Line count: ${jsonlData.lines.length}`);
         jsonlData.lines.forEach((line, index) => {
-          console.log(`第 ${index + 1} 行:`, line);
+          console.log(`Line ${index + 1}:`, line);
           try {
             const parsed = JSON.parse(line);
-            console.log(`解析后:`, parsed);
+            console.log(`Parsed:`, parsed);
             if (parsed.mes) {
-              console.log(`消息内容: "${parsed.mes}"`);
-              // 测试提取
+              console.log(`Message text: "${parsed.mes}"`);
+              // Test extract
               const myResult = contextMonitor.extractDataFromText(parsed.mes, 'myMessage');
               const otherResult = contextMonitor.extractDataFromText(parsed.mes, 'otherMessage');
               const universalResult = contextMonitor.extractDataFromText(parsed.mes, 'universalMessage');
               if (myResult.length > 0) {
-                console.log(`✅ 我方消息匹配:`, myResult);
+                console.log(`✅ Own-message match:`, myResult);
               }
               if (otherResult.length > 0) {
-                console.log(`✅ 对方消息匹配:`, otherResult);
+                console.log(`✅ Other-message match:`, otherResult);
               }
               if (universalResult.length > 0) {
-                console.log(`✅ 通用消息匹配:`, universalResult);
+                console.log(`✅ Universal-message match:`, universalResult);
               }
             }
           } catch (e) {
-            console.error(`解析第 ${index + 1} 行失败:`, e);
+            console.error(`Failed to parse line ${index + 1}:`, e);
           }
           console.log('---');
         });
       }
     } catch (error) {
-      console.error('获取 JSONL 数据失败:', error);
+      console.error('Failed to get JSONL data:', error);
     }
 
     console.groupEnd();
   };
 
   // ===========================================
-  // 上下文编辑器控制台命令
+  // Context editor console commands
   // ===========================================
 
-  // 显示上下文编辑器
+  // Show context editor
   window.MobileContext.showContextEditor = function () {
     if (window.mobileContextEditor && typeof window.mobileContextEditor.showEditor === 'function') {
       window.mobileContextEditor.showEditor();
     } else {
-      console.warn('[Mobile Context] 上下文编辑器未初始化或方法不存在');
-      console.log('[Mobile Context] 编辑器状态:', {
+      console.warn('[Mobile Context] Context editor not initialized or method missing');
+      console.log('[Mobile Context] Editor status:', {
         exists: !!window.mobileContextEditor,
         hasMethod: !!(window.mobileContextEditor && window.mobileContextEditor.showEditor),
       });
     }
   };
 
-  // 强制启动编辑器（即使SillyTavern未就绪）
+  // Force-start editor even if SillyTavern is not ready
   window.MobileContext.forceShowEditor = function () {
     if (window.mobileContextEditor) {
       const success = window.mobileContextEditor.forceInitialize();
       if (success) {
-        console.log('[Mobile Context] ✅ 强制启动编辑器成功');
+        console.log('[Mobile Context] ✅ Force-start editor succeeded');
       } else {
-        console.error('[Mobile Context] ❌ 强制启动编辑器失败');
+        console.error('[Mobile Context] ❌ Force-start editor failed');
       }
     } else {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
     }
   };
 
-  // 加载当前聊天到编辑器（使用v2.0 API）
+  // Load current chat into editor (v2.0 API)
   window.MobileContext.loadChatToEditor = function () {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return null;
     }
 
     try {
       return window.mobileContextEditor.getCurrentChatData();
     } catch (error) {
-      console.error('[Mobile Context] 加载聊天数据失败:', error);
+      console.error('[Mobile Context] Failed to load chat data:', error);
       return null;
     }
   };
 
-  // 修改消息内容（使用v2.0 API）
+  // Modify message (v2.0 API)
   window.MobileContext.modifyMessage = async function (messageIndex, newContent, newName = null) {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return false;
     }
     try {
       return await window.mobileContextEditor.modifyMessage(messageIndex, newContent, newName);
     } catch (error) {
-      console.error('[Mobile Context] 修改消息失败:', error);
+      console.error('[Mobile Context] Failed to modify message:', error);
       return false;
     }
   };
 
-  // 添加新消息（使用v2.0 API）
+  // Add message (v2.0 API)
   window.MobileContext.addMessage = async function (content, isUser = false, name = null) {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return -1;
     }
     try {
       return await window.mobileContextEditor.addMessage(content, isUser, name);
     } catch (error) {
-      console.error('[Mobile Context] 添加消息失败:', error);
+      console.error('[Mobile Context] Failed to add message:', error);
       return -1;
     }
   };
 
-  // 删除消息（使用v2.0 API）
+  // Delete message (v2.0 API)
   window.MobileContext.deleteMessage = async function (messageIndex) {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return null;
     }
     try {
       return await window.mobileContextEditor.deleteMessage(messageIndex);
     } catch (error) {
-      console.error('[Mobile Context] 删除消息失败:', error);
+      console.error('[Mobile Context] Failed to delete message:', error);
       return null;
     }
   };
 
-  // 保存编辑后的聊天数据（使用v2.0 API）
+  // Save edited chat (v2.0 API)
   window.MobileContext.saveEditedChat = async function () {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return false;
     }
     try {
       return await window.mobileContextEditor.saveChatData();
     } catch (error) {
-      console.error('[Mobile Context] 保存失败:', error);
+      console.error('[Mobile Context] Save failed:', error);
       return false;
     }
   };
 
-  // 刷新聊天界面（替代重置功能）
+  // Refresh chat UI (replaces reset)
   window.MobileContext.refreshChatDisplay = async function () {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return false;
     }
     try {
       return await window.mobileContextEditor.refreshChatDisplay();
     } catch (error) {
-      console.error('[Mobile Context] 刷新界面失败:', error);
+      console.error('[Mobile Context] Failed to refresh UI:', error);
       return false;
     }
   };
 
-  // 导出编辑后的JSONL（使用v2.0 API）
+  // Export edited JSONL (v2.0 API)
   window.MobileContext.exportEditedJsonl = function () {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return null;
     }
     try {
       return window.mobileContextEditor.exportToJsonl();
     } catch (error) {
-      console.error('[Mobile Context] 导出失败:', error);
+      console.error('[Mobile Context] Export failed:', error);
       return null;
     }
   };
 
-  // 获取编辑器统计信息（使用v2.0 API）
+  // Get editor stats (v2.0 API)
   window.MobileContext.getEditorStats = function () {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return null;
     }
     return window.mobileContextEditor.getStatistics();
   };
 
-  // 调试SillyTavern状态（使用v2.0 API）
+  // Debug SillyTavern status (v2.0 API)
   window.MobileContext.debugSillyTavernStatus = function () {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return null;
     }
     return window.mobileContextEditor.debugSillyTavernStatus();
   };
 
-  // 等待SillyTavern准备就绪（使用v2.0 API）
+  // Wait for SillyTavern ready (v2.0 API)
   window.MobileContext.waitForSillyTavernReady = async function (timeout = 30000) {
     if (!window.mobileContextEditor) {
-      console.warn('[Mobile Context] 上下文编辑器未初始化');
+      console.warn('[Mobile Context] Context editor not initialized');
       return false;
     }
     return await window.mobileContextEditor.waitForSillyTavernReady(timeout);
   };
 
   // ===========================================
-  // 自定义API配置控制台命令
+  // Custom API config console commands
   // ===========================================
 
-  // 显示API配置面板
+  // Show API config panel
   window.MobileContext.showAPIConfig = function () {
     if (window.mobileCustomAPIConfig && typeof window.mobileCustomAPIConfig.showConfigPanel === 'function') {
       window.mobileCustomAPIConfig.showConfigPanel();
     } else {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化或方法不存在');
-      console.log('[Mobile Context] API配置状态:', {
+      console.warn('[Mobile Context] Custom API config not initialized or method missing');
+      console.log('[Mobile Context] API config status:', {
         exists: !!window.mobileCustomAPIConfig,
         hasMethod: !!(window.mobileCustomAPIConfig && window.mobileCustomAPIConfig.showConfigPanel),
       });
     }
   };
 
-  // 获取当前API配置
+  // Get current API config
   window.MobileContext.getAPIConfig = function () {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return null;
     }
     return window.mobileCustomAPIConfig.getCurrentConfig();
   };
 
-  // 检查API是否可用
+  // Check whether API is available
   window.MobileContext.isAPIAvailable = function () {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return false;
     }
     return window.mobileCustomAPIConfig.isAPIAvailable();
   };
 
-  // 测试API连接
+  // Test API connection
   window.MobileContext.testAPIConnection = async function () {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return false;
     }
     try {
       await window.mobileCustomAPIConfig.testConnection();
       return true;
     } catch (error) {
-      console.error('[Mobile Context] API连接测试失败:', error);
+      console.error('[Mobile Context] API connection test failed:', error);
       return false;
     }
   };
 
-  // 调用自定义API
+  // Call custom API
   window.MobileContext.callCustomAPI = async function (messages, options = {}) {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return null;
     }
     try {
       return await window.mobileCustomAPIConfig.callAPI(messages, options);
     } catch (error) {
-      console.error('[Mobile Context] 自定义API调用失败:', error);
+      console.error('[Mobile Context] Custom API call failed:', error);
       return null;
     }
   };
 
-  // 获取支持的API服务商列表
+  // List supported API providers
   window.MobileContext.getSupportedProviders = function () {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return null;
     }
     return Object.keys(window.mobileCustomAPIConfig.supportedProviders);
   };
 
-  // 获取API调试信息
+  // Get API debug info
   window.MobileContext.getAPIDebugInfo = function () {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return null;
     }
     return window.mobileCustomAPIConfig.getDebugInfo();
   };
 
-  // 快速设置API配置
+  // Quick-setup API config
   window.MobileContext.quickSetupAPI = function (apiUrl, apiKey, model) {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return false;
     }
 
     if (!apiUrl || !model) {
-      console.warn('[Mobile Context] 用法: MobileContext.quickSetupAPI(apiUrl, apiKey, model)');
-      console.log("示例: MobileContext.quickSetupAPI('https://api.openai.com', 'sk-xxx', 'gpt-4o')");
-      console.log("示例: MobileContext.quickSetupAPI('https://浅浅超级空间站.ndvfp.cn', 'sk-xxx', 'gpt-4o')");
+      console.warn('[Mobile Context] Usage: MobileContext.quickSetupAPI(apiUrl, apiKey, model)');
+      console.log("Example: MobileContext.quickSetupAPI('https://api.openai.com', 'sk-xxx', 'gpt-4o')");
+      console.log("Example: MobileContext.quickSetupAPI('https://your-openai-compatible-host.example', 'sk-xxx', 'gpt-4o')");
       return false;
     }
 
@@ -1909,71 +1909,71 @@ function registerConsoleCommands() {
       window.mobileCustomAPIConfig.currentSettings = {
         ...window.mobileCustomAPIConfig.currentSettings,
         enabled: true,
-        provider: 'custom', // 固定使用custom
+        provider: 'custom', // Always use custom
         apiUrl: apiUrl,
         apiKey: apiKey || '',
         model: model,
       };
 
       window.mobileCustomAPIConfig.saveSettings();
-      console.log('[Mobile Context] ✅ API配置已更新');
+      console.log('[Mobile Context] ✅ API config updated');
       return true;
     } catch (error) {
-      console.error('[Mobile Context] 快速设置失败:', error);
+      console.error('[Mobile Context] Quick setup failed:', error);
       return false;
     }
   };
 
-  // 调试API配置状态
+  // Debug API config
   window.MobileContext.debugAPIConfig = function () {
     if (!window.mobileCustomAPIConfig) {
-      console.warn('[Mobile Context] 自定义API配置模块未初始化');
+      console.warn('[Mobile Context] Custom API config module not initialized');
       return;
     }
     window.mobileCustomAPIConfig.debugConfig();
   };
 
-  // 调试所有模块加载状态
+  // Debug all module load status
   window.MobileContext.debugModuleStatus = function () {
-    console.group('=== Mobile Context 模块状态 ===');
+    console.group('=== Mobile Context module status ===');
 
-    // 检查基础模块
-    console.log('1. 基础插件:', {
+    // Check base modules
+    console.log('1. Base plugin:', {
       pluginInitialized: isInitialized,
       contextMonitor: !!contextMonitor,
       extensionSettings: !!extension_settings,
     });
 
-    // 检查上下文监控器
-    console.log('2. 上下文监控器:', {
+    // Check context monitor
+    console.log('2. Context monitor:', {
       exists: !!window.ContextMonitor,
       instance: !!contextMonitor,
       running: contextMonitor ? contextMonitor.isRunning() : false,
     });
 
-    // 检查上传管理器
-    console.log('3. 上传管理器:', {
+    // Check upload manager
+    console.log('3. Upload manager:', {
       exists: !!window.mobileUploadManager,
       hasToggleUI: !!(window.mobileUploadManager && window.mobileUploadManager.toggleMobileUploadUI),
       hasShowUI: !!(window.mobileUploadManager && window.mobileUploadManager.showMobileUploadUI),
     });
 
-    // 检查上下文编辑器
-    console.log('4. 上下文编辑器:', {
+    // Check context editor
+    console.log('4. Context editor:', {
       exists: !!window.mobileContextEditor,
       hasShowEditor: !!(window.mobileContextEditor && window.mobileContextEditor.showEditor),
       hasForceInit: !!(window.mobileContextEditor && window.mobileContextEditor.forceInitialize),
     });
 
-    // 检查自定义API配置
-    console.log('5. 自定义API配置:', {
+    // Check Custom API config
+    console.log('5. Custom API config:', {
       exists: !!window.mobileCustomAPIConfig,
       hasShowPanel: !!(window.mobileCustomAPIConfig && window.mobileCustomAPIConfig.showConfigPanel),
       hasGetConfig: !!(window.mobileCustomAPIConfig && window.mobileCustomAPIConfig.getCurrentConfig),
     });
 
-    // 检查MesID楼层监听器
-    console.log('6. MesID楼层监听器:', {
+    // Check MesID floor monitor
+    console.log('6. MesIDFloor monitor:', {
       exists: !!window.mesidFloorMonitor,
       hasStart: !!(window.mesidFloorMonitor && window.mesidFloorMonitor.start),
       hasStop: !!(window.mesidFloorMonitor && window.mesidFloorMonitor.stop),
@@ -1981,16 +1981,16 @@ function registerConsoleCommands() {
       isMonitoring: window.mesidFloorMonitor ? window.mesidFloorMonitor.getStatus().isMonitoring : false,
     });
 
-    // 检查控制台命令
-    console.log('7. 控制台命令:', {
+    // Check console commands
+    console.log('7. Console commands:', {
       MobileContext: !!window.MobileContext,
       showContextEditor: !!(window.MobileContext && window.MobileContext.showContextEditor),
       showAPIConfig: !!(window.MobileContext && window.MobileContext.showAPIConfig),
       debugModuleStatus: !!(window.MobileContext && window.MobileContext.debugModuleStatus),
     });
 
-    // 检查UI元素
-    console.log('8. UI元素:', {
+    // Check UI elements
+    console.log('8. UI elements:', {
       phoneButton: !!document.getElementById('mobile-phone-trigger'),
       uploadButton: !!document.getElementById('mobile-upload-trigger'),
       contextEditorButton: !!document.getElementById('mobile-context-editor-btn'),
@@ -2000,382 +2000,382 @@ function registerConsoleCommands() {
     console.groupEnd();
   };
 
-  // 智能加载聊天（使用v2.0 API - 简化版）
+  // Smart-load chat (v2.0 API, simplified)
   window.MobileContext.smartLoadChat = async function () {
-    console.log('[Mobile Context] 开始智能加载聊天（v2.0）...');
+    console.log('[Mobile Context] Starting smart-load chat (v2.0)...');
 
     if (!window.mobileContextEditor) {
-      console.error('[Mobile Context] 上下文编辑器未初始化');
+      console.error('[Mobile Context] Context editor not initialized');
       return null;
     }
 
-    // 先检查状态
+    // Check status first
     const status = window.MobileContext.debugSillyTavernStatus();
     if (!status || !status.ready) {
-      console.log('[Mobile Context] SillyTavern未准备就绪，等待中...');
+      console.log('[Mobile Context] SillyTavern not ready, waiting...');
       const isReady = await window.MobileContext.waitForSillyTavernReady();
       if (!isReady) {
-        console.error('[Mobile Context] 等待超时，请检查SillyTavern状态');
+        console.error('[Mobile Context] Wait timed out — check SillyTavern status');
         return null;
       }
     }
 
-    // 直接加载聊天数据
+    // Load chat data directly
     try {
       const chatData = window.MobileContext.loadChatToEditor();
       if (chatData) {
         console.log(
-          `[Mobile Context] ✅ 聊天加载成功！共 ${chatData.messages.length} 条消息 (${chatData.characterName})`,
+          `[Mobile Context] ✅ Chat loaded. Messages: ${chatData.messages.length}  msgs (${chatData.characterName})`,
         );
         return chatData;
       } else {
-        console.error('[Mobile Context] 无法获取聊天数据');
+        console.error('[Mobile Context] Cannot get chat data');
         return null;
       }
     } catch (error) {
-      console.error('[Mobile Context] 加载失败:', error);
+      console.error('[Mobile Context] Load failed:', error);
       return null;
     }
   };
 
   // ===========================================
-  // MesID楼层监听器控制台命令
+  // MesID floor monitor console commands
   // ===========================================
 
-  // 开始监听楼层变化
+  // Start floor-change monitor
   window.MobileContext.startFloorMonitor = function () {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
     window.mesidFloorMonitor.start();
     return true;
   };
 
-  // 停止监听楼层变化
+  // Stop floor-change monitor
   window.MobileContext.stopFloorMonitor = function () {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
     window.mesidFloorMonitor.stop();
     return true;
   };
 
-  // 获取楼层监听器状态
+  // Get floor monitor status
   window.MobileContext.getFloorStatus = function () {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return null;
     }
     return window.mesidFloorMonitor.getStatus();
   };
 
-  // 获取楼层监听器调试信息
+  // Get floor monitor debug info
   window.MobileContext.getFloorDebugInfo = function () {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return null;
     }
     return window.mesidFloorMonitor.getDebugInfo();
   };
 
-  // 强制检查楼层变化
+  // Force floor check
   window.MobileContext.forceCheckFloor = function () {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
     window.mesidFloorMonitor.forceCheck();
     return true;
   };
 
-  // 设置楼层选择器
+  // Set floor selector
   window.MobileContext.setFloorSelector = function (selector) {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
     if (!selector) {
-      console.warn('[Mobile Context] 请提供有效的选择器');
+      console.warn('[Mobile Context] Provide a valid selector');
       return false;
     }
     window.mesidFloorMonitor.setFloorSelector(selector);
     return true;
   };
 
-  // 添加楼层变化监听器
+  // Add floor-change listener
   window.MobileContext.addFloorListener = function (eventType, callback) {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
     if (!eventType || !callback) {
-      console.warn("[Mobile Context] 用法: MobileContext.addFloorListener('onFloorChanged', function(data) { ... })");
-      console.log('可用事件类型: onFloorAdded, onFloorRemoved, onFloorChanged');
+      console.warn("[Mobile Context] Usage: MobileContext.addFloorListener('onFloorChanged', function(data) { ... })");
+      console.log('Available events: onFloorAdded, onFloorRemoved, onFloorChanged');
       return false;
     }
     return window.mesidFloorMonitor.addEventListener(eventType, callback);
   };
 
-  // 移除楼层变化监听器
+  // Remove floor-change listener
   window.MobileContext.removeFloorListener = function (eventType, callback) {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
     if (!eventType || !callback) {
-      console.warn("[Mobile Context] 用法: MobileContext.removeFloorListener('onFloorChanged', callbackFunction)");
+      console.warn("[Mobile Context] Usage: MobileContext.removeFloorListener('onFloorChanged', callbackFunction)");
       return false;
     }
     return window.mesidFloorMonitor.removeEventListener(eventType, callback);
   };
 
-  // 快速设置楼层监听器
+  // Quick-setup floor monitor
   window.MobileContext.quickSetupFloorMonitor = function (floorSelector = '.message') {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
 
-    // 设置选择器
+    // Set selector
     window.mesidFloorMonitor.setFloorSelector(floorSelector);
 
-    // 添加默认监听器
+    // Add default listeners
     window.mesidFloorMonitor.addEventListener('onFloorAdded', function (data) {
-      console.log(`[楼层监听器] 🟢 楼层增加: ${data.oldCount} -> ${data.newCount} (+${data.change})`);
+      console.log(`[Floor monitor] 🟢 Floors added: ${data.oldCount} -> ${data.newCount} (+${data.change})`);
       if (extension_settings.mobile_context.enableFloorNotifications) {
-        // 可以在这里添加通知逻辑
+        // Notification hook
       }
     });
 
     window.mesidFloorMonitor.addEventListener('onFloorRemoved', function (data) {
-      console.log(`[楼层监听器] 🔴 楼层减少: ${data.oldCount} -> ${data.newCount} (${data.change})`);
+      console.log(`[Floor monitor] 🔴 Floors removed: ${data.oldCount} -> ${data.newCount} (${data.change})`);
       if (extension_settings.mobile_context.enableFloorNotifications) {
-        // 可以在这里添加通知逻辑
+        // Notification hook
       }
     });
 
     window.mesidFloorMonitor.addEventListener('onFloorChanged', function (data) {
       console.log(
-        `[楼层监听器] 🔄 楼层变化: ${data.oldCount} -> ${data.newCount} (${data.change > 0 ? '+' : ''}${data.change})`,
+        `[Floor monitor] 🔄 Floor change: ${data.oldCount} -> ${data.newCount} (${data.change > 0 ? '+' : ''}${data.change})`,
       );
     });
 
-    // 开始监听
+    // Start listening
     window.mesidFloorMonitor.start();
 
-    console.log(`[Mobile Context] ✅ 楼层监听器已快速设置完成 (选择器: ${floorSelector})`);
+    console.log(`[Mobile Context] ✅ Floor monitor quick-setup done (selector: ${floorSelector})`);
     return true;
   };
 
-  // 测试楼层监听器
+  // Test floor monitor
   window.MobileContext.testFloorMonitor = function () {
     if (!window.mesidFloorMonitor) {
-      console.warn('[Mobile Context] MesID楼层监听器未初始化');
+      console.warn('[Mobile Context] MesID floor monitor not initialized');
       return false;
     }
 
-    console.group('=== MesID楼层监听器测试 ===');
+    console.group('=== MesID floor monitor test ===');
 
-    // 检查元素是否存在
+    // Check whether element exists
     const mesidElement = document.querySelector('[mesid="1"]');
-    console.log('1. MesID元素:', mesidElement);
+    console.log('1. MesID element:', mesidElement);
 
     if (mesidElement) {
-      console.log('2. MesID元素HTML:', mesidElement.innerHTML.slice(0, 200) + '...');
-      console.log('3. MesID元素子元素数量:', mesidElement.children.length);
+      console.log('2. MesID element HTML:', mesidElement.innerHTML.slice(0, 200) + '...');
+      console.log('3. MesID child count:', mesidElement.children.length);
 
-      // 测试选择器
+      // Test selector
       const floors = mesidElement.querySelectorAll('.message');
-      console.log('4. 使用.message选择器找到的楼层:', floors.length);
+      console.log('4. Floors found with .message:', floors.length);
 
-      // 尝试其他可能的选择器
+      // Try other selectors
       const divs = mesidElement.querySelectorAll('div');
-      console.log('5. 使用div选择器找到的元素:', divs.length);
+      console.log('5. Elements found with div:', divs.length);
 
       const allChildren = mesidElement.children;
-      console.log('6. 直接子元素:', allChildren.length);
+      console.log('6. Direct children:', allChildren.length);
     }
 
-    // 检查监听器状态
+    // Check listener status
     const status = window.mesidFloorMonitor.getStatus();
-    console.log('7. 监听器状态:', status);
+    console.log('7. Listener status:', status);
 
-    // 强制检查
+    // Force check
     window.mesidFloorMonitor.forceCheck();
 
     console.groupEnd();
     return true;
   };
 
-  console.log('[Mobile Context] 控制台命令已注册:');
-  console.log('=== 基础功能 ===');
-  console.log('  MobileContext.getContext()     - 获取当前上下文');
-  console.log('  MobileContext.getHistory()     - 获取上下文历史');
-  console.log('  MobileContext.getStats()       - 获取统计信息');
-  console.log('  MobileContext.showStatus()     - 显示状态信息');
-  console.log('  MobileContext.start()          - 开始监控');
-  console.log('  MobileContext.stop()           - 停止监控');
-  console.log('  MobileContext.setLogLevel(level) - 设置日志级别');
-  console.log('  MobileContext.clearLogs()      - 清除日志');
+  console.log('[Mobile Context] Console commands registered:');
+  console.log('=== Basics ===');
+  console.log('  MobileContext.getContext()     - Get current context');
+  console.log('  MobileContext.getHistory()     - Get context history');
+  console.log('  MobileContext.getStats()       - Get stats');
+  console.log('  MobileContext.showStatus()     - Show status');
+  console.log('  MobileContext.start()          - Start monitoring');
+  console.log('  MobileContext.stop()           - Stop monitoring');
+  console.log('  MobileContext.setLogLevel(level) - Set log level');
+  console.log('  MobileContext.clearLogs()      - Clear logs');
   console.log('');
-  console.log('=== 聊天数据 ===');
-  console.log('  MobileContext.getChatJsonl()   - 获取聊天JSONL数据');
-  console.log('  MobileContext.getChatMessages() - 获取聊天消息数组');
-  console.log('  MobileContext.downloadChatJsonl() - 下载JSONL文件');
+  console.log('=== Chat data ===');
+  console.log('  MobileContext.getChatJsonl()   - Get chat JSONL');
+  console.log('  MobileContext.getChatMessages() - Get chat messages array');
+  console.log('  MobileContext.downloadChatJsonl() - Download JSONL file');
   console.log('');
-  console.log('=== 数据提取器 ===');
-  console.log('  MobileContext.listFormats()    - 列出所有可用格式');
-  console.log('  MobileContext.extractFromChat(formatName) - 从聊天消息中提取');
-  console.log('  MobileContext.extractFromJsonl(formatName) - 从JSONL中提取');
-  console.log('  MobileContext.extractFromText(text, formatName) - 从文本中提取');
-  console.log('  MobileContext.addFormat(name, regex, fields, desc) - 添加自定义格式');
-  console.log('  MobileContext.quickExtract(formatName, useJsonl) - 快速提取');
+  console.log('=== Data extractor ===');
+  console.log('  MobileContext.listFormats()    - List available formats');
+  console.log('  MobileContext.extractFromChat(formatName) - Extract from chat messages — ');
+  console.log('  MobileContext.extractFromJsonl(formatName) - Extract from JSONL — ');
+  console.log('  MobileContext.extractFromText(text, formatName) - Extract from text — ');
+  console.log('  MobileContext.addFormat(name, regex, fields, desc) - Add custom format');
+  console.log('  MobileContext.quickExtract(formatName, useJsonl) - Quick extract');
   console.log('');
-  console.log('=== 调试工具 ===');
-  console.log('  MobileContext.debugChatData()   - 调试聊天数据获取');
-  console.log('  MobileContext.debugJsonlData()  - 调试JSONL数据内容');
-  console.log('  MobileContext.testExtraction()  - 测试文本提取功能');
+  console.log('=== Debug tools ===');
+  console.log('  MobileContext.debugChatData()   - Debug chat data fetch');
+  console.log('  MobileContext.debugJsonlData()  - Debug JSONL contents');
+  console.log('  MobileContext.testExtraction()  - Test text extraction');
   console.log('');
-  console.log('=== 上下文编辑器 v2.0 (新API) ===');
-  console.log('  MobileContext.showContextEditor() - 显示上下文编辑器界面');
-  console.log('  MobileContext.forceShowEditor()   - 强制启动编辑器即使SillyTavern未就绪');
-  console.log('  MobileContext.loadChatToEditor() - 加载当前聊天到编辑器使用SillyTavern.getContext()');
-  console.log('  MobileContext.smartLoadChat()    - 智能加载聊天自动等待SillyTavern准备');
-  console.log('  MobileContext.modifyMessage(index, content, name) - 修改消息异步使用新API');
-  console.log('  MobileContext.addMessage(content, isUser, name) - 添加新消息异步使用新API');
-  console.log('  MobileContext.deleteMessage(index) - 删除消息异步使用新API');
-  console.log('  MobileContext.saveEditedChat()   - 保存编辑后的聊天使用context.saveChat()');
-  console.log('  MobileContext.refreshChatDisplay() - 刷新聊天界面使用context.reloadCurrentChat()');
-  console.log('  MobileContext.exportEditedJsonl() - 导出编辑后的JSONL');
-  console.log('  MobileContext.getEditorStats()   - 获取编辑器统计信息');
+  console.log('=== Context editor v2.0 (new API) ===');
+  console.log('  MobileContext.showContextEditor() - Show context editor UI');
+  console.log('  MobileContext.forceShowEditor()   - Force-start editor even if SillyTavern is not ready');
+  console.log('  MobileContext.loadChatToEditor() - Load current chat into editor via SillyTavern.getContext()');
+  console.log('  MobileContext.smartLoadChat()    - Smart-load chat and wait for SillyTavern');
+  console.log('  MobileContext.modifyMessage(index, content, name) - Modify message (async, new API)');
+  console.log('  MobileContext.addMessage(content, isUser, name) - Add message (async, new API)');
+  console.log('  MobileContext.deleteMessage(index) - Delete message (async, new API)');
+  console.log('  MobileContext.saveEditedChat()   - Save edited chat via context.saveChat()');
+  console.log('  MobileContext.refreshChatDisplay() - Refresh chat UI via context.reloadCurrentChat()');
+  console.log('  MobileContext.exportEditedJsonl() - Export edited JSONL');
+  console.log('  MobileContext.getEditorStats()   - Get editor stats');
   console.log('');
-  console.log('=== 编辑器调试工具 v2.0 (新API) ===');
-  console.log('  MobileContext.debugSillyTavernStatus() - 检查SillyTavern状态14项检查使用新API');
-  console.log('  MobileContext.waitForSillyTavernReady(timeout) - 等待SillyTavern准备就绪30秒超时');
+  console.log('=== Editor debug tools v2.0 (new API) ===');
+  console.log('  MobileContext.debugSillyTavernStatus() - SillyTavern status check (14 items, new API)');
+  console.log('  MobileContext.waitForSillyTavernReady(timeout) - Wait for SillyTavern ready (30s timeout)');
   console.log('');
-  console.log('=== 自定义API配置 ===');
-  console.log('  MobileContext.showAPIConfig()     - 显示API配置面板');
-  console.log('  MobileContext.getAPIConfig()      - 获取当前API配置');
-  console.log('  MobileContext.isAPIAvailable()    - 检查API是否可用');
-  console.log('  MobileContext.testAPIConnection() - 测试API连接');
-  console.log('  MobileContext.callCustomAPI(messages, options) - 调用自定义API');
-  console.log('  MobileContext.getSupportedProviders() - 获取支持的API服务商列表');
-  console.log('  MobileContext.getAPIDebugInfo()   - 获取API调试信息');
-  console.log('  MobileContext.quickSetupAPI(url, key, model) - 快速设置API配置');
-  console.log('  MobileContext.debugAPIConfig()    - 调试API配置状态');
-  console.log('  MobileContext.debugModuleStatus() - 调试所有模块加载状态');
+  console.log('=== Custom API config ===');
+  console.log('  MobileContext.showAPIConfig()     - Show API config panel');
+  console.log('  MobileContext.getAPIConfig()      - Get current API config');
+  console.log('  MobileContext.isAPIAvailable()    - Check whether API is available');
+  console.log('  MobileContext.testAPIConnection() - Test API connection');
+  console.log('  MobileContext.callCustomAPI(messages, options) - Call custom API');
+  console.log('  MobileContext.getSupportedProviders() - List supported API providers');
+  console.log('  MobileContext.getAPIDebugInfo()   - Get API debug info');
+  console.log('  MobileContext.quickSetupAPI(url, key, model) - Quick-setup API config');
+  console.log('  MobileContext.debugAPIConfig()    - Debug API config');
+  console.log('  MobileContext.debugModuleStatus() - Debug all module load status');
   console.log('');
 
-  console.log('=== 上下文编辑器快速开始 v2.0 (新API) ===');
-  console.log('方式一（推荐 - 等待完全加载）：');
-  console.log('1. MobileContext.debugSillyTavernStatus()  // 检查SillyTavern状态使用新API');
-  console.log('2. MobileContext.smartLoadChat()     // 智能加载聊天使用SillyTavern.getContext()');
-  console.log('3. MobileContext.showContextEditor()  // 打开编辑器界面');
+  console.log('=== Context editor quick start v2.0 (new API) ===');
+  console.log('Method 1 (recommended — wait until fully loaded):');
+  console.log('1. MobileContext.debugSillyTavernStatus()  // Check SillyTavern status via new API');
+  console.log('2. MobileContext.smartLoadChat()     // Smart-load chat via SillyTavern.getContext()');
+  console.log('3. MobileContext.showContextEditor()  // Open editor UI');
   console.log('');
-  console.log('方式二（立即使用 - 如果SillyTavern正在加载');
-  console.log('1. MobileContext.forceShowEditor()    // 立即强制启动编辑器');
-  console.log('2. 在编辑器中点击"重新检查"或等待自动重试');
-  console.log('3. MobileContext.showContextEditor()  // 打开编辑器界面');
-  console.log("4. await MobileContext.modifyMessage(0, '新内容')  // 修改第0条消息使用context.saveChat()");
-  console.log("5. await MobileContext.addMessage('新消息', true)  // 添加用户消息使用context.addOneMessage()");
-  console.log('6. await MobileContext.saveEditedChat()    // 保存所有修改使用context.saveChat()');
-  console.log('7. MobileContext.exportEditedJsonl()  // 导出JSONL文件');
+  console.log('Method 2 (use immediately if SillyTavern is still loading');
+  console.log('1. MobileContext.forceShowEditor()    // Force-start editor immediately');
+  console.log('2. In the editor click Recheck or wait for auto-retry');
+  console.log('3. MobileContext.showContextEditor()  // Open editor UI');
+  console.log("4. await MobileContext.modifyMessage(0, 'new content')  // Modify message 0 via context.saveChat()");
+  console.log("5. await MobileContext.addMessage('new message', true)  // Add user message via context.addOneMessage()");
+  console.log('6. await MobileContext.saveEditedChat()    // Save all edits via context.saveChat()');
+  console.log('7. MobileContext.exportEditedJsonl()  // Export JSONL file');
   console.log('');
-  console.log('注意v2.0使用SillyTavern.getContext()API修改会立即保存并更新界面');
+  console.log('Note: v2.0 uses SillyTavern.getContext(); edits save and refresh the UI immediately');
   console.log('');
-  console.log('=== 自定义API配置快速开始 ===');
-  console.log('方式一（图形界面）：');
-  console.log('1. 点击右侧🔧按钮打开API配置面板');
-  console.log('2. 填写自定义API URL如https://api.openai.com 或 https://浅浅超级空间站.ndvfp.cn');
-  console.log('3. 填写API密钥');
-  console.log('4. 点击📥按钮获取模型列表');
-  console.log('5. 选择模型');
-  console.log('6. 点击🧪测试连接验证配置');
-  console.log('7. 点击💾保存配置完成设置');
+  console.log('=== Custom API config quick start ===');
+  console.log('Method 1 (GUI):');
+  console.log('1. Click the 🔧 button on the right to open API config');
+  console.log('2. Enter a custom API URL such as https://api.openai.com or https://your-openai-compatible-host.example');
+  console.log('3. Enter API key');
+  console.log('4. Click 📥 to fetch the model list');
+  console.log('5. Pick a model');
+  console.log('6. Click 🧪 Test connection');
+  console.log('7. Click 💾 Save to finish');
   console.log('');
-  console.log('方式二（控制台命令）：');
+  console.log('Method 2 (console):');
   console.log("1. MobileContext.quickSetupAPI('https://api.openai.com', 'sk-xxx', 'gpt-4o')");
-  console.log("   或 MobileContext.quickSetupAPI('https://浅浅超级空间站.ndvfp.cn', 'sk-xxx', 'gpt-4o')");
-  console.log('2. MobileContext.testAPIConnection()  // 测试连接');
-  console.log("3. MobileContext.callCustomAPI([{role: 'user', content: '你好'}])  // 调用API");
+  console.log("   or MobileContext.quickSetupAPI('https://your-openai-compatible-host.example', 'sk-xxx', 'gpt-4o')");
+  console.log('2. MobileContext.testAPIConnection()  // Test connection');
+  console.log("3. MobileContext.callCustomAPI([{role: 'user', content: 'hello'}])  // Call API");
   console.log('');
-  console.log('调试命令：');
-  console.log('  MobileContext.debugModuleStatus()  // 检查所有模块加载状态（推荐首先运行）');
-  console.log('  MobileContext.debugAPIConfig()     // 查看当前配置状态和问题诊断');
-  console.log('  MobileContext.getAPIDebugInfo()    // 获取详细调试信息');
+  console.log('Debug commands:');
+  console.log('  MobileContext.debugModuleStatus()  // Check all module load status (run this first)');
+  console.log('  MobileContext.debugAPIConfig()     // Inspect current config and diagnose issues');
+  console.log('  MobileContext.getAPIDebugInfo()    // Get detailed debug info');
   console.log('');
-  console.log('如果命令无法使用请先运行MobileContext.debugModuleStatus()');
-  console.log('注意现在只支持OpenAI兼容的自定义API使用Bearer认证和/v1/models端点');
+  console.log('If commands fail, run MobileContext.debugModuleStatus() first');
+  console.log('Note: only OpenAI-compatible custom APIs with Bearer auth and /v1/models are supported');
   console.log('');
-  console.log('=== MesID楼层监听器 ===');
-  console.log('  MobileContext.startFloorMonitor()   - 开始监听楼层变化');
-  console.log('  MobileContext.stopFloorMonitor()    - 停止监听楼层变化');
-  console.log('  MobileContext.getFloorStatus()      - 获取楼层监听器状态');
-  console.log('  MobileContext.getFloorDebugInfo()   - 获取楼层监听器调试信息');
-  console.log('  MobileContext.forceCheckFloor()     - 强制检查楼层变化');
-  console.log('  MobileContext.setFloorSelector(selector) - 设置楼层选择器');
-  console.log('  MobileContext.addFloorListener(eventType, callback) - 添加楼层变化监听器');
-  console.log('  MobileContext.removeFloorListener(eventType, callback) - 移除楼层变化监听器');
-  console.log('  MobileContext.quickSetupFloorMonitor(selector) - 快速设置楼层监听器');
-  console.log('  MobileContext.testFloorMonitor()    - 测试楼层监听器');
+  console.log('=== MesIDFloor monitor ===');
+  console.log('  MobileContext.startFloorMonitor()   - Start floor-change monitor');
+  console.log('  MobileContext.stopFloorMonitor()    - Stop floor-change monitor');
+  console.log('  MobileContext.getFloorStatus()      - Get floor monitor status');
+  console.log('  MobileContext.getFloorDebugInfo()   - Get floor monitor debug info');
+  console.log('  MobileContext.forceCheckFloor()     - Force floor check');
+  console.log('  MobileContext.setFloorSelector(selector) - Set floor selector');
+  console.log('  MobileContext.addFloorListener(eventType, callback) - Add floor-change listener');
+  console.log('  MobileContext.removeFloorListener(eventType, callback) - Remove floor-change listener');
+  console.log('  MobileContext.quickSetupFloorMonitor(selector) - Quick-setup floor monitor');
+  console.log('  MobileContext.testFloorMonitor()    - Test floor monitor');
   console.log('');
-  console.log('=== MesID楼层监听器快速开始 ===');
-  console.log('方式一（快速设置）：');
-  console.log("1. MobileContext.quickSetupFloorMonitor('.message')  // 使用.message选择器快速设置");
-  console.log('2. MobileContext.testFloorMonitor()   // 测试监听器是否正常工作');
+  console.log('=== MesID floor monitor quick start ===');
+  console.log('Method 1 (quick setup):');
+  console.log("1. MobileContext.quickSetupFloorMonitor('.message')  // Quick-setup with .message selector");
+  console.log('2. MobileContext.testFloorMonitor()   // Test whether the listener works');
   console.log('');
-  console.log('方式二（手动设置）：');
-  console.log("1. MobileContext.setFloorSelector('.message')  // 设置楼层选择器");
+  console.log('Method 2 (manual):');
+  console.log("1. MobileContext.setFloorSelector('.message')  // Set floor selector");
   console.log("2. MobileContext.addFloorListener('onFloorChanged', function(data) {");
-  console.log("     console.log('楼层变化:', data.oldCount, '->', data.newCount);");
+  console.log("     console.log('Floor change:', data.oldCount, '->', data.newCount);");
   console.log('   });');
-  console.log('3. MobileContext.startFloorMonitor()  // 开始监听');
+  console.log('3. MobileContext.startFloorMonitor()  // Start listening');
   console.log('');
-  console.log('调试命令：');
-  console.log('  MobileContext.testFloorMonitor()    // 测试楼层监听器并显示详细信息');
-  console.log('  MobileContext.getFloorDebugInfo()   // 获取调试信息');
-  console.log('  MobileContext.getFloorStatus()      // 查看当前状态');
+  console.log('Debug commands:');
+  console.log('  MobileContext.testFloorMonitor()    // Test floor monitor and print details');
+  console.log('  MobileContext.getFloorDebugInfo()   // Get debug info');
+  console.log('  MobileContext.getFloorStatus()      // View current status');
   console.log('');
-  console.log('事件类型onFloorAdded, onFloorRemoved, onFloorChanged');
-  console.log('注意：楼层监听器会自动监听 mesid="1" 元素的变化');
+  console.log('Events: onFloorAdded, onFloorRemoved, onFloorChanged');
+  console.log('Note: the floor monitor watches the mesid="1" element');
 
   // ===========================================
-  // 论坛管理器控制台命令
+  // Forum manager console commands
   // ===========================================
 
-  // 显示论坛管理面板
+  // Show forum panel
   window.MobileContext.showForumPanel = function () {
     if (window.forumManager && typeof window.forumManager.showForumPanel === 'function') {
       window.forumManager.showForumPanel();
     } else {
-      console.warn('[Mobile Context] 论坛管理器未初始化或方法不存在');
+      console.warn('[Mobile Context] Forum manager not initialized or method missing');
     }
   };
 
-  // 生成论坛内容
+  // Generate forum content
   window.MobileContext.generateForum = function () {
     if (window.forumManager && typeof window.forumManager.generateForumContent === 'function') {
       window.forumManager.generateForumContent();
     } else {
-      console.warn('[Mobile Context] 论坛管理器未初始化或方法不存在');
+      console.warn('[Mobile Context] Forum manager not initialized or method missing');
     }
   };
 
-  // 清除论坛内容
+  // Clear forum content
   window.MobileContext.clearForum = function () {
     if (window.forumManager && typeof window.forumManager.clearForumContent === 'function') {
       window.forumManager.clearForumContent();
     } else {
-      console.warn('[Mobile Context] 论坛管理器未初始化或方法不存在');
+      console.warn('[Mobile Context] Forum manager not initialized or method missing');
     }
   };
 
-  // 获取论坛状态
+  // Get forum status
   window.MobileContext.getForumStatus = function () {
     if (!window.forumManager) {
-      console.warn('[Mobile Context] 论坛管理器未初始化');
+      console.warn('[Mobile Context] Forum manager not initialized');
       return null;
     }
     return {
@@ -2386,19 +2386,19 @@ function registerConsoleCommands() {
     };
   };
 
-  // 设置论坛风格
+  // Set forum style
   window.MobileContext.setForumStyle = function (styleName) {
     if (!window.forumManager) {
-      console.warn('[Mobile Context] 论坛管理器未初始化');
+      console.warn('[Mobile Context] Forum manager not initialized');
       return false;
     }
     if (!styleName) {
-      console.warn('[Mobile Context] 请提供风格名称');
+      console.warn('[Mobile Context] Provide a style name');
       console.log(
-        '可用风格:',
+        'Available styles:',
         window.forumStyles
           ? window.forumStyles.getAvailableStyles()
-          : ['贴吧老哥', '知乎精英', '小红书种草', '抖音达人', 'B站UP主', '海角老司机', '八卦小报记者', '天涯老涯友'],
+          : ['Tieba Bro', 'Zhihu Elite', 'Xiaohongshu Recs', 'Douyin Creator', 'Bilibili UP', 'Hajiao Veteran', 'Tabloid Reporter', 'Tianya Regular'],
       );
       return false;
     }
@@ -2407,14 +2407,14 @@ function registerConsoleCommands() {
     return true;
   };
 
-  // 设置论坛阈值
+  // Set forum threshold
   window.MobileContext.setForumThreshold = function (threshold) {
     if (!window.forumManager) {
-      console.warn('[Mobile Context] 论坛管理器未初始化');
+      console.warn('[Mobile Context] Forum manager not initialized');
       return false;
     }
     if (typeof threshold !== 'number' || threshold < 1) {
-      console.warn('[Mobile Context] 请提供有效的阈值（大于0的整数）');
+      console.warn('[Mobile Context] Provide a valid threshold (integer > 0)');
       return false;
     }
     window.forumManager.currentSettings.threshold = threshold;
@@ -2422,31 +2422,31 @@ function registerConsoleCommands() {
     return true;
   };
 
-  // 切换论坛自动更新
+  // Toggle forum auto-update
   window.MobileContext.toggleForumAutoUpdate = function () {
     if (!window.forumManager) {
-      console.warn('[Mobile Context] 论坛管理器未初始化');
+      console.warn('[Mobile Context] Forum manager not initialized');
       return false;
     }
     window.forumManager.currentSettings.autoUpdate = !window.forumManager.currentSettings.autoUpdate;
     window.forumManager.saveSettings();
-    console.log(`[Mobile Context] 论坛自动更新已${window.forumManager.currentSettings.autoUpdate ? '启用' : '禁用'}`);
+    console.log(`[Mobile Context] Forum auto-update is now${window.forumManager.currentSettings.autoUpdate ? 'enabled' : 'disabled'}`);
     return window.forumManager.currentSettings.autoUpdate;
   };
 
-  // 获取可用论坛风格
+  // List forum styles
   window.MobileContext.getForumStyles = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return [];
     }
     return window.forumStyles.getAvailableStyles();
   };
 
-  // 启动/停止论坛自动监听器
+  // Start/stop forum auto-listener
   window.MobileContext.startForumListener = function () {
     if (!window.forumAutoListener) {
-      console.warn('[Mobile Context] 论坛自动监听器未初始化');
+      console.warn('[Mobile Context] Forum auto-listener not initialized');
       return false;
     }
     window.forumAutoListener.start();
@@ -2455,184 +2455,184 @@ function registerConsoleCommands() {
 
   window.MobileContext.stopForumListener = function () {
     if (!window.forumAutoListener) {
-      console.warn('[Mobile Context] 论坛自动监听器未初始化');
+      console.warn('[Mobile Context] Forum auto-listener not initialized');
       return false;
     }
     window.forumAutoListener.stop();
     return true;
   };
 
-  // 获取论坛监听器状态
+  // Get forum listener status
   window.MobileContext.getForumListenerStatus = function () {
     if (!window.forumAutoListener) {
-      console.warn('[Mobile Context] 论坛自动监听器未初始化');
+      console.warn('[Mobile Context] Forum auto-listener not initialized');
       return null;
     }
     return window.forumAutoListener.getStatus();
   };
 
-  // 调试论坛功能
+  // Debug forum features
   window.MobileContext.debugForumFeatures = function () {
-    console.group('=== 论坛功能状态 ===');
+    console.group('=== Forum feature status ===');
 
-    // 检查论坛模块
-    console.log('1. 论坛风格模块:', {
+    // Check forum modules
+    console.log('1. Forum styles module:', {
       exists: !!window.forumStyles,
       availableStyles: window.forumStyles ? window.forumStyles.getAvailableStyles().length : 0,
       hasCustomPrefix: window.forumStyles ? window.forumStyles.getPrefixStatus().hasPrefix : false,
       hasGlobalPrefix: window.forumStyles ? window.forumStyles.getPrefixStatus().hasGlobalPrefix : false,
     });
 
-    console.log('2. 论坛自动监听器:', {
+    console.log('2. Forum auto-listener:', {
       exists: !!window.forumAutoListener,
       isListening: window.forumAutoListener ? window.forumAutoListener.isListening : false,
       lastMessageCount: window.forumAutoListener ? window.forumAutoListener.lastMessageCount : 0,
     });
 
-    console.log('3. 论坛管理器:', {
+    console.log('3. Forum manager:', {
       exists: !!window.forumManager,
       isInitialized: window.forumManager ? window.forumManager.isInitialized : false,
       isProcessing: window.forumManager ? window.forumManager.isProcessing : false,
       settings: window.forumManager ? window.forumManager.currentSettings : null,
     });
 
-    // 检查UI元素
-    console.log('4. 论坛UI元素:', {
+    // Check UI elements
+    console.log('4. Forum UI elements:', {
       forumButton: !!document.getElementById('mobile-forum-trigger'),
       forumPanel: !!document.getElementById('forum-panel-overlay'),
     });
 
-    // 显示前缀状态（详细版）
+    // Show prefix status (detailed)
     if (window.forumStyles) {
       const prefixStatus = window.forumStyles.getPrefixStatus();
-      console.log('5. 前缀设置详情:', prefixStatus);
+      console.log('5. Prefix details:', prefixStatus);
 
-      // 显示优先级信息
+      // Show priority info
       const priorityInfo = window.forumStyles.getPrefixPriorityInfo();
-      console.log('6. 前缀优先级:', priorityInfo);
+      console.log('6. Prefix priority:', priorityInfo);
     }
 
     console.groupEnd();
   };
 
   // ===========================================
-  // 论坛前缀控制台命令
+  // Forum prefix console commands
   // ===========================================
 
-  // 设置论坛前缀
+  // Set forum prefix
   window.MobileContext.setForumPrefix = function (text) {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return false;
     }
     window.forumStyles.setCustomPrefix(text);
-    console.log(`[Mobile Context] ✅ 前缀已设置: ${text ? '已设置' : '已清空'}`);
+    console.log(`[Mobile Context] ✅ Prefix set: ${text ? 'set' : 'cleared'}`);
     return true;
   };
 
-  // 获取当前前缀
+  // Get current prefix
   window.MobileContext.getForumPrefix = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
     const prefix = window.forumStyles.getCustomPrefix();
-    console.log(`[Mobile Context] 当前前缀: ${prefix || '(无)'}`);
+    console.log(`[Mobile Context] Current prefix: ${prefix || '(none)'}`);
     return prefix;
   };
 
-  // 清空前缀
+  // Clear prefix
   window.MobileContext.clearForumPrefix = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return false;
     }
     window.forumStyles.clearCustomPrefix();
-    console.log('[Mobile Context] ✅ 前缀已清空');
+    console.log('[Mobile Context] ✅ Prefix cleared');
     return true;
   };
 
-  // 预览带前缀的风格提示词
-  window.MobileContext.previewForumPrompt = function (styleName = '贴吧老哥') {
+  // Preview style prompt with prefix
+  window.MobileContext.previewForumPrompt = function (styleName = 'Tieba Bro') {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
     const prompt = window.forumStyles.previewStyleWithPrefix(styleName);
-    console.log(`[Mobile Context] ${styleName} 风格预览:`);
+    console.log(`[Mobile Context] ${styleName}  style preview:`);
     console.log(prompt);
     return prompt;
   };
 
-  // 获取前缀状态
+  // Get prefix status
   window.MobileContext.getForumPrefixStatus = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
     const status = window.forumStyles.getPrefixStatus();
-    console.log('[Mobile Context] 前缀状态:', status);
+    console.log('[Mobile Context] Prefix status:', status);
     return status;
   };
 
   // ===========================================
-  // 全局后台前缀控制台命令
+  // Global backend prefix console commands
   // ===========================================
 
-  // 查看全局后台前缀
+  // View global backend prefix
   window.MobileContext.getGlobalForumPrefix = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
     const globalPrefix = window.forumStyles.getGlobalBackendPrefix();
-    console.log('[Mobile Context] 全局后台前缀:');
+    console.log('[Mobile Context] Global backend prefix:');
     console.log(globalPrefix);
     return globalPrefix;
   };
 
-  // 检查是否有全局后台前缀
+  // Check whether a global backend prefix exists
   window.MobileContext.hasGlobalForumPrefix = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return false;
     }
     const hasGlobal = window.forumStyles.hasGlobalBackendPrefix();
-    console.log(`[Mobile Context] 全局后台前缀状态: ${hasGlobal ? '已设置' : '未设置'}`);
+    console.log(`[Mobile Context] Global backend prefix status: ${hasGlobal ? 'set' : 'not set'}`);
     return hasGlobal;
   };
 
-  // 获取完整前缀预览
+  // Get full prefix preview
   window.MobileContext.getFullForumPrefixPreview = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
     const preview = window.forumStyles.getFullPrefixPreview();
-    console.log('[Mobile Context] 完整前缀预览:');
+    console.log('[Mobile Context] Full prefix preview:');
     console.log(preview);
     return preview;
   };
 
-  // 获取前缀优先级信息
+  // Get prefix priority info
   window.MobileContext.getForumPrefixPriority = function () {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
     const info = window.forumStyles.getPrefixPriorityInfo();
-    console.log('[Mobile Context] 前缀优先级信息:');
+    console.log('[Mobile Context] Prefix priority info:');
     console.log(info);
     return info;
   };
 
-  // 预览最终发送给模型的完整提示词
-  window.MobileContext.previewFullForumPrompt = function (styleName = '贴吧老哥') {
+  // Preview the full prompt sent to the model
+  window.MobileContext.previewFullForumPrompt = function (styleName = 'Tieba Bro') {
     if (!window.forumStyles) {
-      console.warn('[Mobile Context] 论坛风格模块未初始化');
+      console.warn('[Mobile Context] Forum styles module not initialized');
       return null;
     }
-    console.log(`[Mobile Context] 完整提示词预览（${styleName}风格）:`);
+    console.log(`[Mobile Context] Full prompt preview (${styleName} style):`);
     console.log('='.repeat(60));
     const fullPrompt = window.forumStyles.previewStyleWithPrefix(styleName);
     console.log(fullPrompt);
@@ -2641,70 +2641,70 @@ function registerConsoleCommands() {
   };
 
   console.log('');
-  console.log('=== 论坛管理器 v1.0 ===');
-  console.log('  MobileContext.showForumPanel() - 显示论坛管理面板');
-  console.log('  MobileContext.generateForum() - 立即生成论坛内容');
-  console.log('  MobileContext.clearForum() - 清除第1楼层的论坛内容');
-  console.log('  MobileContext.getForumStatus() - 获取论坛管理器状态');
-  console.log('  MobileContext.setForumStyle(styleName) - 设置论坛风格');
-  console.log('  MobileContext.setForumThreshold(number) - 设置消息阈值');
-  console.log('  MobileContext.toggleForumAutoUpdate() - 切换自动更新');
-  console.log('  MobileContext.getForumStyles() - 获取可用论坛风格列表');
+  console.log('=== Forum manager v1.0 ===');
+  console.log('  MobileContext.showForumPanel() - Show forum panel');
+  console.log('  MobileContext.generateForum() - Generate forum content now');
+  console.log('  MobileContext.clearForum() - Clear forum content on floor 1');
+  console.log('  MobileContext.getForumStatus() - Get forum manager status');
+  console.log('  MobileContext.setForumStyle(styleName) - Set forum style');
+  console.log('  MobileContext.setForumThreshold(number) - Set message threshold');
+  console.log('  MobileContext.toggleForumAutoUpdate() - Toggle auto-update');
+  console.log('  MobileContext.getForumStyles() - List forum styles');
   console.log('');
-  console.log('=== 论坛前缀设置 ===');
-  console.log('  MobileContext.setForumPrefix(text) - 设置用户自定义前缀');
-  console.log('  MobileContext.getForumPrefix() - 获取当前用户前缀');
-  console.log('  MobileContext.clearForumPrefix() - 清空用户前缀');
-  console.log('  MobileContext.previewForumPrompt(style) - 预览带前缀的提示词');
+  console.log('=== Forum prefix settings ===');
+  console.log('  MobileContext.setForumPrefix(text) - Set user prefix');
+  console.log('  MobileContext.getForumPrefix() - Get current user prefix');
+  console.log('  MobileContext.clearForumPrefix() - Clear user prefix');
+  console.log('  MobileContext.previewForumPrompt(style) - Preview prompt with prefix');
   console.log('');
-  console.log('=== 全局后台前缀管理 ===');
-  console.log('  MobileContext.getGlobalForumPrefix() - 查看全局后台前缀');
-  console.log('  MobileContext.hasGlobalForumPrefix() - 检查是否设置全局前缀');
-  console.log('  MobileContext.getFullForumPrefixPreview() - 预览所有前缀组合');
-  console.log('  MobileContext.getForumPrefixPriority() - 查看前缀优先级信息');
-  console.log('  MobileContext.previewFullForumPrompt(style) - 预览最终完整提示词');
+  console.log('=== Global backend prefix ===');
+  console.log('  MobileContext.getGlobalForumPrefix() - View global backend prefix');
+  console.log('  MobileContext.hasGlobalForumPrefix() - Check whether global prefix is set');
+  console.log('  MobileContext.getFullForumPrefixPreview() - Preview all prefix layers');
+  console.log('  MobileContext.getForumPrefixPriority() - View prefix priority');
+  console.log('  MobileContext.previewFullForumPrompt(style) - Preview final full prompt');
   console.log('');
-  console.log('=== 论坛自动监听器 ===');
-  console.log('  MobileContext.startForumListener() - 启动论坛自动监听器');
-  console.log('  MobileContext.stopForumListener() - 停止论坛自动监听器');
-  console.log('  MobileContext.getForumListenerStatus() - 获取监听器状态');
+  console.log('=== Forum auto-listener ===');
+  console.log('  MobileContext.startForumListener() - Start forum auto-listener');
+  console.log('  MobileContext.stopForumListener() - Stop forum auto-listener');
+  console.log('  MobileContext.getForumListenerStatus() - Get listener status');
   console.log('');
-  console.log('=== 论坛调试工具 ===');
-  console.log('  MobileContext.debugForumFeatures() - 调试论坛功能状态');
+  console.log('=== Forum debug tools ===');
+  console.log('  MobileContext.debugForumFeatures() - Debug forum features');
   console.log('');
-  console.log('=== 论坛快速开始 ===');
-  console.log('方式一（图形界面）：');
-  console.log('1. 点击右侧📰按钮打开论坛管理面板');
-  console.log('2. 选择论坛风格（贴吧老哥、知乎精英、小红书种草等8种风格）');
-  console.log('3. 可选：设置用户自定义前缀（会添加到全局前缀后面）');
-  console.log('4. 设置消息阈值（当新增消息达到阈值时自动生成论坛内容）');
-  console.log('5. 开启/关闭自动生成');
-  console.log("6. 点击'立即生成论坛'手动生成内容");
-  console.log('7. 论坛内容会自动追加到第1楼层（保留原有内容）');
+  console.log('=== Forum quick start ===');
+  console.log('Method 1 (GUI):');
+  console.log('1. Click the 📰 button on the right to open the forum panel');
+  console.log('2. Pick a forum style (8 community styles such as Tieba Bro, Zhihu Elite, Xiaohongshu)');
+  console.log('3. Optional: set a user prefix (appended after the global prefix)');
+  console.log('4. Set the message threshold (auto-generate when new messages hit it)');
+  console.log('5. Toggle auto-generate');
+  console.log("6. Click 'Generate forum now' for a manual run");
+  console.log('7. Forum content is appended to floor 1 (original text kept)');
   console.log('');
-  console.log('方式二（控制台命令）：');
-  console.log("1. MobileContext.setForumStyle('知乎精英')  // 设置风格");
-  console.log("2. MobileContext.setForumPrefix('你的自定义要求')  // 可选：设置用户前缀");
-  console.log('3. MobileContext.setForumThreshold(5)      // 设置阈值');
-  console.log('4. MobileContext.toggleForumAutoUpdate()   // 启用自动更新');
-  console.log('5. MobileContext.generateForum()           // 立即生成论坛内容');
+  console.log('Method 2 (console):');
+  console.log("1. MobileContext.setForumStyle('Zhihu Elite')  // Set style");
+  console.log("2. MobileContext.setForumPrefix('your custom instructions')  // Optional: set user prefix");
+  console.log('3. MobileContext.setForumThreshold(5)      // Set threshold');
+  console.log('4. MobileContext.toggleForumAutoUpdate()   // Enable auto-update');
+  console.log('5. MobileContext.generateForum()           // Generate forum content now');
   console.log('');
-  console.log('=== 前缀系统说明 ===');
-  console.log('论坛功能采用多层前缀系统，优先级从高到低：');
-  console.log('1. 🔒 全局后台前缀（开发者在代码中设置，包含基础规范）');
-  console.log('2. 👤 用户自定义前缀（用户在UI或控制台中设置）');
-  console.log('3. 🎭 论坛风格提示词（8种网络社区风格）');
-  console.log('4. 😊 表情包使用指南');
+  console.log('=== Prefix system notes ===');
+  console.log('Forum uses stacked prefixes, high to low priority:');
+  console.log('1. 🔒 Global backend prefix (set in code by the developer; base rules)');
+  console.log('2. 👤 User prefix (set in the UI or console)');
+  console.log('3. 🎭 Forum style prompt (8 community styles)');
+  console.log('4. 😊 Sticker usage guide');
   console.log('');
-  console.log('查看前缀状态：MobileContext.getFullForumPrefixPreview()');
-  console.log("预览完整提示词：MobileContext.previewFullForumPrompt('贴吧老哥')");
+  console.log('View prefix status: MobileContext.getFullForumPrefixPreview()');
+  console.log("Preview full prompt: MobileContext.previewFullForumPrompt('Tieba Bro')");
   console.log('');
-  console.log('注意：论坛功能需要先配置API（自定义API配置模块）');
-  console.log('支持的风格：贴吧老哥、知乎精英、小红书种草、抖音达人、B站UP主、海角老司机、八卦小报记者、天涯老涯友');
-  console.log('生成的论坛内容会追加到第1楼层，使用特殊标记包装，清除时只清除论坛部分');
+  console.log('Note: forum needs API config first (Custom API config module)');
+  console.log('Supported styles: Tieba Bro, Zhihu Elite, Xiaohongshu Recs, Douyin Creator, Bilibili UP, Hajiao Veteran, Tabloid Reporter, Tianya Regular');
+  console.log('Generated forum text is appended to floor 1 inside special markers; clear removes only the forum block');
 }
 
-// 设置全局插件标识
+// Set global plugin flag
 window.MobileContextPlugin = {
   version: '2.4.0',
   description:
@@ -2724,7 +2724,7 @@ window.MobileContextPlugin = {
 };
 
 /**
- * 更新pointer-events设置
+ * Update pointer-events setting
  */
 function updatePointerEventsSettings() {
   const container = document.querySelector('.mobile-phone-container');
@@ -2735,18 +2735,18 @@ function updatePointerEventsSettings() {
   }
 
   if (extension_settings.mobile_context.tavernCompatibilityMode) {
-    // 兼容模式：启用pointer-events设置，允许同时控制手机和酒馆页面
+    // Compat mode: pointer-events so phone and tavern page can both be used
     container.style.pointerEvents = 'none';
     frame.style.pointerEvents = 'auto';
   } else {
-    // 非兼容模式：确保容器可以接收点击事件，允许点击外部关闭手机
+    // Non-compat: container receives clicks so tapping outside closes the phone
     container.style.pointerEvents = 'auto';
     frame.style.pointerEvents = 'auto';
   }
 }
 
 /**
- * 更新手机按钮可见性
+ * Update phone-button visibility
  */
 function updatePhoneVisibility() {
   const phoneTrigger = document.getElementById('mobile-phone-trigger');
@@ -2756,10 +2756,10 @@ function updatePhoneVisibility() {
   }
 
   if (extension_settings.mobile_context.hidePhone) {
-    // 隐藏手机按钮
+    // Hide phone button
     phoneTrigger.style.display = 'none';
   } else {
-    // 显示手机按钮
+    // Show phone button
     phoneTrigger.style.display = 'block';
   }
 }
