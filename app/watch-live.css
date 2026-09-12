@@ -19,7 +19,9 @@
 .live-app {
   display: flex;
   flex-direction: column;
-  height: 100%; /* parent height, not viewport */
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
@@ -714,14 +716,17 @@
 .live-container {
   display: flex;
   flex-direction: column;
-  height: 100%; /* parent height, i.e. calc(100% - 48px) */
-  overflow: hidden; /* no page scroll */
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Video box */
 .video-placeholder {
-  width: calc(100% - 20px); /* side margin 30px → 20px */
-  flex: 0 0 40%; /* flex: 40% height */
+  width: calc(100% - 20px);
+  flex: 0 0 40%;
+  min-height: 0;
   background-color: #000;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'%3E%3Crect fill='%23050505' width='80' height='80'/%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M10 10 L60 10 L60 60 L10 60 Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   border-radius: 10px; /* radius 12px → 10px */
@@ -743,20 +748,21 @@
 }
 
 .live-content-text {
-  color: #ffffff; /* white for contrast */
-  font-size: 15px; /* type 16px → 15px */
-  line-height: 1.5; /* line-height 1.6 → 1.5 */
-  margin: 0; /* no margin */
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
   transition: opacity 0.5s ease;
-  padding: 0 6px 6px 6px; /* keep bottom + side padding only */
+  padding: 0 6px 6px 6px;
   text-align: center;
-  flex: 1; /* text area takes leftover space */
-  overflow-y: auto; /* vertical scroll */
-  word-wrap: break-word; /* wrap */
-  word-break: break-all; /* force wrap */
-  display: flex; /* flex container */
-  align-items: flex-start; /* align top so the start is not clipped */
-  justify-content: center; /* center horizontally */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  word-wrap: break-word;
+  word-break: break-word;
+  display: block;
 }
 
 /* Live-content text scrollbar */
@@ -812,10 +818,12 @@
 
 /* Recommended-action panel */
 .interaction-panel {
-  padding: 10px; /* padding 15px → 10px */
+  padding: 10px;
   border-bottom: 1px solid var(--live-border-color);
   background: white;
-  flex: 0 0 20%; /* flex: 20% height */
+  flex: 0 0 20%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .interaction-panel h4 {
@@ -904,14 +912,15 @@
 
 /* Danmaku container */
 .danmaku-container {
-  flex: 1; /* take leftover space (~35%) */
+  flex: 1;
   padding: 15px;
   overflow-y: auto;
-  /* scroll-behavior: smooth; instant jump instead of smooth scroll */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: white;
-  min-height: 0; /* allow flex shrink */
-  display: flex; /* flex container */
-  flex-direction: column; /* column */
+  min-height: 0;
+  display: block;
 }
 
 .danmaku-container::-webkit-scrollbar {
@@ -935,9 +944,9 @@
 .danmaku-list {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* gap 12px → 8px */
-  flex: 1; /* take leftover parent space */
-  min-height: 0; /* allow shrink */
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: auto;
 }
 
 .danmaku-item {
