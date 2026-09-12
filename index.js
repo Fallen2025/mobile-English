@@ -226,14 +226,13 @@ const customAPIScript = document.createElement('script');
 customAPIScript.src = './scripts/extensions/third-party/mobile/custom-api-config.js';
 customAPIScript.onload = () => {
   console.log('[Mobile Context] Custom API config module loaded');
-  // Check whether API config module was created
   setTimeout(() => {
-    if (window.mobileCustomAPIConfig) {
-      console.log('[Mobile Context] ✅ Custom API config module created');
+    if (window.mobileCustomAPIConfig || window.MobileCustomAPIConfig) {
+      console.log('[Mobile Context] Custom API config module created');
     } else {
-      console.error('[Mobile Context] ❌ Custom API config module create failed');
+      console.warn('[Mobile Context] Custom API config instance not ready yet');
     }
-  }, 100);
+  }, 500);
 };
 customAPIScript.onerror = () => {
   console.error('[Mobile Context] Custom API config module failed to load');
