@@ -1,0 +1,20 @@
+{
+  "messages": "Messages",
+  "shop": "Shop",
+  "task": "Tasks",
+  "forum": "Forum",
+  "weibo": "Feed",
+  "live": "Live",
+  "backpack": "Bag",
+  "api": "API",
+  "profile": "Profile",
+  "settings": "Settings",
+  "status": "Status",
+  "diary": "Diary",
+  "mail": "Mail",
+  "back": "Back",
+  "send": "Send",
+  "home": "Home",
+  "unread": "Unread",
+  "tavernCompatibility": "Tavern compatibility"
+}
