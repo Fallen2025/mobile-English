@@ -1773,7 +1773,8 @@ if (typeof window.WatchLiveApp === 'undefined') {
           // 自动"jump"弹幕到底部（瞬时、仅在未在底部时触发）
           const danmakuContainer = appContainer.querySelector('#danmaku-container');
           if (danmakuContainer) {
-            this.jumpToBottomIfNeeded(danmakuContainer);
+            this.bindDanmakuScrollTracking(danmakuContainer);
+            this.jumpToBottomIfNeeded(danmakuContainer, true);
           }
         }
 
@@ -1785,13 +1786,37 @@ if (typeof window.WatchLiveApp === 'undefined') {
     }
 
     // 若接近底部则保持不动；若不在底部则瞬时跳到底部
-    jumpToBottomIfNeeded(container) {
-      const threshold = 10; // px判定阈值
-      const distanceToBottom = container.scrollHeight - (container.scrollTop + container.clientHeight);
-      if (distanceToBottom > threshold) {
-        // 瞬间jump，无动画
-        container.scrollTop = container.scrollHeight;
+    isNearBottom(container, threshold = 48) {
+      if (!container) return true;
+      return container.scrollHeight - (container.scrollTop + container.clientHeight) <= threshold;
+    }
+
+    stickContainerToBottom(container) {
+      if (!container) return;
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Stick to bottom only when the user is already near it (or first paint).
+    jumpToBottomIfNeeded(container, force = false) {
+      if (!container) return;
+      if (force || this._danmakuPinnedToBottom !== false) {
+        if (force || this.isNearBottom(container)) {
+          this.stickContainerToBottom(container);
+        }
       }
+    }
+
+    bindDanmakuScrollTracking(container) {
+      if (!container || container.dataset.scrollBound === '1') return;
+      container.dataset.scrollBound = '1';
+      this._danmakuPinnedToBottom = true;
+      container.addEventListener(
+        'scroll',
+        () => {
+          this._danmakuPinnedToBottom = this.isNearBottom(container);
+        },
+        { passive: true },
+      );
     }
 
     /**
@@ -2365,9 +2390,64 @@ if (typeof window.WatchLiveApp === 'undefined') {
     /**
      * 发送消息到SillyTavern
      */
+    /**
+     * Compact live state for presets that send no chat history.
+     * Pulls known rooms + current session so the model does not reboot.
+     */
+    collectLiveContextSnippet() {
+      const parts = [];
+      try {
+        const rooms = typeof this.parseLiveRoomList === 'function' ? this.parseLiveRoomList() || [] : [];
+        const seen = new Set();
+        const unique = [];
+        for (const r of rooms) {
+          const key = `${r.name}|${r.streamer}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          unique.push(r);
+        }
+        const lastRooms = unique.slice(-10);
+        if (lastRooms.length) {
+          parts.push('Known rooms:');
+          lastRooms.forEach(r => {
+            parts.push(`[直播|${r.name}|${r.streamer}|${r.category}|${r.viewers}]`);
+          });
+        }
+
+        const st = this.stateManager || {};
+        if (st.isLiveActive) {
+          parts.push(`Active session viewers: ${st.currentViewerCount || '?'}`);
+          if (st.currentLiveContent) {
+            parts.push(`Latest 直播内容: ${String(st.currentLiveContent).slice(0, 400)}`);
+          }
+          const dan = (st.danmakuList || []).slice(-8);
+          if (dan.length) {
+            parts.push('Recent chat:');
+            dan.forEach(d => {
+              const user = d.user || d.username || d.name || 'user';
+              const text = d.content || d.text || d.message || '';
+              parts.push(`- ${user}: ${String(text).slice(0, 80)}`);
+            });
+          }
+        }
+      } catch (error) {
+        console.warn('[Watch Live App] live context pack failed:', error);
+      }
+
+      let body = parts.join('\n').trim();
+      if (body.length > 2500) body = body.slice(-2500);
+      if (!body) return '';
+      return (
+        '[LIVE_CONTEXT]\n' +
+        body +
+        '\nContinue from this live state. Do not reboot the stream or invent a fresh room list unless asked.\n[/LIVE_CONTEXT]\n\n'
+      );
+    }
+
     async sendToSillyTavern(message) {
       try {
-        console.log('[Live App] Sending to SillyTavern:', message);
+        const packed = (this.collectLiveContextSnippet ? this.collectLiveContextSnippet() : '') + message;
+        console.log('[Live App] Sending to SillyTavern:', packed);
 
         // 尝试找到文本输入框
         const textarea = document.querySelector('#send_textarea');
@@ -2377,7 +2457,7 @@ if (typeof window.WatchLiveApp === 'undefined') {
         }
 
         // 设置消息内容
-        textarea.value = message;
+        textarea.value = packed;
         textarea.focus();
 
         // 触发输入事件
@@ -3021,8 +3101,8 @@ if (typeof window.WatchLiveApp === 'undefined') {
           el.classList.add('appear-show');
           // 每条出现后，若容器存在则将其滚动到可见底部（瞬时，无动画）
           const container = document.getElementById('danmaku-container');
-          if (container && el?.scrollIntoView) {
-            el.scrollIntoView({ block: 'end', inline: 'nearest' });
+          if (container) {
+            this.jumpToBottomIfNeeded(container);
           }
         }, baseDelay + idx * stepDelay);
       });
