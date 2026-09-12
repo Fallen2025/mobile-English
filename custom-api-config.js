@@ -119,7 +119,7 @@ class MobileCustomAPIConfig {
                 apiUrl: this.currentSettings.apiUrl || '(not set)',
                 hasApiKey: !!this.currentSettings.apiKey,
                 model: this.currentSettings.model || '(not set)',
-                Supported providers: Object.keys(this.supportedProviders)
+                supportedProviders: Object.keys(this.supportedProviders)
             });
             return true;
         } catch (error) {
@@ -500,6 +500,11 @@ class MobileCustomAPIConfig {
             const currentProvider = this.currentSettings.provider;
             this.onProviderChange(currentProvider);
         }
+    }
+
+    // Alias used by forum control / index.js
+    showAPIPanel() {
+        this.showConfigPanel();
     }
 
     /**
