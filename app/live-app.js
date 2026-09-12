@@ -823,8 +823,10 @@ if (typeof window.LiveApp === 'undefined') {
         this.eventListener.startListening();
 
         // 发送开始直播消息到SillyTavern
-        const message = `用户开始直播，初始互动为（${initialInteraction}），请按照正确的直播格式要求生成本场人数，直播内容，弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动。禁止使用错误格式。`;
+        const message = `The user started a live stream. Opening line: (${initialInteraction}). Generate live data in the required format: 本场人数, 直播内容, danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines. Do not use any other format.
+[直播|{{user}}|弹幕|${initialInteraction}]`;
 
+        this.appendLocalUserChat(initialInteraction);
         await this.sendToSillyTavern(message);
 
         // 更新界面
@@ -833,7 +835,7 @@ if (typeof window.LiveApp === 'undefined') {
         console.log('[Live App] 直播已开始');
       } catch (error) {
         console.error('[Live App] 开始直播失败:', error);
-        this.showToast('开始直播失败: ' + error.message, 'error');
+        this.showToast('Could not go live: ' + error.message, 'error');
       }
     }
 
@@ -857,11 +859,11 @@ if (typeof window.LiveApp === 'undefined') {
         // 更新界面
         this.updateAppContent();
 
-        this.showToast('直播已结束', 'success');
+        this.showToast('Stream ended', 'success');
         console.log('[Live App] 直播已结束');
       } catch (error) {
         console.error('[Live App] 结束直播失败:', error);
-        this.showToast('结束直播失败: ' + error.message, 'error');
+        this.showToast('Could not end stream: ' + error.message, 'error');
       }
     }
 
@@ -879,14 +881,16 @@ if (typeof window.LiveApp === 'undefined') {
         }
 
         // 发送继续直播消息到SillyTavern
-        const message = `用户继续直播，互动为（${interaction}），请按照正确的直播格式要求生成本场人数，直播内容，弹幕，打赏和推荐互动。此次回复内仅生成一次本场人数和直播内容格式，直播内容需要简洁。最后需要生成四条推荐互动。禁止使用错误格式。`;
+        const message = `The user is still live. Their action: (${interaction}). Generate live data in the required format: 本场人数, 直播内容, danmaku, tips, and 推荐互动. Emit 本场人数 and 直播内容 exactly once. Keep 直播内容 short. End with four 推荐互动 lines. Do not use any other format.
+[直播|{{user}}|弹幕|${interaction}]`;
 
+        this.appendLocalUserChat(interaction);
         await this.sendToSillyTavern(message);
 
         console.log('[Live App] 互动消息已发送');
       } catch (error) {
         console.error('[Live App] 继续互动失败:', error);
-        this.showToast('发送互动失败: ' + error.message, 'error');
+        this.showToast('Could not send chat: ' + error.message, 'error');
       }
     }
 
@@ -1034,16 +1038,16 @@ if (typeof window.LiveApp === 'undefined') {
         <div class="live-app">
           <div class="live-main-container">
             <div class="live-main-header">
-              <h2>直播中心</h2>
-              <p>选择你想要的直播功能</p>
+              <h2>Live</h2>
+              <p>Go live or watch a stream</p>
             </div>
 
             <div class="live-options">
               <div class="live-option-card" id="start-streaming-option">
                 <div class="option-icon">🎥</div>
                 <div class="option-content">
-                  <h3>我要直播</h3>
-                  <p>开始你的直播之旅</p>
+                  <h3>Go Live</h3>
+                  <p>Start streaming</p>
                 </div>
                 <div class="option-arrow">→</div>
               </div>
@@ -1051,8 +1055,8 @@ if (typeof window.LiveApp === 'undefined') {
               <div class="live-option-card" id="watch-streaming-option">
                 <div class="option-icon">📺</div>
                 <div class="option-content">
-                  <h3>观看直播</h3>
-                  <p>观看其他主播的精彩直播</p>
+                  <h3>Watch Live</h3>
+                  <p>Watch other streamers</p>
                 </div>
                 <div class="option-arrow">→</div>
               </div>
@@ -1063,38 +1067,38 @@ if (typeof window.LiveApp === 'undefined') {
           <div class="modal" id="start-live-modal" style="display: none;">
             <div class="modal-content">
               <div class="modal-header">
-                <h3>开始直播</h3>
+                <h3>Start stream</h3>
                 <button class="modal-close-btn">&times;</button>
               </div>
               <div class="modal-body">
                 <div class="custom-interaction-section">
                   <textarea
                     id="custom-interaction-input"
-                    placeholder="输入自定义互动内容..."
+                    placeholder="What do you want to say..."
                     rows="3"
                   ></textarea>
                 </div>
 
                 <div class="preset-interactions">
-                  <h4>预设互动</h4>
+                  <h4>Presets</h4>
                   <div class="preset-buttons">
-                    <button class="preset-btn" data-interaction="和观众打个招呼">
-                      👋 和观众打个招呼
+                    <button class="preset-btn" data-interaction="Say hi to chat">
+                      👋 Say hi to chat
                     </button>
-                    <button class="preset-btn" data-interaction="分享今天的心情">
-                      😊 分享今天的心情
+                    <button class="preset-btn" data-interaction="Share how today feels">
+                      😊 Share how today feels
                     </button>
-                    <button class="preset-btn" data-interaction="聊聊最近的趣事">
-                      💬 聊聊最近的趣事
+                    <button class="preset-btn" data-interaction="Tell a recent story">
+                      💬 Tell a recent story
                     </button>
-                    <button class="preset-btn" data-interaction="唱首歌给大家听">
-                      🎵 唱首歌给大家听
+                    <button class="preset-btn" data-interaction="Sing a song">
+                      🎵 Sing a song
                     </button>
                   </div>
                 </div>
 
                 <button class="start-live-btn" id="start-custom-live">
-                  开始直播
+                  Go Live
                 </button>
               </div>
             </div>
@@ -1124,7 +1128,7 @@ if (typeof window.LiveApp === 'undefined') {
             <div class="danmaku-item gift${needAppearClass}" data-sig="${sig}">
               <i class="fas fa-gift"></i>
               <span class="username">${danmaku.username}</span>
-              <span class="content">送出 ${danmaku.content}</span>
+              <span class="content">sent ${danmaku.content}</span>
             </div>
           `;
           } else {
@@ -1143,7 +1147,7 @@ if (typeof window.LiveApp === 'undefined') {
           <div class="live-container">
             <!-- 视频框 -->
             <div class="video-placeholder">
-              <p class="live-content-text">${state.liveContent || '等待直播内容...'}</p>
+              <p class="live-content-text">${state.liveContent || 'Waiting for stream...'}</p>
               <div class="live-status-bottom">
                 <div class="live-dot"></div>
                 <span>LIVE</span>
@@ -1153,13 +1157,13 @@ if (typeof window.LiveApp === 'undefined') {
             <!-- 推荐互动 -->
             <div class="interaction-panel">
               <div class="interaction-header">
-                <h4>推荐互动：</h4>
+                <h4>Suggested:</h4>
                 <button class="interact-btn" id="custom-interact-btn">
-                  <i class="fas fa-pen-nib"></i> 自定义互动
+                  <i class="fas fa-pen-nib"></i> Custom chat
                 </button>
               </div>
               <div class="recommended-interactions">
-                ${recommendedButtons || '<p class="no-interactions">等待推荐互动...</p>'}
+                ${recommendedButtons || '<p class="no-interactions">Waiting for suggestions...</p>'}
               </div>
             </div>
 
@@ -1171,15 +1175,15 @@ if (typeof window.LiveApp === 'undefined') {
             </div>
           </div>
 
-          <!-- 自定义互动弹窗 -->
+          <!-- Custom chat弹窗 -->
           <div id="interaction-modal" class="modal">
             <div class="modal-content">
               <div class="modal-header">
-                <h3>自定义互动</h3>
+                <h3>Custom chat</h3>
                 <button class="modal-close-btn">&times;</button>
               </div>
               <form id="interaction-form">
-                <textarea id="custom-interaction-textarea" placeholder="输入你想说的内容..." rows="4"></textarea>
+                <textarea id="custom-interaction-textarea" placeholder="Type what you want to say..." rows="4"></textarea>
                 <button type="submit" class="submit-btn">发送</button>
               </form>
             </div>
@@ -1256,7 +1260,7 @@ if (typeof window.LiveApp === 'undefined') {
                 this.hideModal('start-live-modal');
                 this.startLive(interaction);
               } else {
-                this.showToast('请输入互动内容', 'warning');
+                this.showToast('Enter something to say', 'warning');
               }
             });
           }
@@ -1285,7 +1289,7 @@ if (typeof window.LiveApp === 'undefined') {
             });
           });
 
-          // 自定义互动按钮
+          // Custom chat按钮
           const customInteractBtn = appContainer.querySelector('#custom-interact-btn');
           if (customInteractBtn) {
             customInteractBtn.addEventListener('click', () => {
@@ -1293,7 +1297,7 @@ if (typeof window.LiveApp === 'undefined') {
             });
           }
 
-          // 自定义互动表单
+          // Custom chat表单
           const interactionForm = appContainer.querySelector('#interaction-form');
           if (interactionForm) {
             interactionForm.addEventListener('submit', e => {
@@ -1305,7 +1309,7 @@ if (typeof window.LiveApp === 'undefined') {
                 textarea.value = '';
                 this.hideAllModals();
               } else {
-                this.showToast('请输入互动内容', 'warning');
+                this.showToast('Enter something to say', 'warning');
               }
             });
           }
@@ -1508,35 +1512,63 @@ if (typeof window.LiveApp === 'undefined') {
     /**
      * 发送消息到SillyTavern
      */
+    appendLocalUserChat(text) {
+      try {
+        if (!this.stateManager) return;
+        const content = String(text || '').trim();
+        if (!content) return;
+        const item = {
+          id: Date.now(),
+          username: 'You',
+          content,
+          type: 'normal',
+          timestamp: new Date().toLocaleString(),
+        };
+        const list = this.stateManager.danmakuList || [];
+        const exists = list.some(d => d.username === item.username && d.content === item.content);
+        if (!exists) this.stateManager.danmakuList = list.concat(item);
+        if (typeof this.updateAppContent === 'function') this.updateAppContent();
+      } catch (e) {
+        console.warn('[Live App] local chat append failed:', e);
+      }
+    }
+
     async sendToSillyTavern(message) {
       try {
-        console.log('[Live App] 发送消息到SillyTavern:', message);
-
-        // 尝试找到文本输入框
-        const textarea = document.querySelector('#send_textarea');
-        if (!textarea) {
-          console.error('[Live App] 未找到消息输入框');
-          throw new Error('未找到消息输入框');
+        const raw = message == null ? '' : String(message);
+        if (!raw.trim() || raw.trim() === 'undefined') {
+          console.error('[Live App] Refusing empty/undefined live prompt');
+          throw new Error('Live prompt was empty (got undefined)');
         }
 
-        // 设置消息内容
-        textarea.value = message;
+        const prefix =
+          '[Live] {{user}} is going live / interacting. Continue the current story. Do not restart Crossing or open a new prologue.\n\n';
+        const packed = prefix + raw;
+        console.log('[Live App] Sending to SillyTavern:', packed.slice(0, 400));
+
+        const textarea = document.querySelector('#send_textarea');
+        if (!textarea) {
+          console.error('[Live App] Message box not found');
+          throw new Error('Message box not found');
+        }
+
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+        if (setter) setter.call(textarea, packed);
+        else textarea.value = packed;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        textarea.dispatchEvent(new Event('change', { bubbles: true }));
         textarea.focus();
 
-        // 触发输入事件
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-
-        // 触发发送按钮点击
         const sendButton = document.querySelector('#send_but');
         if (sendButton) {
           sendButton.click();
-          console.log('[Live App] 已点击发送按钮');
+          console.log('[Live App] Clicked send');
           return true;
         }
 
-        throw new Error('未找到发送按钮');
+        throw new Error('Send button not found');
       } catch (error) {
-        console.error('[Live App] 发送消息时出错:', error);
+        console.error('[Live App] sendToSillyTavern error:', error);
         throw error;
       }
     }
@@ -1919,7 +1951,7 @@ if (typeof window.LiveApp === 'undefined') {
       if (window.mobilePhone && window.mobilePhone.updateAppHeader) {
         const state = {
           app: 'live',
-          title: this.currentView === 'live' ? '直播中' : '直播',
+          title: this.currentView === 'live' ? 'Live' : 'Live',
           view: this.currentView,
           viewerCount: this.stateManager.currentViewerCount,
         };
@@ -2181,7 +2213,7 @@ window.getLiveAppContent = function () {
 
   if (!window.liveApp) {
     console.error('[Live App] liveApp实例不存在');
-    return '<div class="error-message">直播应用加载失败</div>';
+    return '<div class="error-message">Live app failed to load</div>';
   }
 
   try {
@@ -2190,7 +2222,7 @@ window.getLiveAppContent = function () {
     return window.liveApp.getAppContent();
   } catch (error) {
     console.error('[Live App] 获取应用内容失败:', error);
-    return '<div class="error-message">直播应用内容加载失败</div>';
+    return '<div class="error-message">Live app content failed to load</div>';
   }
 };
 
