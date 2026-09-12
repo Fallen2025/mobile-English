@@ -1,9 +1,9 @@
-/* 手机前端框架 - 可爱的iOS风格样式 */
+/* Mobile phone shell — iOS-style */
 
-/* 引入Font Awesome */
+/* Font Awesome */
 @import url('');
 
-/* 触发按钮 */
+/* Trigger button */
 .mobile-phone-trigger {
   position: absolute;
   bottom: 140px;
@@ -25,7 +25,7 @@
   box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6);
 }
 
-/* 手机容器 */
+/* Phone container */
 .mobile-phone-container {
   position: absolute;
   top: 0;
@@ -46,7 +46,7 @@
   transform: scale(1);
 }
 
-/* 遮罩层 */
+/* Overlay */
 .mobile-phone-overlay {
   position: absolute;
   top: 0;
@@ -55,7 +55,7 @@
   height: 100%;
 }
 
-/* 手机框架 */
+/* Phone frame */
 .mobile-phone-frame {
   position: relative;
   width: 70%;
@@ -78,7 +78,7 @@
   position: relative;
 }
 
-/* 状态栏 */
+/* Status bar */
 .mobile-status-bar {
   height: 44px;
   display: flex;
@@ -149,7 +149,7 @@
   font-size: 12px;
 }
 
-/* 主内容区域 */
+/* Main content */
 .mobile-content {
   flex: 1;
   position: relative;
@@ -177,7 +177,7 @@
   font-weight: 600;
 }
 
-/* 时间天气卡片 */
+/* Clock / weather card */
 .weather-card {
   background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
   border-radius: 20px;
@@ -233,7 +233,7 @@
   color: #4a5568;
 }
 
-/* 快捷功能区 */
+/* Quick actions */
 .quick-actions {
   display: flex;
   gap: 15px;
@@ -261,7 +261,7 @@
   font-weight: 500;
 }
 
-/* 应用页面容器 */
+/* App pages */
 .app-pages-container {
   flex: 1;
   display: flex;
@@ -309,7 +309,7 @@
   transform: scale(1.2);
 }
 
-/* 应用图标网格 */
+/* App icon grid */
 .app-grid {
   flex: 1;
   display: flex;
@@ -389,7 +389,7 @@
   text-align: center;
 }
 
-/* 底部装饰 */
+/* Bottom decoration */
 .bottom-decoration {
   display: flex;
   justify-content: center;
@@ -425,7 +425,7 @@
   }
 }
 
-/* 应用界面 */
+/* App screen */
 .app-screen {
   position: absolute;
   top: 0;
@@ -444,12 +444,12 @@
 
 .app-header {
   height: 40px;
-  /* 减少高度 48px → 40px */
+  /* height 48px → 40px */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
-  /* 减少左右padding */
+  /* tighter side padding */
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -475,7 +475,7 @@
 
 .app-title {
   font-size: 16px;
-  /* 减小字体 18px → 16px */
+  /* type 18px → 16px */
   font-weight: 600;
   color: #2d3748;
   margin: 0;
@@ -485,11 +485,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  /* 减小间距 10px → 6px */
+  /* gap 10px → 6px */
   min-width: 40px;
   justify-content: flex-end;
   margin-left: auto;
-  /* 确保右侧组件靠右 */
+  /* pin header actions right */
 }
 
 .app-header-btn {
@@ -498,15 +498,15 @@
   color: var(--text-color);
   cursor: pointer;
   font-size: 13px;
-  /* 进一步减小字体 14px → 13px */
+  /* type 14px → 13px */
   padding: 3px 5px;
-  /* 进一步减小padding */
+  /* tighter padding */
   border-radius: 6px;
   transition: all 0.2s ease;
   margin-left: 3px;
-  /* 进一步减小左边距 4px → 3px */
+  /* left margin 4px → 3px */
   min-width: 38px;
-  /* 减小最小宽度 44px → 38px */
+  /* min-width 44px → 38px */
   text-align: center;
   white-space: nowrap;
   display: flex;
@@ -536,7 +536,7 @@
   transform: none;
 }
 
-/* 论坛按钮特殊样式 */
+/* Forum header buttons */
 .app-header-btn[style*='#e5c9c7'] {
   font-weight: 500;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -547,7 +547,7 @@
   transform: scale(1.05);
 }
 
-/* 论坛应用特殊响应式优化 */
+/* Forum header on small screens */
 @media (max-width: 480px) {
   .app-header[data-app='forum'] .app-header-btn {
     font-size: 10px;
@@ -574,7 +574,7 @@
   }
 }
 
-/* 微博应用特殊响应式优化 - 4个按钮需要更紧凑的布局 */
+/* Weibo header — four buttons, tighter */
 @media (max-width: 480px) {
   .app-header[data-app='weibo'] .app-header-btn {
     font-size: 9px;
@@ -619,7 +619,7 @@
 
   .app-header[data-app='weibo'] .app-header-btn span {
     display: none;
-    /* 在最小屏幕上隐藏文字，只显示图标 */
+    /* smallest screens: icon only */
   }
 
   .app-header[data-app='weibo'] .app-header-btn i {
@@ -631,7 +631,7 @@
   }
 }
 
-/* 响应式设计 */
+/* Responsive */
 @media (max-width: 480px) {
   .app-header-btn {
     font-size: 11px;
@@ -675,7 +675,7 @@
   }
 }
 
-/* 论坛风格设置页面样式 */
+/* Forum style settings page */
 .forum-styles-container {
   padding: 20px;
   max-width: 800px;
@@ -855,7 +855,7 @@
   left: 0;
 }
 
-/* 响应式设计 */
+/* Responsive */
 @media (max-width: 768px) {
   .forum-styles-container {
     padding: 15px;
@@ -903,7 +903,7 @@
   }
 }
 
-/* 弹窗样式 */
+/* Modals */
 .modal {
   position: absolute;
   top: 0;
@@ -990,7 +990,7 @@
   padding: 20px;
 }
 
-/* 表单样式 */
+/* Forms */
 .form-group {
   margin-bottom: 20px;
 }
@@ -1092,7 +1092,7 @@
   color: var(--text-color);
 }
 
-/* 响应式弹窗 */
+/* Responsive modal */
 @media (max-width: 768px) {
   .modal-content {
     width: 95%;
@@ -1132,7 +1132,7 @@
   }
 }
 
-/* 风格预览弹窗样式 */
+/* Style preview modal */
 .style-preview-content {
   max-width: 700px;
   width: 95%;
@@ -1252,7 +1252,7 @@
   gap: 10px;
 }
 
-/* 响应式预览弹窗 */
+/* Responsive preview modal */
 @media (max-width: 768px) {
   .style-preview-content {
     width: 98%;
@@ -1334,28 +1334,28 @@
   }
 }
 
-/* 直播应用header特殊样式 */
+/* Live app header */
 .viewer-count {
   display: flex;
   align-items: center;
   gap: 3px;
-  /* 减小间距 5px → 3px */
+  /* gap 5px → 3px */
   font-size: 12px;
-  /* 减小字体 14px → 12px */
+  /* type 14px → 12px */
   color: var(--text-color);
   background: rgba(255, 255, 255, 0.1);
   padding: 3px 6px;
-  /* 减小padding 4px 8px → 3px 6px */
+  /* padding 4px 8px → 3px 6px */
   border-radius: 10px;
-  /* 减小圆角 12px → 10px */
+  /* radius 12px → 10px */
   margin-right: 3px;
-  /* 减小右边距 5px → 3px */
+  /* right margin 5px → 3px */
 }
 
 .viewer-count i {
   color: #fb7299;
   font-size: 10px;
-  /* 减小图标 12px → 10px */
+  /* icon 12px → 10px */
 }
 
 .gift-log-btn {
@@ -1370,11 +1370,11 @@
   flex: 1;
   overflow-y: auto;
   height: calc(100% - 40px);
-  /* 更新高度计算 48px → 40px */
+  /* height calc 48px → 40px */
   padding-bottom: 0;
 }
 
-/* 应用内容样式 */
+/* App content */
 .messages-app {
   height: 100%;
   background: #fff;
@@ -1390,10 +1390,10 @@
   display: flex;
   gap: 12px;
   padding: 15px;
-  background: transparent; /* 完全透明背景 */
-  border-radius: 0; /* 移除圆角 */
-  backdrop-filter: none; /* 移除磨砂效果 */
-  box-shadow: none; /* 移除阴影 */
+  background: transparent; /* fully transparent */
+  border-radius: 0; /* no radius */
+  backdrop-filter: none; /* no blur */
+  box-shadow: none; /* no shadow */
 }
 
 .message-avatar {
@@ -1430,7 +1430,7 @@
   color: #718096;
 }
 
-/* 相册应用 */
+/* Gallery */
 .gallery-app {
   height: 100%;
 }
@@ -1457,7 +1457,7 @@
   transform: scale(1.05);
 }
 
-/* 设置应用 */
+/* Settings */
 .settings-app {
   height: 100%;
 }
@@ -1503,7 +1503,7 @@
   color: #718096;
 }
 
-/* 日记应用 */
+/* Diary */
 .diary-app {
   height: 100%;
 }
@@ -1546,7 +1546,7 @@
   line-height: 1.5;
 }
 
-/* 邮件应用 */
+/* Mail */
 .mail-app {
   height: 100%;
 }
@@ -1603,30 +1603,30 @@
   text-align: right;
 }
 
-/* 响应式设计 */
+/* Responsive */
 @media (max-width: 768px) {
-  /* Header响应式 */
+  /* Header responsive */
   .app-header {
     height: 36px;
-    /* 减少高度 40px → 36px */
+    /* height 40px → 36px */
     padding: 0 12px;
-    /* 减少左右padding */
+    /* tighter side padding */
   }
 
   .app-title {
     font-size: 15px;
-    /* 减小字体 16px → 15px */
+    /* type 16px → 15px */
   }
 
   .app-header-btn {
     font-size: 12px;
-    /* 进一步减小字体 13px → 12px */
+    /* type 13px → 12px */
     padding: 2px 4px;
-    /* 进一步减小padding */
+    /* tighter padding */
     margin-left: 2px;
-    /* 进一步减小左边距 */
+    /* tighter left margin */
     min-width: 34px;
-    /* 减小最小宽度 */
+    /* smaller min-width */
   }
 
   .app-header-btn i {
@@ -1635,26 +1635,26 @@
 
   .app-header-right {
     gap: 5px;
-    /* 减小间距 6px → 5px */
+    /* gap 6px → 5px */
   }
 
   .viewer-count {
     font-size: 11px;
-    /* 减小字体 12px → 11px */
+    /* type 12px → 11px */
     padding: 2px 5px;
-    /* 减小padding */
+    /* tighter padding */
     margin-right: 2px;
-    /* 减小右边距 */
+    /* tighter right margin */
   }
 
   .viewer-count i {
     font-size: 9px;
-    /* 减小图标 10px → 9px */
+    /* icon 10px → 9px */
   }
 
   .app-content {
     height: calc(100% - 36px);
-    /* 更新高度计算 */
+    /* update height calc */
   }
 
   .mobile-phone-frame {
@@ -1691,7 +1691,7 @@
   }
 }
 
-/* 滚动条样式 */
+/* Scrollbar */
 .app-content::-webkit-scrollbar {
   width: 4px;
 }
@@ -1709,17 +1709,17 @@
   background: #c3c3c3;
 }
 
-/* 直播应用特殊处理：禁用整体滚动条 */
+/* Live app: no page scroll */
 .app-content:has(.live-app) {
   overflow: hidden !important;
 }
 
-/* 兼容性备用方案：通过属性选择器 */
+/* Fallback via attribute selector */
 .app-content[data-app='live'] {
   overflow: hidden !important;
 }
 
-/* 加载占位符样式 */
+/* Loading placeholder */
 .loading-placeholder {
   display: flex;
   flex-direction: column;
@@ -1741,7 +1741,7 @@
   opacity: 0.8;
 }
 
-/* 新的应用加载状态样式 */
+/* App loading state */
 .app-loading-container {
   display: flex;
   flex-direction: column;
@@ -1813,7 +1813,7 @@
   }
 }
 
-/* 错误消息样式 */
+/* Error state */
 .error-message {
   display: flex;
   flex-direction: column;
@@ -1863,7 +1863,7 @@
 }
 
 /*zhishishutiao*/
-/* 天气卡片样式 */
+/* Weather card */
 .weather-container {
   background-color: #ffffff;
   display: flex;
@@ -1954,7 +1954,7 @@
 
 .weather-icon::before {
   content: '☁';
-  /* 云图标 */
+  /* cloud glyph */
   position: absolute;
   left: 0;
   top: 0;
@@ -2035,8 +2035,8 @@
   display: none !important;
 }
 
-/* 图标 CSS 定义区域【蚀刻版】 */
-/* 1. "信息"图标 */
+/* Etched app-icon glyphs */
+/* 1. Messages icon */
 .app-icon[data-app='messages'] .app-icon-bg::before,
 .app-icon[data-app='messages'] .app-icon-bg::after {
   content: '';
@@ -2073,7 +2073,7 @@
   border-radius: 16px 16px 16px 5px;
 }
 
-/* 2. "任务"图标 */
+/* 2. Tasks icon */
 .app-icon[data-app='task'] .app-icon-bg::before,
 .app-icon[data-app='task'] .app-icon-bg::after {
   position: absolute;
@@ -2104,7 +2104,7 @@
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-/* 3. "论坛"图标 */
+/* 3. Forum icon */
 .app-icon[data-app='forum'] .app-icon-bg::before,
 .app-icon[data-app='forum'] .app-icon-bg::after {
   content: '';
@@ -2132,7 +2132,7 @@
   box-shadow: 20px 0 0 0 rgba(0, 0, 0, 0.4);
 }
 
-/* 4. "购物"图标 */
+/* 4. Shop icon */
 .app-icon[data-app='shop'] .app-icon-bg::before,
 .app-icon[data-app='shop'] .app-icon-bg::after {
   content: '';
@@ -2170,7 +2170,7 @@
   text-shadow: none;
 }
 
-/* 5. "直播"图标 */
+/* 5. Live icon */
 .app-icon[data-app='live'] .app-icon-bg::before,
 .app-icon[data-app='live'] .app-icon-bg::after {
   content: '♪' !important;
@@ -2192,7 +2192,7 @@
   transform: translate(6px, -4px) rotate(10deg);
 }
 
-/* 6. "背包"图标 */
+/* 6. Bag icon */
 .app-icon[data-app='backpack'] .app-icon-bg::before,
 .app-icon[data-app='backpack'] .app-icon-bg::after {
   content: '';
@@ -2223,7 +2223,7 @@
   transform: translateX(-50%);
 }
 
-/* 7. "设置"图标 */
+/* 7. Settings icon */
 .app-icon[data-app='settings'] .app-icon-bg::before,
 .app-icon[data-app='settings'] .app-icon-bg::after {
   content: '';
@@ -2251,7 +2251,7 @@
   background-position: 100% center, center center;
 }
 
-/* 8. "微博"图标 */
+/* 8. Weibo icon */
 .app-icon[data-app='weibo'] .app-icon-bg::before {
   content: '\f06e';
   font-family: 'Font Awesome 5 Free';
@@ -2267,7 +2267,7 @@
   content:''
 }
 
-/* 9. "API"图标 */
+/* 9. API icon */
 .app-icon[data-app='api'] .app-icon-bg::before {
   content: '\f1e6';
   font-family: 'Font Awesome 5 Free';
@@ -2306,30 +2306,30 @@
   display: none !important;
 }
 
-/* 小屏幕响应式设计 */
+/* Small-screen responsive */
 @media (max-width: 480px) {
-  /* Header响应式 */
+  /* Header responsive */
   .app-header {
     height: 32px;
-    /* 进一步减少高度 36px → 32px */
+    /* height 36px → 32px */
     padding: 0 10px;
-    /* 进一步减少左右padding */
+    /* tighter side padding */
   }
 
   .app-title {
     font-size: 14px;
-    /* 进一步减小字体 15px → 14px */
+    /* type 15px → 14px */
   }
 
   .app-header-btn {
     font-size: 10px;
-    /* 进一步减小字体 12px → 10px */
+    /* type 12px → 10px */
     padding: 1px 3px;
-    /* 进一步减小padding */
+    /* tighter padding */
     margin-left: 1px;
-    /* 进一步减小左边距 */
+    /* tighter left margin */
     min-width: 30px;
-    /* 减小最小宽度 */
+    /* smaller min-width */
   }
 
   .app-header-btn i {
@@ -2338,30 +2338,30 @@
 
   .app-header-right {
     gap: 4px;
-    /* 进一步减小间距 5px → 4px */
+    /* gap 5px → 4px */
   }
 
   .viewer-count {
     font-size: 10px;
-    /* 进一步减小字体 11px → 10px */
+    /* type 11px → 10px */
     padding: 1px 4px;
-    /* 进一步减小padding */
+    /* tighter padding */
     margin-right: 1px;
-    /* 进一步减小右边距 */
+    /* tighter right margin */
   }
 
   .viewer-count i {
     font-size: 8px;
-    /* 进一步减小图标 9px → 8px */
+    /* icon 9px → 8px */
   }
 
   .app-content {
     height: calc(100% - 32px);
-    /* 更新高度计算 */
+    /* update height calc */
   }
 }
 
-/* 购物应用 header 橙色主题按钮，仅用于 shop 应用右侧功能键 */
+/* Shop header accent buttons */
 .shop-accent-btn {
   color: #fff !important;
   background: linear-gradient(135deg, #ffb46b 0%, #ff7e29 100%);
