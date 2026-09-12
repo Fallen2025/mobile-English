@@ -4991,7 +4991,7 @@ if (typeof window.MessageApp === 'undefined') {
         const friendNameMatcher = contextMonitor.createFriendNameMatcher(friendName);
 
         // 创建Friends格式标记的正则表达式
-        const friendFormatRegex = new RegExp(`\\[Friendsid\\|${friendName}\\|${friendId}\\]`, 'g');
+        const friendFormatRegex = new RegExp(`\\[好友id\\|${friendName}\\|${friendId}\\]`, 'g');
 
         chatData.messages.forEach((message, index) => {
           if (message.mes && typeof message.mes === 'string') {
@@ -5139,7 +5139,7 @@ if (typeof window.MessageApp === 'undefined') {
         throw new Error('SillyTavern未准备就绪');
       }
 
-      // 格式化FriendsMessages - 使用固定的"Friendsid"文本
+      // 格式化FriendsMessages - 使用固定的"好友id"文本
       const friendInfo = `[好友id|${friendName}|${friendNumber}]`;
 
       // Add到最新楼层
@@ -5636,7 +5636,7 @@ if (typeof window.MessageApp === 'undefined') {
         const contextMonitor =
           window['contextMonitor'] || (window['ContextMonitor'] ? new window['ContextMonitor']() : null);
         const friendMatchers = contextMonitor.createFriendMessageMatchers(friendId);
-        const friendFormatRegex = new RegExp(`\\[Friendsid\\|${friendName}\\|${friendId}\\]`, 'g');
+        const friendFormatRegex = new RegExp(`\\[好友id\\|${friendName}\\|${friendId}\\]`, 'g');
 
         let foundMessages = [];
 
@@ -6121,7 +6121,7 @@ if (typeof window.MessageApp === 'undefined') {
       console.log('');
 
       // 测试Friends格式检测
-      const friendRegex = /\[Friendsid\|([^|]+)\|([^|]+)\]/g;
+      const friendRegex = /\[好友id\|([^|]+)\|([^|]+)\]/g;
       console.log('Friends格式匹配（原始文本）:');
       let match;
       friendRegex.lastIndex = 0;
@@ -6134,7 +6134,7 @@ if (typeof window.MessageApp === 'undefined') {
       console.log('');
 
       // 测试移除thinking外的Friends格式
-      const cleanedText = this.removePatternOutsideThinkingTags(sampleText, /\[Friendsid\|([^|]+)\|([^|]+)\]/g);
+      const cleanedText = this.removePatternOutsideThinkingTags(sampleText, /\[好友id\|([^|]+)\|([^|]+)\]/g);
       console.log('移除thinking外Friends格式后:', cleanedText);
       console.log('');
 
