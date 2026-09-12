@@ -16,5 +16,13 @@
   "send": "Send",
   "home": "Home",
   "unread": "Unread",
-  "tavernCompatibility": "Tavern compatibility"
+  "externalPhone": "External Phone",
+  "tavernCompatibility": "Tavern page compatible with phone controls",
+  "hidePhoneButton": "Hide phone button",
+  "exclusiveMode": "Exclusive mode (one chat at a time)",
+  "blockStoryText": "Block story text",
+  "viewStatus": "View status",
+  "clearLogs": "Clear logs",
+  "customApiConfig": "Custom API config",
+  "floorMonitorStatus": "Floor monitor status"
 }
