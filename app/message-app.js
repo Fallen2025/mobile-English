@@ -805,7 +805,7 @@ if (typeof window.MessageApp === 'undefined') {
         const recentMessages = chatData.messages.slice(-3); // 检查最近3条消息
         return recentMessages.some(message => {
           if (message.mes && typeof message.mes === 'string') {
-            return message.mes.includes('[群聊消息|') || message.mes.includes('[我方群聊消息|');
+            return message.mes.includes('[群聊消息|') || message.mes.includes('[我方群聊消息|') || message.mes.includes('[GroupMessage|') || message.mes.includes('[MyGroupMessage|');
           }
           return false;
         });
@@ -6121,7 +6121,7 @@ if (typeof window.MessageApp === 'undefined') {
       console.log('');
 
       // 测试Friends格式检测
-      const friendRegex = /\[好友id\|([^|]+)\|([^|]+)\]/g;
+      const friendRegex = /\[(?:好友id|FriendId|Friend)\|([^|]+)\|([^|]+)\]/gi;
       console.log('Friends格式匹配（原始文本）:');
       let match;
       friendRegex.lastIndex = 0;
