@@ -255,7 +255,7 @@ if (typeof window.MessageRenderer === 'undefined') {
         }
 
         // 定义正则表达式匹配动态提取的格式
-        const friendPattern = /\[Friendsid\|([^|]+)\|(\d+)\]/g;
+        const friendPattern = /\[好友id\|([^|]+)\|(\d+)\]/g;
         const groupPattern = /\[群聊\|([^|]+)\|([^|]+)\|([^\]]+)\]/g;
 
         context.chat.forEach(message => {
