@@ -96,13 +96,8 @@
     buffer.push({ t: time, level, text });
     if (buffer.length > MAX) buffer.shift();
     appendDock(level, time, text);
-    if (level === 'error' && window.toastr && typeof window.toastr.error === 'function') {
-      try {
-        window.toastr.error(text.slice(0, 240), 'Phone');
-      } catch (_) {
-        /* ignore */
-      }
-    }
+    // Do not toastr console.error — ST treats those as blocking banners.
+    // Errors stay in the dock + F12 console.
   }
 
   function wrap(level) {
