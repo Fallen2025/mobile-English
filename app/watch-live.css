@@ -1,6 +1,6 @@
-/* Live App 样式文件 - 直播应用 */
+/* Live App styles */
 
-/* CSS变量定义 */
+/* CSS variables */
 :root {
   --live-primary-pink: #fb7299;
   --live-danger-red: #ff4d4f;
@@ -15,30 +15,30 @@
   --live-screen-bg: #f7f8fc;
 }
 
-/* 直播应用容器 */
+/* Live app shell */
 .live-app {
   display: flex;
   flex-direction: column;
-  height: 100%; /* 使用父容器高度，而不是视口高度 */
+  height: 100%; /* parent height, not viewport */
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-/* 禁用直播应用的整体页面滚动条 */
+/* Disable page-level scroll on the live app */
 .live-app .app-content,
 .live-app #app-content {
-  overflow: hidden !important; /* 禁用整体滚动 */
+  overflow: hidden !important; /* no page scroll */
   height: 100% !important;
 }
 
-/* ==================== 观看直播界面 ==================== */
+/* Watch Live home */
 
 .watch-live-container {
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%; /* 使用父容器的完整高度 */
+  height: 100%; /* full parent height */
   overflow-y: auto;
 }
 
@@ -60,7 +60,7 @@
   margin: 0;
 }
 
-/* 观看选项 */
+/* Watch options */
 .watch-options {
   display: flex;
   flex-direction: column;
@@ -102,7 +102,7 @@
   color: var(--live-text-secondary);
 }
 
-/* ==================== 直播间列表界面 ==================== */
+/* Room list */
 
 .live-list-container {
   padding: 20px;
@@ -217,7 +217,7 @@
   font-size: 16px;
 }
 
-/* ==================== 弹窗样式 ==================== */
+/* Modals */
 
 .modal-overlay {
   position: fixed;
@@ -334,7 +334,7 @@
   box-shadow: 0 2px 8px rgba(251, 114, 153, 0.4);
 }
 
-/* ==================== 观看直播间样式 ==================== */
+/* Watching a room */
 
 .watch-actions {
   display: flex;
@@ -355,7 +355,7 @@
   margin-right: 0.25rem;
 }
 
-/* ==================== 全新打赏礼物弹窗样式 ==================== */
+/* Gift / tip modal */
 
 .gift-modal-container {
   width: 95%;
@@ -637,7 +637,7 @@
   font-size: 0.875rem;
 }
 
-/* 自定义互动区域 */
+/* Custom interaction */
 .custom-interaction-section {
   background: white;
   border-radius: 12px;
@@ -664,7 +664,7 @@
   box-shadow: 0 0 0 2px rgba(251, 114, 153, 0.2);
 }
 
-/* 预设互动区域 */
+/* Preset interactions */
 .preset-interactions {
   background: white;
   border-radius: 12px;
@@ -709,30 +709,30 @@
   transform: scale(0.98);
 }
 
-/* ==================== 直播中界面 ==================== */
+/* Live session */
 
 .live-container {
   display: flex;
   flex-direction: column;
-  height: 100%; /* 使用父容器高度，即 calc(100% - 48px) */
-  overflow: hidden; /* 禁用整体滚动 */
+  height: 100%; /* parent height, i.e. calc(100% - 48px) */
+  overflow: hidden; /* no page scroll */
 }
 
-/* 视频框 */
+/* Video box */
 .video-placeholder {
-  width: calc(100% - 20px); /* 减少左右边距 30px → 20px */
-  flex: 0 0 40%; /* 使用flex比例：占40%的高度 */
+  width: calc(100% - 20px); /* side margin 30px → 20px */
+  flex: 0 0 40%; /* flex: 40% height */
   background-color: #000;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'%3E%3Crect fill='%23050505' width='80' height='80'/%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M10 10 L60 10 L60 60 L10 60 Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  border-radius: 10px; /* 减小圆角 12px → 10px */
-  margin: 8px auto 0 auto; /* 减少上边距 15px → 8px */
+  border-radius: 10px; /* radius 12px → 10px */
+  margin: 8px auto 0 auto; /* top margin 15px → 8px */
   display: flex;
   flex-direction: column;
-  justify-content: stretch; /* 让内容拉伸填满空间 */
+  justify-content: stretch; /* stretch to fill */
   text-align: center;
   position: relative;
-  padding: 6px 8px; /* 进一步减少内边距 */
-  overflow: hidden; /* 确保内容不会溢出 */
+  padding: 6px 8px; /* tighter padding */
+  overflow: hidden; /* clip overflow */
 }
 
 .live-status-top {
@@ -743,23 +743,23 @@
 }
 
 .live-content-text {
-  color: #ffffff; /* 改为白色，提高可读性 */
-  font-size: 15px; /* 稍微减小字体 16px → 15px */
-  line-height: 1.5; /* 进一步减少行高 1.6 → 1.5 */
-  margin: 0; /* 移除所有margin */
+  color: #ffffff; /* white for contrast */
+  font-size: 15px; /* type 16px → 15px */
+  line-height: 1.5; /* line-height 1.6 → 1.5 */
+  margin: 0; /* no margin */
   transition: opacity 0.5s ease;
-  padding: 0 6px 6px 6px; /* 只保留底部和左右padding */
+  padding: 0 6px 6px 6px; /* keep bottom + side padding only */
   text-align: center;
-  flex: 1; /* 让文本区域占用所有可用空间 */
-  overflow-y: auto; /* 添加垂直滚动 */
-  word-wrap: break-word; /* 自动换行 */
-  word-break: break-all; /* 强制换行 */
-  display: flex; /* 设置为flex容器 */
-  align-items: flex-start; /* 垂直顶部对齐，确保开头不被隐藏 */
-  justify-content: center; /* 水平居中内容 */
+  flex: 1; /* text area takes leftover space */
+  overflow-y: auto; /* vertical scroll */
+  word-wrap: break-word; /* wrap */
+  word-break: break-all; /* force wrap */
+  display: flex; /* flex container */
+  align-items: flex-start; /* align top so the start is not clipped */
+  justify-content: center; /* center horizontally */
 }
 
-/* 直播内容文本滚动条样式 */
+/* Live-content text scrollbar */
 .live-content-text::-webkit-scrollbar {
   width: 4px;
 }
@@ -780,19 +780,19 @@
 
 .live-status-bottom {
   color: #fff;
-  font-size: 13px; /* 减小字体 14px → 13px */
+  font-size: 13px; /* type 14px → 13px */
   font-weight: bold;
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 5px; /* 减小间距 6px → 5px */
+  gap: 5px; /* gap 6px → 5px */
   transition: opacity 0.3s;
-  margin-top: 0; /* 移除上边距，让内容更紧凑 */
+  margin-top: 0; /* drop top margin */
 }
 
 .live-dot {
-  width: 7px; /* 减小尺寸 8px → 7px */
-  height: 7px; /* 减小尺寸 8px → 7px */
+  width: 7px; /* size 8px → 7px */
+  height: 7px; /* size 8px → 7px */
   background-color: var(--live-danger-red);
   border-radius: 50%;
   animation: breathing 1.5s infinite ease-in-out;
@@ -810,17 +810,17 @@
   }
 }
 
-/* 推荐互动面板 */
+/* Recommended-action panel */
 .interaction-panel {
-  padding: 10px; /* 减少padding 15px → 10px */
+  padding: 10px; /* padding 15px → 10px */
   border-bottom: 1px solid var(--live-border-color);
   background: white;
-  flex: 0 0 20%; /* 使用flex比例：占20%的高度 */
+  flex: 0 0 20%; /* flex: 20% height */
 }
 
 .interaction-panel h4 {
-  font-size: 13px; /* 减小标题字体 */
-  margin: 0 0 8px 0; /* 减少下边距 */
+  font-size: 13px; /* smaller heading */
+  margin: 0 0 8px 0; /* tighter bottom margin */
   color: var(--live-text-primary);
 }
 
@@ -828,11 +828,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px; /* 减少下边距 15px → 10px */
+  margin-bottom: 10px; /* bottom margin 15px → 10px */
 }
 
 .interaction-header h4 {
-  font-size: 14px; /* 减小字体 16px → 14px */
+  font-size: 14px; /* type 16px → 14px */
   font-weight: bold;
   color: var(--live-text-primary);
   margin: 0;
@@ -842,16 +842,16 @@
   background: var(--live-button-gradient);
   border: none;
   color: #fff;
-  padding: 6px 12px; /* 减少padding 8px 16px → 6px 12px */
-  border-radius: 14px; /* 减小圆角 16px → 14px */
-  font-size: 11px; /* 减小字体 12px → 11px */
+  padding: 6px 12px; /* tighter padding 8px 16px → 6px 12px */
+  border-radius: 14px; /* radius 16px → 14px */
+  font-size: 11px; /* type 12px → 11px */
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(251, 114, 153, 0.4);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 3px; /* 减小间距 4px → 3px */
+  gap: 3px; /* gap 4px → 3px */
 }
 
 .interact-btn:hover {
@@ -867,20 +867,20 @@
 .recommended-interactions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px; /* 减少间距 10px → 6px */
+  gap: 6px; /* gap 10px → 6px */
 }
 
 .rec-btn {
   background-color: var(--live-button-bg);
   border: 1px solid var(--live-border-color);
   color: var(--live-text-primary);
-  padding: 8px; /* 减少padding 10px → 8px */
-  border-radius: 6px; /* 减小圆角 8px → 6px */
-  font-size: 12px; /* 减小字体 14px → 12px */
+  padding: 8px; /* padding 10px → 8px */
+  border-radius: 6px; /* radius 8px → 6px */
+  font-size: 12px; /* type 14px → 12px */
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
-  line-height: 1.2; /* 减少行高 1.3 → 1.2 */
+  line-height: 1.2; /* line-height 1.3 → 1.2 */
 }
 
 .rec-btn:hover {
@@ -902,16 +902,16 @@
   margin: 0;
 }
 
-/* 弹幕容器 */
+/* Danmaku container */
 .danmaku-container {
-  flex: 1; /* 使用剩余的所有空间（约35%） */
+  flex: 1; /* take leftover space (~35%) */
   padding: 15px;
   overflow-y: auto;
-  /* scroll-behavior: smooth; 取消平滑滚动，改为瞬时跳转 */
+  /* scroll-behavior: smooth; instant jump instead of smooth scroll */
   background: white;
-  min-height: 0; /* 允许flex收缩 */
-  display: flex; /* 设置为flex容器 */
-  flex-direction: column; /* 垂直布局 */
+  min-height: 0; /* allow flex shrink */
+  display: flex; /* flex container */
+  flex-direction: column; /* column */
 }
 
 .danmaku-container::-webkit-scrollbar {
@@ -935,9 +935,9 @@
 .danmaku-list {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 减少间距 12px → 8px */
-  flex: 1; /* 占用父容器的剩余空间 */
-  min-height: 0; /* 允许收缩 */
+  gap: 8px; /* gap 12px → 8px */
+  flex: 1; /* take leftover parent space */
+  min-height: 0; /* allow shrink */
 }
 
 .danmaku-item {
@@ -958,7 +958,7 @@
   }
 }
 
-/* 普通弹幕样式 */
+/* Normal danmaku */
 .danmaku-item.normal .username {
   color: #1e90ff;
   font-weight: bold;
@@ -970,7 +970,7 @@
   word-break: break-all;
 }
 
-/* 礼物弹幕样式 */
+/* Gift danmaku */
 .danmaku-item.gift {
   display: inline-block;
   background: var(--live-danmaku-gift-bg);
@@ -1003,7 +1003,7 @@
   padding: 40px 20px;
 }
 
-/* ==================== 弹窗样式 ==================== */
+/* Modals */
 
 .modal {
   position: absolute;
@@ -1085,7 +1085,7 @@
   color: var(--live-text-primary);
 }
 
-/* 礼物列表弹窗 */
+/* Gift-list modal */
 .gift-list {
   list-style: none;
   max-height: 250px;
@@ -1123,7 +1123,7 @@
   padding: 20px 0;
 }
 
-/* 自定义互动表单 */
+/* Custom interaction form */
 #interaction-form textarea {
   width: 100%;
   height: 80px;
@@ -1169,7 +1169,7 @@
   box-shadow: 0 2px 8px rgba(251, 114, 153, 0.4);
 }
 
-/* ==================== 提示消息 ==================== */
+/* Toasts */
 
 .live-toast {
   position: fixed;
@@ -1208,7 +1208,7 @@
   background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
 }
 
-/* ==================== 错误状态 ==================== */
+/* Error state */
 
 .error-message {
   text-align: center;
@@ -1239,7 +1239,7 @@
   color: var(--live-text-secondary);
 }
 
-/* ==================== 按钮禁用状态 ==================== */
+/* Disabled buttons */
 
 button:disabled,
 .rec-btn:disabled,
@@ -1259,7 +1259,7 @@ button:disabled:hover,
   transform: none !important;
 }
 
-/* ==================== 响应式设计 ==================== */
+/* Responsive */
 
 @media (max-width: 768px) {
   .watch-live-container,
@@ -1319,67 +1319,67 @@ button:disabled:hover,
   }
 
   .video-placeholder {
-    /* 保持40%比例，只调整边距和内边距 */
-    margin: 6px auto 0 auto; /* 减少上边距 */
-    padding: 6px 10px; /* 进一步减少内边距 */
+    /* Keep 40% height; tweak margins/padding only */
+    margin: 6px auto 0 auto; /* tighter top margin */
+    padding: 6px 10px; /* tighter padding */
   }
 
-  /* 中等屏幕直播内容文本 */
+  /* Mid-size live-content text */
   .live-content-text {
-    font-size: 14px; /* 减小字体 15px → 14px */
-    line-height: 1.4; /* 减少行高 1.5 → 1.4 */
-    margin: 0 0 4px 0; /* 减少底部边距 */
-    padding: 0 4px; /* 减少左右padding */
+    font-size: 14px; /* type 15px → 14px */
+    line-height: 1.4; /* line-height 1.5 → 1.4 */
+    margin: 0 0 4px 0; /* tighter bottom margin */
+    padding: 0 4px; /* tighter side padding */
   }
 
   .interaction-panel {
-    /* 保持20%比例，只调整padding */
-    padding: 8px; /* 进一步减少padding */
+    /* Keep 20% height; tweak padding only */
+    padding: 8px; /* tighter padding */
   }
 
   .danmaku-container {
     padding: 12px;
   }
 
-  /* 中等屏幕弹幕字体和间距 */
+  /* Mid-size danmaku type and spacing */
   .danmaku-list {
-    gap: 6px; /* 减小间距 8px → 6px */
+    gap: 6px; /* gap 8px → 6px */
   }
 
   .danmaku-item {
-    font-size: 13px; /* 减小字体 14px → 13px */
+    font-size: 13px; /* type 14px → 13px */
   }
 
   .danmaku-item.gift {
-    font-size: 12px; /* 减小礼物弹幕字体 13px → 12px */
+    font-size: 12px; /* gift danmaku 13px → 12px */
   }
 
-  /* 中等屏幕LIVE装饰 */
+  /* Mid-size LIVE badge */
   .live-status-bottom {
-    font-size: 12px; /* 减小字体 13px → 12px */
-    gap: 4px; /* 减小间距 5px → 4px */
-    margin-top: 0; /* 保持无上边距 */
+    font-size: 12px; /* type 13px → 12px */
+    gap: 4px; /* gap 5px → 4px */
+    margin-top: 0; /* keep top margin at 0 */
   }
 
   .live-dot {
-    width: 6px; /* 减小尺寸 7px → 6px */
-    height: 6px; /* 减小尺寸 7px → 6px */
+    width: 6px; /* size 7px → 6px */
+    height: 6px; /* size 7px → 6px */
   }
 
-  /* 中等屏幕推荐互动标题 */
+  /* Mid-size recommended-action heading */
   .interaction-header {
-    margin-bottom: 8px; /* 减少下边距 10px → 8px */
+    margin-bottom: 8px; /* bottom margin 10px → 8px */
   }
 
   .interaction-header h4 {
-    font-size: 13px; /* 减小字体 14px → 13px */
+    font-size: 13px; /* type 14px → 13px */
   }
 
   .interact-btn {
-    padding: 5px 10px; /* 减少padding 6px 12px → 5px 10px */
-    font-size: 10px; /* 减小字体 11px → 10px */
-    border-radius: 12px; /* 减小圆角 14px → 12px */
-    gap: 2px; /* 减小间距 3px → 2px */
+    padding: 5px 10px; /* tighter padding 6px 12px → 5px 10px */
+    font-size: 10px; /* type 11px → 10px */
+    border-radius: 12px; /* radius 14px → 12px */
+    gap: 2px; /* gap 3px → 2px */
   }
 
   .modal-content {
@@ -1397,8 +1397,8 @@ button:disabled:hover,
 
   .preset-btn,
   .rec-btn {
-    padding: 6px 4px; /* 进一步减少padding */
-    font-size: 11px; /* 进一步减小字体 12px → 11px */
+    padding: 6px 4px; /* tighter padding */
+    font-size: 11px; /* type 12px → 11px */
   }
 }
 
@@ -1411,75 +1411,75 @@ button:disabled:hover,
     grid-template-columns: 1fr;
   }
 
-  /* 推荐互动保持两列布局，通过缩小字体适应小屏幕 */
+  /* Keep recommended actions in two columns; shrink type on small screens */
   .recommended-interactions {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .video-placeholder {
-    /* 保持40%比例，只调整边距和内边距 */
-    margin: 4px auto 0 auto; /* 进一步减少上边距 */
-    padding: 4px 8px; /* 进一步减少内边距 */
+    /* Keep 40% height; tweak margins/padding only */
+    margin: 4px auto 0 auto; /* tighter top margin */
+    padding: 4px 8px; /* tighter padding */
   }
 
-  /* 小屏幕直播内容文本 */
+  /* Small-screen live-content text */
   .live-content-text {
-    font-size: 13px; /* 进一步减小字体 14px → 13px */
-    line-height: 1.3; /* 进一步减少行高 1.4 → 1.3 */
-    margin: 0 0 3px 0; /* 进一步减少底部边距 */
-    padding: 0 3px; /* 进一步减少左右padding */
+    font-size: 13px; /* type 14px → 13px */
+    line-height: 1.3; /* line-height 1.4 → 1.3 */
+    margin: 0 0 3px 0; /* tighter bottom margin */
+    padding: 0 3px; /* tighter side padding */
   }
 
   .interaction-panel {
-    /* 保持20%比例，只调整padding */
-    padding: 6px; /* 进一步减少padding */
+    /* Keep 20% height; tweak padding only */
+    padding: 6px; /* tighter padding */
   }
 
   .live-content-text {
-    font-size: 13px; /* 进一步减小字体 */
-    max-height: none; /* 允许完整显示内容，不限制高度 */
-    line-height: 1.4; /* 调整行高 */
+    font-size: 13px; /* smaller type */
+    max-height: none; /* no max-height clip */
+    line-height: 1.4; /* tweak line-height */
   }
 
-  /* 小屏幕弹幕字体和间距 */
+  /* Small-screen danmaku type and spacing */
   .danmaku-list {
-    gap: 5px; /* 进一步减小间距 6px → 5px */
+    gap: 5px; /* gap 6px → 5px */
   }
 
   .danmaku-item {
-    font-size: 12px; /* 小屏幕进一步减小字体 13px → 12px */
+    font-size: 12px; /* small-screen type 13px → 12px */
   }
 
   .danmaku-item.gift {
-    font-size: 11px; /* 小屏幕礼物弹幕字体 12px → 11px */
+    font-size: 11px; /* small-screen gift danmaku 12px → 11px */
   }
 
-  /* 小屏幕LIVE装饰 */
+  /* Small-screen LIVE badge */
   .live-status-bottom {
-    font-size: 11px; /* 进一步减小字体 12px → 11px */
-    gap: 3px; /* 进一步减小间距 4px → 3px */
-    margin-top: 0; /* 保持无上边距 */
+    font-size: 11px; /* type 12px → 11px */
+    gap: 3px; /* gap 4px → 3px */
+    margin-top: 0; /* keep top margin at 0 */
   }
 
   .live-dot {
-    width: 5px; /* 进一步减小尺寸 6px → 5px */
-    height: 5px; /* 进一步减小尺寸 6px → 5px */
+    width: 5px; /* size 6px → 5px */
+    height: 5px; /* size 6px → 5px */
   }
 
-  /* 小屏幕推荐互动标题 */
+  /* Small-screen recommended-action heading */
   .interaction-header {
-    margin-bottom: 6px; /* 进一步减少下边距 8px → 6px */
+    margin-bottom: 6px; /* bottom margin 8px → 6px */
   }
 
   .interaction-header h4 {
-    font-size: 12px; /* 进一步减小字体 13px → 12px */
+    font-size: 12px; /* type 13px → 12px */
   }
 
   .interact-btn {
-    padding: 4px 8px; /* 进一步减少padding 5px 10px → 4px 8px */
-    font-size: 9px; /* 进一步减小字体 10px → 9px */
-    border-radius: 10px; /* 进一步减小圆角 12px → 10px */
-    gap: 2px; /* 保持间距 */
+    padding: 4px 8px; /* tighter padding 5px 10px → 4px 8px */
+    font-size: 9px; /* type 10px → 9px */
+    border-radius: 10px; /* radius 12px → 10px */
+    gap: 2px; /* keep gap */
   }
 
   .modal-content {
@@ -1557,7 +1557,7 @@ button:disabled:hover,
   }
 }
 
-/* ==================== 加载动画 ==================== */
+/* Loading */
 
 .live-loading {
   display: flex;
@@ -1579,7 +1579,7 @@ button:disabled:hover,
   margin-right: 10px;
 }
 
-/* 更新加载提示样式 */
+/* Update-loading hint */
 .live-loading-update {
   display: flex;
   justify-content: center;
@@ -1611,7 +1611,7 @@ button:disabled:hover,
   }
 }
 
-/* ==================== 滚动条美化 ==================== */
+/* Scrollbars */
 
 .watch-live-container::-webkit-scrollbar,
 .modal-content::-webkit-scrollbar {
@@ -1635,9 +1635,9 @@ button:disabled:hover,
   background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-/* ==================== 特殊效果 ==================== */
+/* Effects */
 
-/* 按钮点击波纹效果 */
+/* Button ripple */
 .submit-btn,
 .interact-btn {
   position: relative;
@@ -1664,25 +1664,25 @@ button:disabled:hover,
   height: 200px;
 }
 
-/* 焦点可见性 */
+/* Focus visible */
 button:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--live-primary-pink);
   outline-offset: 2px;
 }
 
-/* 新增弹幕/礼物逐条出现效果 */
+/* Staggered appear for danmaku / gifts */
 .danmaku-item.appear-init,
 .gift-list li.appear-init {
   opacity: 0;
   transform: translateY(10px);
-  display: none; /* 初始不占位，避免空白 */
+  display: none; /* display:none so it does not reserve space */
 }
 
 .danmaku-item.appear-show,
 .gift-list li.appear-show {
   opacity: 1;
   transform: translateY(0);
-  display: block; /* 出现时占位 */
+  display: block; /* occupy space when shown */
   transition: opacity 300ms ease, transform 300ms ease;
 }
